@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { auth, googleProvider, storage } from '$lib/firebase';
 	import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 	import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -111,6 +112,19 @@
 					{/if}
 				</button>
 
+				<!-- Slideshow Button -->
+				<button class="btn btn-accent w-full" on:click={() => goto('/slideshow')}>
+					<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+						/>
+					</svg>
+					Slideshow
+				</button>
+
 				<button class="btn btn-error w-full" on:click={logout}>Logout</button>
 			</div>
 		{:else}
@@ -136,22 +150,4 @@
 			</button>
 		{/if}
 	</div>
-
-	<!-- Display uploaded images -->
-	{#if $user && $uploadedImages.length > 0}
-		<div class="card bg-base-100 mt-4 w-full max-w-md p-6 shadow-xl">
-			<h2 class="mb-4 text-lg font-semibold">Uploaded Photos</h2>
-			<div class="grid grid-cols-2 gap-4">
-				{#each $uploadedImages as imageUrl, index (imageUrl)}
-					<div class="aspect-square overflow-hidden rounded-lg border">
-						<img
-							src={imageUrl}
-							alt="Photo {index + 1}"
-							class="h-full w-full cursor-pointer object-cover transition-transform hover:scale-105"
-						/>
-					</div>
-				{/each}
-			</div>
-		</div>
-	{/if}
 </div>
