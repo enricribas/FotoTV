@@ -43,6 +43,10 @@
 		"vitest-browser-svelte": "^0.1.0"
 	},
 	"dependencies": {
+		"@capacitor/android": "^7.4.2",
+		"@capacitor/cli": "^7.4.2",
+		"@capacitor/core": "^7.4.2",
+		"@sveltejs/adapter-static": "^3.0.8",
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"daisyui": "^5.0.46",
 		"firebase": "^11.10.0"
