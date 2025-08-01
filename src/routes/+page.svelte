@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { auth, googleProvider, storage } from '$lib/firebase';
 	import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
-	import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+	import { ref, uploadBytes, getDownloadURL, listAll } from 'firebase/storage';
 	import type { User } from 'firebase/auth';
 	import { writable } from 'svelte/store';
 
@@ -14,9 +14,44 @@
 	let fileInput: HTMLInputElement;
 
 	onMount(() => {
-		const unsubscribe = onAuthStateChanged(auth, (u) => user.set(u));
+		const unsubscribe = onAuthStateChanged(auth, async (u) => {
+			user.set(u);
+			if (u) {
+				await loadUserImages();
+			} else {
+				uploadedImages.set([]);
+			}
+		});
 		return unsubscribe;
 	});
+
+	async function loadUserImages() {
+		const currentUser = $user;
+		if (!currentUser) {
+			return;
+		}
+
+		try {
+			const userRef = ref(storage, `images/${currentUser.uid}`);
+			const result = await listAll(userRef);
+
+			// Sort items by name (which includes timestamp)
+			const sortedItems = result.items.sort((a, b) => {
+				return a.name.localeCompare(b.name);
+			});
+
+			const imageUrls = await Promise.all(
+				sortedItems.map(async (itemRef) => {
+					return await getDownloadURL(itemRef);
+				})
+			);
+
+			uploadedImages.set(imageUrls);
+		} catch (error) {
+			console.error('Error loading images:', error);
+			uploadedImages.set([]);
+		}
+	}
 
 	function login() {
 		signInWithPopup(auth, googleProvider).catch(console.error);
@@ -58,10 +93,24 @@
 			// Get the download URL
 			const downloadURL = await getDownloadURL(snapshot.ref);
 
-			// Add to uploaded images list
+			// Immediately add the new image to the list
 			uploadedImages.update((images) => [...images, downloadURL]);
 
-			console.log('File uploaded successfully:', downloadURL);
+			// Retry loading with backoff to ensure Firebase has updated
+			let retries = 0;
+			const maxRetries = 3;
+
+			while (retries < maxRetries) {
+				await new Promise((resolve) => setTimeout(resolve, 500 * (retries + 1)));
+				const previousCount = $uploadedImages.length;
+				await loadUserImages();
+
+				if ($uploadedImages.length > previousCount - 1) {
+					break;
+				}
+
+				retries++;
+			}
 		} catch (error) {
 			console.error('Upload failed:', error);
 			alert('Upload failed. Please try again.');
