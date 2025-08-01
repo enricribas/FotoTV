@@ -23,7 +23,7 @@ function logout() {
 
 <div class="flex flex-col items-center justify-center min-h-screen bg-base-200">
   <div class="card w-96 bg-base-100 shadow-xl p-8">
-    <h1 class="text-2xl font-bold mb-4 text-center">PhotoTV Login</h1>
+    <h1 class="text-2xl font-bold mb-4 text-center text-blue-500">FotoTV</h1>
     {#if $user}
       <div class="flex flex-col items-center">
         <div class="avatar mb-2">
