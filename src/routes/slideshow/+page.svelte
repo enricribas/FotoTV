@@ -328,17 +328,17 @@
 	{/if}
 
 	<!-- Main content area -->
-	<div class="flex flex-1 items-center justify-center">
+	<div class="absolute inset-0 flex items-center justify-center">
 		{#if loading}
 			<div class="loading loading-spinner loading-lg"></div>
 		{:else if error}
 			<button class="btn btn-primary" on:click={goBack}>Go Back</button>
 		{:else if imageRefs.length > 0}
-			<div class="relative flex h-full w-full items-center justify-center">
+			<div class="absolute inset-0 flex items-center justify-center">
 				{#if loadingNext}
 					<div class="loading loading-spinner loading-lg"></div>
 				{:else if currentImageUrl}
-					<img src={currentImageUrl} alt="" class="max-h-full max-w-full object-contain" />
+					<img src={currentImageUrl} alt="" class="h-full w-full object-contain" />
 				{/if}
 			</div>
 		{/if}
