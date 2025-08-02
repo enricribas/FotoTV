@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { auth, storage } from '$lib/firebase';
+	import { auth } from '$lib/firebase';
 	import { onAuthStateChanged } from 'firebase/auth';
-	import { ref, listAll, getDownloadURL } from 'firebase/storage';
 	import type { User } from 'firebase/auth';
+	import { ImageService } from '$lib/imageService';
 
 	let user: User | null = null;
 	let images: string[] = [];
@@ -37,15 +37,7 @@
 
 		try {
 			loading = true;
-			const userImagesRef = ref(storage, `images/${user.uid}`);
-			const result = await listAll(userImagesRef);
-
-			const imageUrls = await Promise.all(
-				result.items.map(async (itemRef) => {
-					return await getDownloadURL(itemRef);
-				})
-			);
-
+			const imageUrls = await ImageService.loadUserImages(user);
 			images = imageUrls;
 
 			if (images.length > 0) {
