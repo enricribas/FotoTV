@@ -99,20 +99,28 @@
 	class="hidden"
 />
 
-<div class="bg-base-200 flex min-h-screen flex-col items-center justify-center p-4">
-	<div class="card bg-base-100 w-full max-w-md p-8 shadow-xl">
-		<h1 class="mb-4 text-center text-2xl font-bold text-blue-500">FotoTV</h1>
+<div
+	class="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-orange-100 to-red-100 p-4"
+>
+	<div class="card w-full max-w-md border border-orange-200 bg-white p-8 shadow-xl">
+		<h1 class="mb-4 text-center text-2xl font-bold text-orange-600">FotoTV</h1>
 		{#if $user}
 			<div class="flex flex-col items-center space-y-4">
 				<div class="avatar mb-2">
-					<div class="ring-primary ring-offset-base-100 w-16 rounded-full ring ring-offset-2">
+					<div class="w-16 rounded-full ring ring-orange-500 ring-offset-2 ring-offset-white">
 						<img src={$user.photoURL} alt="User avatar" />
 					</div>
 				</div>
-				<p class="mb-2">Welcome, <span class="font-semibold">{$user.displayName}</span>!</p>
+				<p class="mb-2 text-gray-700">
+					Welcome, <span class="font-semibold text-red-600">{$user.displayName}</span>!
+				</p>
 
 				<!-- Upload Button -->
-				<button class="btn btn-secondary w-full" on:click={triggerFileUpload} disabled={$uploading}>
+				<button
+					class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600"
+					on:click={triggerFileUpload}
+					disabled={$uploading}
+				>
 					{#if $uploading}
 						<span class="loading loading-spinner loading-sm"></span>
 						Uploading...
@@ -130,7 +138,10 @@
 				</button>
 
 				<!-- Slideshow Button -->
-				<button class="btn btn-accent w-full" on:click={() => goto('/slideshow')}>
+				<button
+					class="btn w-full border-red-500 bg-red-500 text-white hover:bg-red-600"
+					on:click={() => goto('/slideshow')}
+				>
 					<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
@@ -142,10 +153,16 @@
 					Slideshow
 				</button>
 
-				<button class="btn btn-error w-full" on:click={logout}>Logout</button>
+				<button
+					class="btn w-full border-gray-500 bg-gray-500 text-white hover:bg-gray-600"
+					on:click={logout}>Logout</button
+				>
 			</div>
 		{:else}
-			<button class="btn btn-primary w-full" on:click={login}>
+			<button
+				class="btn w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+				on:click={login}
+			>
 				<svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"
 					><g
 						><path
