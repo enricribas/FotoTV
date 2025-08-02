@@ -14,6 +14,7 @@
 	let error = '';
 	let intervalId: NodeJS.Timeout | null = null;
 	let loadingNext = false;
+	let showControls = false;
 
 	onMount(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (u) => {
@@ -141,33 +142,92 @@
 			case 'R':
 				refreshImages();
 				break;
+			case 'Enter':
+			case 'c':
+			case 'C':
+				toggleControls();
+				break;
 		}
 	}
 
 	async function refreshImages() {
 		await loadImageList();
 	}
+
+	function toggleControls() {
+		showControls = !showControls;
+	}
+
+	function handleScreenClick(event: MouseEvent) {
+		// Don't toggle if clicking on a button
+		if ((event.target as HTMLElement).closest('button')) {
+			return;
+		}
+		toggleControls();
+	}
+
+	function handleScreenKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter') {
+			toggleControls();
+		}
+	}
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="fixed inset-0 flex flex-col bg-black">
-	<!-- Refresh button -->
-	{#if imageRefs.length > 0}
-		<button
-			class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-4 right-4 z-20 text-white hover:bg-white"
-			on:click={refreshImages}
-			aria-label="Refresh images"
-		>
-			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-				/>
-			</svg>
-		</button>
+<div
+	class="fixed inset-0 flex flex-col bg-black"
+	on:click={handleScreenClick}
+	on:keydown={handleScreenKeydown}
+	role="button"
+	tabindex="0"
+>
+	<!-- Navigation buttons -->
+	{#if imageRefs.length > 0 && showControls}
+		<div class="fixed top-4 right-4 z-20 flex space-x-2">
+			<!-- Previous button -->
+			<button
+				class="btn btn-circle btn-ghost hover:bg-opacity-20 text-white hover:bg-white"
+				on:click={previousImage}
+				aria-label="Previous image"
+			>
+				<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M15 19l-7-7 7-7"
+					/>
+				</svg>
+			</button>
+
+			<!-- Next button -->
+			<button
+				class="btn btn-circle btn-ghost hover:bg-opacity-20 text-white hover:bg-white"
+				on:click={nextImage}
+				aria-label="Next image"
+			>
+				<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+				</svg>
+			</button>
+
+			<!-- Refresh button -->
+			<button
+				class="btn btn-circle btn-ghost hover:bg-opacity-20 text-white hover:bg-white"
+				on:click={refreshImages}
+				aria-label="Refresh images"
+			>
+				<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+					/>
+				</svg>
+			</button>
+		</div>
 	{/if}
 
 	<!-- Main content area -->
