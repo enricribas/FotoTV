@@ -3,7 +3,13 @@
 	import { goto } from '$app/navigation';
 	import { auth, storage } from '$lib/firebase';
 	import { onAuthStateChanged } from 'firebase/auth';
-	import { ref, listAll, getDownloadURL, type StorageReference } from 'firebase/storage';
+	import {
+		ref,
+		listAll,
+		getDownloadURL,
+		deleteObject,
+		type StorageReference
+	} from 'firebase/storage';
 	import type { User } from 'firebase/auth';
 
 	let user: User | null = null;
@@ -15,6 +21,8 @@
 	let intervalId: NodeJS.Timeout | null = null;
 	let loadingNext = false;
 	let showControls = false;
+	let showDeleteConfirm = false;
+	let deleting = false;
 
 	onMount(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (u) => {
@@ -147,6 +155,49 @@
 		}
 	}
 
+	function showDeleteDialog() {
+		showDeleteConfirm = true;
+	}
+
+	function hideDeleteDialog() {
+		showDeleteConfirm = false;
+	}
+
+	async function deleteCurrentImage() {
+		if (!user || imageRefs.length === 0) return;
+
+		try {
+			deleting = true;
+			const currentRef = imageRefs[currentImageIndex];
+
+			// Delete from Firebase Storage
+			await deleteObject(currentRef);
+
+			// Remove from local array
+			imageRefs = imageRefs.filter((_, index) => index !== currentImageIndex);
+
+			// Adjust current index if needed
+			if (currentImageIndex >= imageRefs.length) {
+				currentImageIndex = Math.max(0, imageRefs.length - 1);
+			}
+
+			// Load the new current image or handle empty state
+			if (imageRefs.length > 0) {
+				await loadCurrentImage();
+			} else {
+				currentImageUrl = '';
+				error = 'No images found. Please upload some images first.';
+			}
+
+			hideDeleteDialog();
+		} catch (err) {
+			console.error('Error deleting image:', err);
+			alert('Failed to delete image. Please try again.');
+		} finally {
+			deleting = false;
+		}
+	}
+
 	function toggleControls() {
 		showControls = !showControls;
 	}
@@ -222,6 +273,57 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 				</svg>
 			</button>
+		</div>
+	{/if}
+
+	<!-- Delete button (top center) -->
+	{#if imageRefs.length > 0 && showControls}
+		<button
+			class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-4 left-1/2 z-20 -translate-x-1/2 transform text-white hover:bg-white"
+			on:click={showDeleteDialog}
+			aria-label="Delete current image"
+		>
+			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16"
+				/>
+			</svg>
+		</button>
+	{/if}
+
+	<!-- Delete confirmation dialog -->
+	{#if showDeleteConfirm}
+		<div class="bg-opacity-75 fixed inset-0 z-50 flex items-center justify-center bg-black">
+			<div class="mx-4 max-w-md rounded-lg bg-white p-6 shadow-xl">
+				<h3 class="mb-4 text-lg font-bold text-gray-900">Delete Image</h3>
+				<p class="mb-6 text-gray-700">
+					Are you sure you want to delete this image? This action cannot be undone.
+				</p>
+				<div class="flex justify-end space-x-3">
+					<button
+						class="rounded bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
+						on:click={hideDeleteDialog}
+						disabled={deleting}
+					>
+						Cancel
+					</button>
+					<button
+						class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
+						on:click={deleteCurrentImage}
+						disabled={deleting}
+					>
+						{#if deleting}
+							<span class="loading loading-spinner loading-sm"></span>
+							Deleting...
+						{:else}
+							Delete
+						{/if}
+					</button>
+				</div>
+			</div>
 		</div>
 	{/if}
 
