@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { auth } from '$lib/firebase';
-	import { onAuthStateChanged } from 'firebase/auth';
+	import { onAuthStateChanged, signOut } from 'firebase/auth';
 	import type { User } from 'firebase/auth';
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
@@ -23,12 +23,16 @@
 		});
 		return unsubscribe;
 	});
+
+	function logout() {
+		signOut(auth).catch(console.error);
+	}
 </script>
 
 <div
 	class="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-orange-100 to-red-100 p-4"
 >
-	<!-- User info in top right corner of entire page -->
+	<!-- User info and logout button in top right corner of entire page -->
 	{#if $user}
 		<div class="absolute top-4 right-4 flex items-center space-x-2 bg-white rounded-lg p-2 shadow-md z-10">
 			{#if $user.photoURL}
@@ -47,6 +51,12 @@
 			<div class="text-sm text-gray-700">
 				<span class="font-semibold text-red-600">{$user.displayName || $user.email}</span>
 			</div>
+			<button
+				class="btn btn-sm border-gray-500 bg-gray-500 text-white hover:bg-gray-600 ml-2"
+				on:click={logout}
+			>
+				Logout
+			</button>
 		</div>
 	{/if}
 

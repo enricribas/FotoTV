@@ -332,7 +332,7 @@
 		{#if loading}
 			<div class="loading loading-spinner loading-lg"></div>
 		{:else if error}
-			<button class="btn btn-primary" on:click={goBack}>Go Back</button>
+			<button class="btn btn-primary" on:click={goBack}>Upload Images through phone app</button>
 		{:else if imageRefs.length > 0}
 			<div class="absolute inset-0 flex items-center justify-center">
 				{#if loadingNext}

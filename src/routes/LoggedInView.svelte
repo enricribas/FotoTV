@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { auth, storage } from '$lib/firebase';
-	import { signOut } from 'firebase/auth';
 	import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 	import type { User } from 'firebase/auth';
 	import { writable } from 'svelte/store';
@@ -24,10 +23,6 @@
 	$: uploadedImagesStore.set(uploadedImages);
 
 	let fileInput: HTMLInputElement;
-
-	function logout() {
-		signOut(auth).catch(console.error);
-	}
 
 	function triggerFileUpload() {
 		fileInput?.click();
@@ -129,8 +124,4 @@
 			Slideshow
 		</button>
 
-		<button
-			class="btn w-full border-gray-500 bg-gray-500 text-white hover:bg-gray-600"
-			on:click={logout}>Logout</button
-		>
 	</div> 
