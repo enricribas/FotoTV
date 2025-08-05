@@ -34,7 +34,7 @@
 >
 	<!-- User info and logout button in top right corner of entire page -->
 	{#if $user}
-		<div class="absolute top-4 right-4 flex items-center space-x-2 bg-white rounded-lg p-2 shadow-md z-10">
+		<div class="absolute top-4 right-4 flex items-center space-x-2 z-10">
 			{#if $user.photoURL}
 				<div class="avatar">
 					<div class="w-8 h-8 rounded-full ring ring-orange-500 ring-offset-1 ring-offset-white">
@@ -48,11 +48,11 @@
 					</span>
 				</div>
 			{/if}
-			<div class="text-sm text-gray-700">
-				<span class="font-semibold text-red-600">{$user.displayName || $user.email}</span>
+			<div class="text-sm text-gray-800">
+				<span class="font-semibold">{$user.displayName || $user.email}</span>
 			</div>
 			<button
-				class="btn btn-sm border-gray-500 bg-gray-500 text-white hover:bg-gray-600 ml-2"
+				class="btn btn-sm border-white bg-white text-gray-700 hover:bg-gray-100 ml-2"
 				on:click={logout}
 			>
 				Logout
@@ -60,11 +60,16 @@
 		</div>
 	{/if}
 
-	<div class="card w-full max-w-md border border-orange-200 bg-white p-8 shadow-xl">
-		<div class="mb-4 flex justify-center">
-			<img src="/FotoTV-logo.jpeg" alt="FotoTV Logo" class="h-16 w-auto" />
+	<!-- FotoTV logo and text - centered when logged out, top-left when logged in -->
+	<div class="{$user ? 'absolute top-4 left-4' : 'absolute top-8 left-1/2 transform -translate-x-1/2'} z-10">
+		<div class="flex items-center space-x-3">
+			<img src="/FotoTV-logo2.png" alt="FotoTV Logo" class="{$user ? 'h-8' : 'h-16'} w-auto" />
+			<h1 class="{$user ? 'text-lg' : 'text-3xl'} font-bold text-gray-800">FotoTV</h1>
 		</div>
-		<h1 class="mb-4 text-center text-2xl font-bold text-orange-600">FotoTV</h1>
+	</div>
+
+	<!-- Main content centered -->
+	<div class="w-full max-w-md">
 		{#if $user}
 			<LoggedInView user={$user} uploadedImages={$uploadedImages} />
 		{:else}
