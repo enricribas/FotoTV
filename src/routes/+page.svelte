@@ -26,9 +26,26 @@
 </script>
 
 <div
-	class="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-orange-100 to-red-100 p-4"
+	class="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-orange-100 to-red-100 p-4"
 >
+	<!-- User info in top right corner of entire page -->
+	{#if $user}
+		<div class="absolute top-4 right-4 flex items-center space-x-2 bg-white rounded-lg p-2 shadow-md z-10">
+			<div class="avatar">
+				<div class="w-8 h-8 rounded-full ring ring-orange-500 ring-offset-1 ring-offset-white">
+					<img src={$user.photoURL} alt="User avatar" />
+				</div>
+			</div>
+			<div class="text-sm text-gray-700">
+				<span class="font-semibold text-red-600">{$user.displayName}</span>
+			</div>
+		</div>
+	{/if}
+
 	<div class="card w-full max-w-md border border-orange-200 bg-white p-8 shadow-xl">
+		<div class="mb-4 flex justify-center">
+			<img src="/FotoTV-logo.jpeg" alt="FotoTV Logo" class="h-16 w-auto" />
+		</div>
 		<h1 class="mb-4 text-center text-2xl font-bold text-orange-600">FotoTV</h1>
 		{#if $user}
 			<LoggedInView user={$user} uploadedImages={$uploadedImages} />
