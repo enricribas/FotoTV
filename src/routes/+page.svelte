@@ -31,13 +31,21 @@
 	<!-- User info in top right corner of entire page -->
 	{#if $user}
 		<div class="absolute top-4 right-4 flex items-center space-x-2 bg-white rounded-lg p-2 shadow-md z-10">
-			<div class="avatar">
-				<div class="w-8 h-8 rounded-full ring ring-orange-500 ring-offset-1 ring-offset-white">
-					<img src={$user.photoURL} alt="User avatar" />
+			{#if $user.photoURL}
+				<div class="avatar">
+					<div class="w-8 h-8 rounded-full ring ring-orange-500 ring-offset-1 ring-offset-white">
+						<img src={$user.photoURL} alt="User avatar" />
+					</div>
 				</div>
-			</div>
+			{:else}
+				<div class="w-8 h-8 rounded-full ring ring-orange-500 ring-offset-1 ring-offset-white bg-orange-500 flex items-center justify-center">
+					<span class="text-white text-sm font-semibold">
+						{$user.displayName ? $user.displayName.charAt(0).toUpperCase() : $user.email?.charAt(0).toUpperCase() || 'U'}
+					</span>
+				</div>
+			{/if}
 			<div class="text-sm text-gray-700">
-				<span class="font-semibold text-red-600">{$user.displayName}</span>
+				<span class="font-semibold text-red-600">{$user.displayName || $user.email}</span>
 			</div>
 		</div>
 	{/if}
