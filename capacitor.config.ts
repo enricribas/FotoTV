@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
 	appId: 'com.phototv.app',
-	appName: 'PhotoTV',
+	appName: 'FotoTV',
 	webDir: 'build',
 	server: {
 		androidScheme: 'https'
