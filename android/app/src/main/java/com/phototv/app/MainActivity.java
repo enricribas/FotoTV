@@ -1,4 +1,4 @@
-package com.knomni.fototv;
+package com.phototv.app;
 
 import com.getcapacitor.BridgeActivity;
 

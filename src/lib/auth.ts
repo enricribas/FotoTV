@@ -22,8 +22,21 @@ export class AuthService {
 	static async signInWithGoogle(): Promise<User | null> {
 		try {
 			if (isNative) {
-				// For native apps, use redirect flow
+				// Configure OAuth provider with custom parameters
+				googleProvider.setCustomParameters({
+					// For better native mobile experience
+					prompt: 'select_account',
+					// Tag for native app identification
+					state: 'com.phototv.app',
+					// Add timestamp to prevent caching issues
+					t: Date.now().toString()
+				});
+
+				// Use Firebase's built-in redirect system
+				// This is more reliable than constructing the URL manually
 				await signInWithRedirect(auth, googleProvider);
+				console.log('Initiated Google Sign-In with redirect');
+
 				// The result will be handled by getRedirectResult on app resume
 				return null;
 			} else {
@@ -42,11 +55,22 @@ export class AuthService {
 	 */
 	static async handleRedirectResult(): Promise<User | null> {
 		try {
+			console.log('Checking for redirect result...');
 			const result = await getRedirectResult(auth);
-			return result?.user || null;
+
+			if (result && result.user) {
+				console.log('Successfully handled redirect result', {
+					uid: result.user.uid,
+					provider: result.providerId
+				});
+				return result.user;
+			} else {
+				console.log('No redirect result found');
+				return null;
+			}
 		} catch (error) {
 			console.error('Redirect Result Error:', error);
-			return null;
+			throw error; // Rethrow to see the actual error in debug tools
 		}
 	}
 
@@ -63,7 +87,7 @@ export class AuthService {
 				// For native apps, use custom URL scheme
 				dynamicLinkDomain: 'fototv-90cf0.page.link',
 				android: {
-					packageName: 'com.knomni.fototv',
+					packageName: 'com.phototv.app',
 					installApp: false,
 					minimumVersion: '1'
 				}
@@ -144,7 +168,14 @@ export class AuthService {
 	static async initialize(): Promise<void> {
 		if (isNative) {
 			// Handle any pending redirect results
-			await this.handleRedirectResult();
+			try {
+				const result = await this.handleRedirectResult();
+				if (result) {
+					console.log('Successfully signed in from redirect');
+				}
+			} catch (e) {
+				console.error('Error handling redirect result:', e);
+			}
 
 			// Set up app state change listener for OAuth returns
 			document.addEventListener('visibilitychange', async () => {
@@ -152,6 +183,38 @@ export class AuthService {
 					await this.handleRedirectResult();
 				}
 			});
+
+			// Listen for app resume events on Capacitor
+			try {
+				// @ts-ignore - Capacitor app not in types
+				const { App } = await import('@capacitor/app');
+				App.addListener('appStateChange', async (state: { isActive: boolean }) => {
+					if (state.isActive) {
+						console.log('App became active, checking auth state');
+						// App came to foreground, try to get auth result
+						await this.handleRedirectResult();
+					}
+				});
+
+				// Listen for URL open events (deep links)
+				App.addListener('appUrlOpen', async (data: { url: string }) => {
+					console.log('App opened with URL:', data.url);
+					if (data.url) {
+						// Check if it's an auth deep link
+						if (data.url.includes('oauth') || data.url.includes('auth')) {
+							console.log('Handling auth redirect from deep link');
+							await this.handleRedirectResult();
+						}
+						// Check if it's a magic link
+						if (isSignInWithEmailLink(auth, data.url)) {
+							console.log('Handling magic link from deep link');
+							await this.completeMagicLinkSignIn(data.url);
+						}
+					}
+				});
+			} catch (e) {
+				console.warn('Could not add Capacitor App listeners', e);
+			}
 		}
 
 		// Check for magic links on app/page load

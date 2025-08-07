@@ -9,7 +9,7 @@
 			"client_info": {
 				"mobilesdk_app_id": "1:341116492373:android:83616e327530476c4d12dc",
 				"android_client_info": {
-					"package_name": "com.knomni.fototv"
+					"package_name": "com.phototv.app"
 				}
 			},
 			"oauth_client": [
@@ -17,7 +17,7 @@
 					"client_id": "341116492373-7dv93n1u82qgseu1u5si8otga7pfaccq.apps.googleusercontent.com",
 					"client_type": 1,
 					"android_info": {
-						"package_name": "com.knomni.fototv",
+						"package_name": "com.phototv.app",
 						"certificate_hash": "df68534a7d8d6fad82eddb39de14594bba33239c"
 					}
 				},

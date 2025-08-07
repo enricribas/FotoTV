@@ -1,7 +1,7 @@
 {
 	"name": "phototv",
 	"private": true,
-	"version": "0.0.3",
+	"version": "0.0.8",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -22,7 +22,9 @@
 		"android:debug": "cd android && ./gradlew assembleDebug",
 		"android:release": "cd android && ./gradlew assembleRelease",
 		"android:bundle": "cd android && ./gradlew bundleRelease",
-		"auth:check": "node scripts/check-auth-config.js"
+		"auth:check": "node scripts/check-auth-config.js",
+		"release": "node scripts/release.js",
+		"setup:signing": "node scripts/setup-signing.js"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
@@ -53,6 +55,7 @@
 	},
 	"dependencies": {
 		"@capacitor/android": "^7.4.2",
+		"@capacitor/app": "^7.0.2",
 		"@capacitor/browser": "^7.0.2",
 		"@capacitor/cli": "^7.4.2",
 		"@capacitor/core": "^7.4.2",

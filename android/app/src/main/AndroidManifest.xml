@@ -46,7 +46,37 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="com.knomni.fototv" />
+                <data android:scheme="com.phototv.app" />
+            </intent-filter>
+
+            <!-- OAuth redirects - multiple handlers for different paths -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="fototv-90cf0.firebaseapp.com"
+                      android:pathPrefix="/__/auth/handler" />
+            </intent-filter>
+
+            <!-- Additional OAuth paths -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="fototv-90cf0.firebaseapp.com"
+                      android:pathPrefix="/auth" />
+            </intent-filter>
+
+            <!-- Universal links (App Links) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="fototv-90cf0.firebaseapp.com"
+                      android:pathPrefix="/" />
             </intent-filter>
 
         </activity>

@@ -103,7 +103,7 @@ if (!fs.existsSync(manifestPath)) {
 		error('Deep link configuration missing in AndroidManifest.xml');
 	}
 
-	if (manifestContent.includes('android:scheme="com.knomni.fototv"')) {
+	if (manifestContent.includes('android:scheme="com.phototv.app"')) {
 		success('Custom URL scheme configured');
 	} else {
 		warning('Custom URL scheme not found in AndroidManifest.xml');
@@ -177,7 +177,7 @@ if (!fs.existsSync(capacitorConfigPath)) {
 		warning('Browser plugin not explicitly configured in Capacitor config');
 	}
 
-	if (capacitorContent.includes('appId: "com.knomni.fototv"')) {
+	if (capacitorContent.includes('appId: "com.phototv.app"')) {
 		success('App ID configured');
 	} else {
 		warning('Check App ID configuration in capacitor.config.ts');

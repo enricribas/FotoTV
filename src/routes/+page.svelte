@@ -7,6 +7,7 @@
 	import { ImageService } from '$lib/imageService';
 	import LoggedInView from './LoggedInView.svelte';
 	import LoggedOutView from './LoggedOutView.svelte';
+	import AuthDebug from './AuthDebug.svelte';
 
 	const user = writable<User | null>(null);
 	const uploadedImages = writable<string[]>([]);
@@ -34,17 +35,21 @@
 >
 	<!-- User info and logout button in top right corner of entire page -->
 	{#if $user}
-		<div class="absolute top-4 right-4 flex items-center space-x-2 z-10">
+		<div class="absolute top-4 right-4 z-10 flex items-center space-x-2">
 			{#if $user.photoURL}
 				<div class="avatar">
-					<div class="w-8 h-8 rounded-full ring ring-orange-500 ring-offset-1 ring-offset-white">
+					<div class="h-8 w-8 rounded-full ring ring-orange-500 ring-offset-1 ring-offset-white">
 						<img src={$user.photoURL} alt="User avatar" />
 					</div>
 				</div>
 			{:else}
-				<div class="w-8 h-8 rounded-full ring ring-orange-500 ring-offset-1 ring-offset-white bg-orange-500 flex items-center justify-center">
-					<span class="text-white text-sm font-semibold">
-						{$user.displayName ? $user.displayName.charAt(0).toUpperCase() : $user.email?.charAt(0).toUpperCase() || 'U'}
+				<div
+					class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 ring ring-orange-500 ring-offset-1 ring-offset-white"
+				>
+					<span class="text-sm font-semibold text-white">
+						{$user.displayName
+							? $user.displayName.charAt(0).toUpperCase()
+							: $user.email?.charAt(0).toUpperCase() || 'U'}
 					</span>
 				</div>
 			{/if}
@@ -52,7 +57,7 @@
 				<span class="font-semibold">{$user.displayName || $user.email}</span>
 			</div>
 			<button
-				class="btn btn-sm border-white bg-white text-gray-700 hover:bg-gray-100 ml-2"
+				class="btn btn-sm ml-2 border-white bg-white text-gray-700 hover:bg-gray-100"
 				on:click={logout}
 			>
 				Logout
@@ -61,7 +66,11 @@
 	{/if}
 
 	<!-- FotoTV logo and text - centered when logged out, top-left when logged in -->
-	<div class="{$user ? 'absolute top-4 left-4' : 'absolute top-8 left-1/2 transform -translate-x-1/2'} z-10">
+	<div
+		class="{$user
+			? 'absolute top-4 left-4'
+			: 'absolute top-8 left-1/2 -translate-x-1/2 transform'} z-10"
+	>
 		<div class="flex items-center space-x-3">
 			<img src="/FotoTV-logo2.png" alt="FotoTV Logo" class="{$user ? 'h-8' : 'h-16'} w-auto" />
 			<h1 class="{$user ? 'text-lg' : 'text-3xl'} font-bold text-gray-800">FotoTV</h1>
@@ -76,4 +85,7 @@
 			<LoggedOutView />
 		{/if}
 	</div>
+
+	<!-- Auth Debug Component -->
+	<AuthDebug />
 </div>
