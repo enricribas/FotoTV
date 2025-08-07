@@ -8,8 +8,7 @@ const config: CapacitorConfig = {
 		androidScheme: 'https'
 	},
 	android: {
-		allowMixedContent: true,
-		flavor: 'tv'
+		allowMixedContent: true
 	},
 	plugins: {
 		SplashScreen: {

@@ -1,7 +1,7 @@
 {
 	"name": "phototv",
 	"private": true,
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -17,8 +17,11 @@
 		"deploy": "npm run build && npx netlify deploy --prod --dir=build",
 		"version": "node scripts/update-version.js",
 		"version:sync": "npm run version && npx cap sync",
-		"version:build": "npm run version:sync && npx cap build android",
-		"bump": "node scripts/bump-version.js"
+		"version:build": "npm run version:sync && npm run android:debug",
+		"bump": "node scripts/bump-version.js",
+		"android:debug": "cd android && ./gradlew assembleDebug",
+		"android:release": "cd android && ./gradlew assembleRelease",
+		"android:bundle": "cd android && ./gradlew bundleRelease"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
