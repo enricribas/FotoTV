@@ -14,7 +14,11 @@
 		"lint": "prettier --check . && eslint .",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run",
-		"deploy": "npm run build && npx netlify deploy --prod --dir=build"
+		"deploy": "npm run build && npx netlify deploy --prod --dir=build",
+		"version": "node scripts/update-version.js",
+		"version:sync": "npm run version && npx cap sync",
+		"version:build": "npm run version:sync && npx cap build android",
+		"bump": "node scripts/bump-version.js"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
