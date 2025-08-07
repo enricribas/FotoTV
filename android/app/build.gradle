@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.phototv.app"
+    namespace "com.knomni.fototv"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.phototv.app"
+        applicationId "com.knomni.fototv"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 4

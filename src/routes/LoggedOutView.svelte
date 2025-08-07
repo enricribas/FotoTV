@@ -1,15 +1,20 @@
 <script lang="ts">
-	import { auth, googleProvider } from '$lib/firebase';
-	import { signInWithPopup, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
+	import { AuthService } from '$lib/auth';
 	import { writable } from 'svelte/store';
+	import { onMount } from 'svelte';
 
 	const showEmailForm = writable(false);
 	const email = writable('');
 	const sending = writable(false);
 	const message = writable('');
 
-	function login() {
-		signInWithPopup(auth, googleProvider).catch(console.error);
+	async function login() {
+		try {
+			await AuthService.signInWithGoogle();
+		} catch (error) {
+			console.error('Google login error:', error);
+			message.set('Google sign-in failed. Please try again.');
+		}
 	}
 
 	async function sendMagicLink() {
@@ -22,16 +27,7 @@
 		message.set('');
 
 		try {
-			const actionCodeSettings = {
-				url: window.location.href,
-				handleCodeInApp: true,
-			};
-
-			await sendSignInLinkToEmail(auth, $email, actionCodeSettings);
-			
-			// Save the email for later use
-			window.localStorage.setItem('emailForSignIn', $email);
-			
+			await AuthService.sendMagicLink($email);
 			message.set('Check your email for the magic link!');
 			email.set('');
 		} catch (error: any) {
@@ -48,29 +44,9 @@
 		email.set('');
 	}
 
-	// Check if user clicked on magic link
-	async function checkMagicLink() {
-		if (isSignInWithEmailLink(auth, window.location.href)) {
-			let email = window.localStorage.getItem('emailForSignIn');
-			
-			if (!email) {
-				email = window.prompt('Please provide your email for confirmation');
-			}
-
-			if (email) {
-				try {
-					await signInWithEmailLink(auth, email, window.location.href);
-					window.localStorage.removeItem('emailForSignIn');
-				} catch (error) {
-					console.error('Error signing in with magic link:', error);
-					message.set('Error signing in. Please try again.');
-				}
-			}
-		}
-	}
-
-	// Check for magic link on component mount
-	checkMagicLink();
+	onMount(() => {
+		// AuthService handles magic link checking automatically
+	});
 </script>
 
 <div class="space-y-4">
@@ -99,7 +75,7 @@
 			>
 			Sign in with Google
 		</button>
-		<div class="text-xs text-center text-gray-500">easiest for phone</div>
+		<div class="text-center text-xs text-gray-500">easiest for phone</div>
 	</div>
 
 	<!-- Divider -->
@@ -139,10 +115,7 @@
 					Send Magic Link
 				{/if}
 			</button>
-			<button
-				class="btn btn-ghost w-full text-gray-600"
-				on:click={toggleEmailForm}
-			>
+			<button class="btn btn-ghost w-full text-gray-600" on:click={toggleEmailForm}>
 				Cancel
 			</button>
 		</div>
@@ -162,14 +135,16 @@
 				</svg>
 				Email Magic Link
 			</button>
-			<div class="text-xs text-center text-gray-500">easiest for TV</div>
+			<div class="text-center text-xs text-gray-500">easiest for TV</div>
 		</div>
 	{/if}
 
 	<!-- Message Display -->
 	{#if $message}
-		<div class="text-sm text-center {$message.includes('Error') ? 'text-red-600' : 'text-green-600'}">
+		<div
+			class="text-center text-sm {$message.includes('Error') ? 'text-red-600' : 'text-green-600'}"
+		>
 			{$message}
 		</div>
 	{/if}
-</div> 
+</div>

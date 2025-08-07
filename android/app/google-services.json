@@ -1,0 +1,47 @@
+{
+	"project_info": {
+		"project_number": "341116492373",
+		"project_id": "fototv-90cf0",
+		"storage_bucket": "fototv-90cf0.firebasestorage.app"
+	},
+	"client": [
+		{
+			"client_info": {
+				"mobilesdk_app_id": "1:341116492373:android:83616e327530476c4d12dc",
+				"android_client_info": {
+					"package_name": "com.knomni.fototv"
+				}
+			},
+			"oauth_client": [
+				{
+					"client_id": "341116492373-7dv93n1u82qgseu1u5si8otga7pfaccq.apps.googleusercontent.com",
+					"client_type": 1,
+					"android_info": {
+						"package_name": "com.knomni.fototv",
+						"certificate_hash": "df68534a7d8d6fad82eddb39de14594bba33239c"
+					}
+				},
+				{
+					"client_id": "341116492373-943d7474frnl1n9uv4rf16lfg1oprn4o.apps.googleusercontent.com",
+					"client_type": 3
+				}
+			],
+			"api_key": [
+				{
+					"current_key": "AIzaSyCAxLh6ZDgTOUMMaJeyjFKNbQzt5zChiJQ"
+				}
+			],
+			"services": {
+				"appinvite_service": {
+					"other_platform_oauth_client": [
+						{
+							"client_id": "341116492373-943d7474frnl1n9uv4rf16lfg1oprn4o.apps.googleusercontent.com",
+							"client_type": 3
+						}
+					]
+				}
+			}
+		}
+	],
+	"configuration_version": "1"
+}

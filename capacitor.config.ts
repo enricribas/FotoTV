@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-	appId: 'com.phototv.app',
+	appId: 'com.knomni.fototv',
 	appName: 'FotoTV',
 	webDir: 'build',
 	server: {
@@ -15,6 +15,9 @@ const config: CapacitorConfig = {
 			launchShowDuration: 2000,
 			backgroundColor: '#000000',
 			showSpinner: false
+		},
+		Browser: {
+			presentationStyle: 'popover'
 		}
 	}
 };
