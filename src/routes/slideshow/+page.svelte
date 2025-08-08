@@ -93,7 +93,7 @@
 		// Start the slideshow
 		intervalId = setInterval(async () => {
 			await nextImage();
-		}, 5000);
+		}, 10000);
 	}
 
 	function goBack() {
@@ -215,9 +215,64 @@
 			toggleControls();
 		}
 	}
+	let frameElement;
+	let imageElement;
+
+	function calculateOptimalPadding() {
+		if (!frameElement || !imageElement || !currentImageUrl) return;
+
+		const frameWidth = window.innerWidth;
+		const frameHeight = window.innerHeight;
+
+		// Create a temporary image to get natural dimensions
+		const tempImg = new Image();
+		tempImg.onload = function () {
+			const imageAspectRatio = this.naturalWidth / this.naturalHeight;
+			const screenAspectRatio = frameWidth / frameHeight;
+
+			let paddingTop, paddingRight, paddingBottom, paddingLeft;
+
+			if (imageAspectRatio > screenAspectRatio) {
+				// Image is wider - use minimum horizontal padding, expand vertical padding
+				paddingLeft = paddingRight = 100;
+				const imageWidth = frameWidth - 200;
+				const imageHeight = imageWidth / imageAspectRatio;
+				const totalVerticalPadding = frameHeight - imageHeight;
+				paddingTop = paddingBottom = Math.max(100, totalVerticalPadding / 2);
+			} else {
+				// Image is taller - use minimum vertical padding, expand horizontal padding
+				paddingTop = paddingBottom = 100;
+				const imageHeight = frameHeight - 200;
+				const imageWidth = imageHeight * imageAspectRatio;
+				const totalHorizontalPadding = frameWidth - imageWidth;
+				paddingLeft = paddingRight = Math.max(100, totalHorizontalPadding / 2);
+			}
+
+			// Apply the calculated padding
+			if (frameElement) {
+				frameElement.style.paddingTop = `${paddingTop}px`;
+				frameElement.style.paddingRight = `${paddingRight}px`;
+				frameElement.style.paddingBottom = `${paddingBottom}px`;
+				frameElement.style.paddingLeft = `${paddingLeft}px`;
+			}
+		};
+		tempImg.src = currentImageUrl;
+	}
+
+	// Watch for image changes and recalculate padding
+	$: if (currentImageUrl && frameElement) {
+		setTimeout(calculateOptimalPadding, 100);
+	}
+
+	// Recalculate on window resize
+	function handleResize() {
+		if (currentImageUrl && frameElement) {
+			setTimeout(calculateOptimalPadding, 100);
+		}
+	}
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} on:resize={handleResize} />
 
 <div
 	class="fixed inset-0 flex flex-col bg-black"
@@ -229,7 +284,7 @@
 	<!-- Back button (top-left) -->
 	{#if imageRefs.length > 0 && showControls}
 		<button
-			class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-4 left-4 z-20 text-white hover:bg-white"
+			class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-4 left-4 z-20 bg-gray-200 text-gray-700 hover:bg-gray-300"
 			on:click={goBack}
 			aria-label="Go back to main menu"
 		>
@@ -249,7 +304,7 @@
 		<div class="fixed top-4 right-4 z-20 flex space-x-2">
 			<!-- Previous button -->
 			<button
-				class="btn btn-circle btn-ghost hover:bg-opacity-20 text-white hover:bg-white"
+				class="btn btn-circle btn-ghost hover:bg-opacity-20 bg-gray-200 text-gray-700 hover:bg-gray-300"
 				on:click={previousImage}
 				aria-label="Previous image"
 			>
@@ -265,7 +320,7 @@
 
 			<!-- Next button -->
 			<button
-				class="btn btn-circle btn-ghost hover:bg-opacity-20 text-white hover:bg-white"
+				class="btn btn-circle btn-ghost hover:bg-opacity-20 bg-gray-200 text-gray-700 hover:bg-gray-300"
 				on:click={nextImage}
 				aria-label="Next image"
 			>
@@ -279,7 +334,7 @@
 	<!-- Delete button (top center) -->
 	{#if imageRefs.length > 0 && showControls}
 		<button
-			class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-4 left-1/2 z-20 -translate-x-1/2 transform text-white hover:bg-white"
+			class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-4 left-1/2 z-20 -translate-x-1/2 transform bg-gray-200 text-gray-700 hover:bg-gray-300"
 			on:click={showDeleteDialog}
 			aria-label="Delete current image"
 		>
@@ -334,13 +389,62 @@
 		{:else if error}
 			<button class="btn btn-primary" on:click={goBack}>Upload Images through phone app</button>
 		{:else if imageRefs.length > 0}
-			<div class="absolute inset-0 flex items-center justify-center">
+			<div class="absolute inset-0 flex items-center justify-center p-8">
 				{#if loadingNext}
 					<div class="loading loading-spinner loading-lg"></div>
 				{:else if currentImageUrl}
-					<img src={currentImageUrl} alt="" class="h-full w-full object-contain" />
+					<!-- Picture frame container -->
+					<div class="picture-frame" bind:this={frameElement}>
+						<img src={currentImageUrl} alt="" class="framed-image" bind:this={imageElement} />
+					</div>
 				{/if}
 			</div>
 		{/if}
 	</div>
 </div>
+
+<style>
+	.picture-frame {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 100px;
+		background-color: #fafafa;
+		border: 1px solid #e5e5e5;
+		box-shadow:
+			0 0 0 1px rgba(0, 0, 0, 0.1),
+			0 4px 8px rgba(0, 0, 0, 0.15),
+			0 8px 16px rgba(0, 0, 0, 0.1),
+			inset 0 1px 0 rgba(255, 255, 255, 0.8),
+			inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		width: 100vw;
+		height: 100vh;
+		box-sizing: border-box;
+	}
+
+	.picture-frame::before {
+		content: '';
+		position: absolute;
+		top: 50px;
+		left: 50px;
+		right: 50px;
+		bottom: 50px;
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		pointer-events: none;
+	}
+
+	.framed-image {
+		display: block;
+		max-width: 100%;
+		max-height: 100%;
+		width: auto;
+		height: auto;
+		object-fit: contain;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	}
+</style>
