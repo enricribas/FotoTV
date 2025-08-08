@@ -215,18 +215,19 @@
 			toggleControls();
 		}
 	}
-	let frameElement;
-	let imageElement;
+	let frameElement: HTMLDivElement;
+	let imageElement: HTMLImageElement;
 
 	function calculateOptimalPadding() {
 		if (!frameElement || !imageElement || !currentImageUrl) return;
 
 		const frameWidth = window.innerWidth;
 		const frameHeight = window.innerHeight;
+		const minPadding = 50; // Use CSS variable value
 
 		// Create a temporary image to get natural dimensions
 		const tempImg = new Image();
-		tempImg.onload = function () {
+		tempImg.onload = function (this: HTMLImageElement) {
 			const imageAspectRatio = this.naturalWidth / this.naturalHeight;
 			const screenAspectRatio = frameWidth / frameHeight;
 
@@ -234,18 +235,18 @@
 
 			if (imageAspectRatio > screenAspectRatio) {
 				// Image is wider - use minimum horizontal padding, expand vertical padding
-				paddingLeft = paddingRight = 100;
-				const imageWidth = frameWidth - 200;
+				paddingLeft = paddingRight = minPadding;
+				const imageWidth = frameWidth - minPadding * 2;
 				const imageHeight = imageWidth / imageAspectRatio;
 				const totalVerticalPadding = frameHeight - imageHeight;
-				paddingTop = paddingBottom = Math.max(100, totalVerticalPadding / 2);
+				paddingTop = paddingBottom = Math.max(minPadding, totalVerticalPadding / 2);
 			} else {
 				// Image is taller - use minimum vertical padding, expand horizontal padding
-				paddingTop = paddingBottom = 100;
-				const imageHeight = frameHeight - 200;
+				paddingTop = paddingBottom = minPadding;
+				const imageHeight = frameHeight - minPadding * 2;
 				const imageWidth = imageHeight * imageAspectRatio;
 				const totalHorizontalPadding = frameWidth - imageWidth;
-				paddingLeft = paddingRight = Math.max(100, totalHorizontalPadding / 2);
+				paddingLeft = paddingRight = Math.max(minPadding, totalHorizontalPadding / 2);
 			}
 
 			// Apply the calculated padding
@@ -404,11 +405,15 @@
 </div>
 
 <style>
+	:root {
+		--frame-border-width: 50px;
+	}
+
 	.picture-frame {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 100px;
+		padding: var(--frame-border-width);
 		background-color: #fafafa;
 		border: 1px solid #e5e5e5;
 		box-shadow:
@@ -430,10 +435,10 @@
 	.picture-frame::before {
 		content: '';
 		position: absolute;
-		top: 50px;
-		left: 50px;
-		right: 50px;
-		bottom: 50px;
+		top: calc(var(--frame-border-width) / 2);
+		left: calc(var(--frame-border-width) / 2);
+		right: calc(var(--frame-border-width) / 2);
+		bottom: calc(var(--frame-border-width) / 2);
 		border: 1px solid rgba(0, 0, 0, 0.1);
 		pointer-events: none;
 	}
