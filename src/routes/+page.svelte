@@ -7,12 +7,25 @@
 	import { ImageService } from '$lib/imageService';
 	import LoggedInView from './LoggedInView.svelte';
 	import LoggedOutView from './LoggedOutView.svelte';
+	import AuthHelper from './AuthHelper.svelte';
 	import AuthDebug from './AuthDebug.svelte';
+	import { Capacitor } from '@capacitor/core';
+	import { AndroidAuth } from '$lib/androidAuth';
 
 	const user = writable<User | null>(null);
 	const uploadedImages = writable<string[]>([]);
 
-	onMount(() => {
+	onMount(async () => {
+		// Initialize Android-specific auth if on native platform
+		if (Capacitor.isNativePlatform()) {
+			try {
+				await AndroidAuth.initialize();
+				console.log('AndroidAuth initialized successfully');
+			} catch (error) {
+				console.error('Failed to initialize AndroidAuth:', error);
+			}
+		}
+
 		const unsubscribe = onAuthStateChanged(auth, async (u) => {
 			user.set(u);
 			if (u) {
@@ -86,6 +99,25 @@
 		{/if}
 	</div>
 
+	<!-- Debug Info Display -->
+	{#if import.meta.env.DEV}
+		<div
+			class="bg-opacity-75 fixed bottom-4 left-4 z-50 max-w-xs rounded-lg bg-black p-3 text-xs text-white"
+		>
+			<div class="mb-1 font-bold">Debug Info:</div>
+			<div>Platform: {Capacitor.getPlatform()}</div>
+			<div>Native: {Capacitor.isNativePlatform() ? 'Yes' : 'No'}</div>
+			<div>Auth Status: {$user ? 'Signed In' : 'Signed Out'}</div>
+			{#if $user}
+				<div class="mt-1">UID: {$user.uid.substring(0, 8)}...</div>
+				<div>Provider: {$user.providerData[0]?.providerId || 'unknown'}</div>
+			{/if}
+		</div>
+	{/if}
+
 	<!-- Auth Debug Component -->
 	<AuthDebug />
+
+	<!-- Auth Helper for redirects -->
+	<AuthHelper />
 </div>

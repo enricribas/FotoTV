@@ -6,7 +6,6 @@ const config: CapacitorConfig = {
 	webDir: 'build',
 	server: {
 		androidScheme: 'https',
-		hostname: 'fototv-90cf0.firebaseapp.com',
 		cleartext: true
 	},
 	android: {
@@ -21,12 +20,12 @@ const config: CapacitorConfig = {
 		Browser: {
 			presentationStyle: 'popover'
 		},
-		App: {
-			url: 'com.phototv.app://',
-			androidScheme: 'https'
+		FirebaseAuthentication: {
+			skipNativeAuth: false,
+			providers: ['google.com'],
+			customUrlScheme: 'com.phototv.app'
 		}
-	},
-	loggingBehavior: 'debug'
+	}
 };
 
 export default config;

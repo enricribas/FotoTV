@@ -7,7 +7,8 @@ import {
 	isSignInWithEmailLink,
 	signInWithEmailLink,
 	browserLocalPersistence,
-	setPersistence
+	setPersistence,
+	connectAuthEmulator
 } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
@@ -23,37 +24,33 @@ const firebaseConfig = {
 	measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
+// Initialize Firebase
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
+// Initialize Auth
 export const auth = getAuth(app);
 
-// Configure auth persistence
+// Set persistent local authentication
 setPersistence(auth, browserLocalPersistence).catch((err) =>
 	console.error('Error setting auth persistence:', err)
 );
 
-// Configure Google provider
+// Configure Google provider with minimal settings
 export const googleProvider = new GoogleAuthProvider();
-googleProvider.addScope('profile');
 googleProvider.addScope('email');
+googleProvider.addScope('profile');
 
-// Configure for different platforms
-if (Capacitor.isNativePlatform()) {
-	// Native app settings
-	googleProvider.setCustomParameters({
-		// Force selection screen
-		prompt: 'select_account',
-		// For native app identification
-		state: JSON.stringify({ app: 'com.phototv.app', platform: Capacitor.getPlatform() }),
-		// Prevents caching issues
-		nonce: Math.random().toString(36).substring(2, 15)
-	});
-} else {
-	// Web settings
-	googleProvider.setCustomParameters({
-		prompt: 'select_account'
-	});
-}
+// Simple configuration that works on both platforms
+googleProvider.setCustomParameters({
+	// Always force the user to select account
+	prompt: 'select_account'
+});
 
+// Initialize Firestore and Storage
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// Debug info
+console.log(
+	`Firebase initialized. Platform: ${Capacitor.getPlatform()}, Native: ${Capacitor.isNativePlatform()}`
+);

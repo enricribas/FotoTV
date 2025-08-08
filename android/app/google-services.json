@@ -14,6 +14,14 @@
 			},
 			"oauth_client": [
 				{
+					"client_id": "341116492373-2vjbp28q3r51oqkn4l8d1c83sb42bh4c.apps.googleusercontent.com",
+					"client_type": 1,
+					"android_info": {
+						"package_name": "com.phototv.app",
+						"certificate_hash": "c9e4b1dfb0bbc106edb74d0f613a5c44dce7cdad"
+					}
+				},
+				{
 					"client_id": "341116492373-7dv93n1u82qgseu1u5si8otga7pfaccq.apps.googleusercontent.com",
 					"client_type": 1,
 					"android_info": {

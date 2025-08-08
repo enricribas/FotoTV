@@ -32,51 +32,36 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
 
-            <!-- Deep Link for Magic Links and OAuth -->
+            <!-- Firebase Authentication custom URL scheme -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.phototv.app" android:host="firebase-auth" />
+            </intent-filter>
+
+            <!-- Magic link custom URL scheme for Android-only deployment -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.phototv.app" android:host="auth" android:pathPrefix="/callback" />
+            </intent-filter>
+
+            <!-- Firebase web app links for magic links -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                      android:host="fototv-90cf0.firebaseapp.com" />
+                <data android:scheme="https" android:host="fototv-90cf0.firebaseapp.com" />
             </intent-filter>
 
-            <!-- Custom URL scheme for OAuth -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="com.phototv.app" />
-            </intent-filter>
-
-            <!-- OAuth redirects - multiple handlers for different paths -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                      android:host="fototv-90cf0.firebaseapp.com"
-                      android:pathPrefix="/__/auth/handler" />
-            </intent-filter>
-
-            <!-- Additional OAuth paths -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                      android:host="fototv-90cf0.firebaseapp.com"
-                      android:pathPrefix="/auth" />
-            </intent-filter>
-
-            <!-- Universal links (App Links) -->
+            <!-- Firebase web.app domain -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                      android:host="fototv-90cf0.firebaseapp.com"
-                      android:pathPrefix="/" />
+                <data android:scheme="https" android:host="fototv-90cf0.web.app" />
             </intent-filter>
 
         </activity>

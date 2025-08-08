@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { AuthService } from '$lib/auth';
+	import { AuthTest } from '$lib/authTest';
 	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import { Capacitor } from '@capacitor/core';
@@ -9,36 +10,63 @@
 	const sending = writable(false);
 	const message = writable('');
 	const loginInProgress = writable(false);
+	const debugInfo = writable('');
+	const showDebug = writable(false);
 	const isNative = Capacitor.isNativePlatform();
 
-	async function login() {
+	async function signInWithGoogle() {
 		if ($loginInProgress) return;
 
 		loginInProgress.set(true);
 		message.set('');
+		debugInfo.set('Starting Google sign-in...');
 
 		try {
-			await AuthService.signInWithGoogle();
-			// For native, we show a message since there's a redirect
+			console.log('=== GOOGLE SIGN-IN START ===');
+
 			if (isNative) {
-				message.set('Opening Google Sign-In...');
+				// Use the test method for better debugging
+				const result = await AuthTest.testGoogleSignIn();
+
+				if (result.success) {
+					message.set('Google Sign-In successful!');
+					debugInfo.set(
+						`✅ Success via ${result.method}: ${result.user?.email || result.user?.uid}`
+					);
+
+					// Give Firebase Auth time to sync
+					setTimeout(() => {
+						if (AuthService.getCurrentUser()) {
+							debugInfo.set(`✅ Firebase Auth synced: ${AuthService.getCurrentUser()?.uid}`);
+						}
+					}, 2000);
+				} else {
+					message.set(`Sign-in failed: ${result.error}`);
+					debugInfo.set(`❌ Failed (${result.method}): ${result.error}`);
+
+					if (result.nativeError && result.webFallbackError) {
+						debugInfo.set(`❌ Native: ${result.nativeError} | Web: ${result.webFallbackError}`);
+					}
+				}
+			} else {
+				// For web, use the standard AuthService
+				const user = await AuthService.signInWithGoogle();
+				if (user) {
+					message.set('Google Sign-In successful!');
+					debugInfo.set(`✅ Web success: ${user.email || user.uid}`);
+				} else {
+					message.set('Sign-in was cancelled');
+					debugInfo.set('❌ Web sign-in cancelled by user');
+				}
 			}
 		} catch (error: any) {
 			console.error('Google login error:', error);
 			message.set(`Sign-in failed: ${error.message || 'Unknown error'}`);
+			debugInfo.set(`❌ Exception: ${error.message} | Code: ${error.code || 'unknown'}`);
 		} finally {
-			// We keep the progress active for native since the browser is opening
-			if (!isNative) {
+			setTimeout(() => {
 				loginInProgress.set(false);
-			}
-
-			// For native, we reset after a timeout since the app will redirect
-			if (isNative) {
-				setTimeout(() => {
-					loginInProgress.set(false);
-					message.set('');
-				}, 5000);
-			}
+			}, 2000);
 		}
 	}
 
@@ -50,14 +78,17 @@
 
 		sending.set(true);
 		message.set('');
+		debugInfo.set(`Sending magic link to ${$email}...`);
 
 		try {
 			await AuthService.sendMagicLink($email);
 			message.set('Check your email for the magic link!');
+			debugInfo.set(`✅ Magic link sent to ${$email}`);
 			email.set('');
 		} catch (error: any) {
 			console.error('Error sending magic link:', error);
 			message.set('Error sending magic link. Please try again.');
+			debugInfo.set(`❌ Magic link failed: ${error.message}`);
 		} finally {
 			sending.set(false);
 		}
@@ -67,10 +98,44 @@
 		showEmailForm.set(!$showEmailForm);
 		message.set('');
 		email.set('');
+		debugInfo.set('');
 	}
 
-	onMount(() => {
-		// AuthService handles magic link checking automatically
+	async function testPluginAvailability() {
+		debugInfo.set('Testing plugin...');
+		const result = await AuthTest.testPluginAvailability();
+		debugInfo.set(
+			`Plugin test: ${result.available ? '✅ Available' : '❌ Not available'} | ${result.error || 'OK'}`
+		);
+	}
+
+	async function runFullTest() {
+		debugInfo.set('Running full configuration test...');
+		const result = await AuthTest.testConfiguration();
+		debugInfo.set(
+			`Config test: ${result.success ? '✅' : '❌'} ${result.summary} | Check console for details`
+		);
+		console.log('Full test results:', result);
+	}
+
+	function showDebugInfo() {
+		const info = AuthService.getDebugInfo();
+		debugInfo.set(
+			`Debug: Platform=${info.platform.native ? 'Native' : 'Web'}, Plugin=${info.plugin.available ? 'Yes' : 'No'}, Firebase=${info.firebase.hasCurrentUser ? 'Signed In' : 'Not signed in'}, Storage=${info.storage.storageMethod}`
+		);
+		console.log('Full debug info:', info);
+	}
+
+	function toggleDebug() {
+		showDebug.set(!$showDebug);
+		if ($showDebug) {
+			showDebugInfo();
+		}
+	}
+
+	onMount(async () => {
+		// Initialize and show basic debug info
+		showDebugInfo();
 	});
 </script>
 
@@ -79,7 +144,7 @@
 	<div class="space-y-1">
 		<button
 			class="btn w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
-			on:click={login}
+			on:click={signInWithGoogle}
 			disabled={$loginInProgress}
 		>
 			{#if $loginInProgress}
@@ -106,7 +171,9 @@
 				Sign in with Google
 			{/if}
 		</button>
-		<div class="text-center text-xs text-gray-500">easiest for phone</div>
+		<div class="text-center text-xs text-gray-500">
+			{isNative ? 'uses native authentication' : 'uses web popup'}
+		</div>
 	</div>
 
 	<!-- Divider -->
@@ -166,7 +233,7 @@
 				</svg>
 				Email Magic Link
 			</button>
-			<div class="text-center text-xs text-gray-500">easiest for TV</div>
+			<div class="text-center text-xs text-gray-500">no storage dependencies</div>
 		</div>
 	{/if}
 
@@ -181,14 +248,61 @@
 		</div>
 	{/if}
 
-	<!-- Platform info for debugging -->
+	<!-- Debug Toggle Button -->
 	{#if import.meta.env.DEV}
-		<div class="mt-6 rounded-lg border border-gray-300 bg-gray-100 p-3 text-xs text-gray-600">
+		<button
+			class="w-full rounded border border-gray-300 bg-gray-50 p-2 text-xs text-gray-600"
+			on:click={toggleDebug}
+		>
+			{$showDebug ? 'Hide' : 'Show'} Debug Info
+		</button>
+	{/if}
+
+	<!-- Debug Section -->
+	{#if import.meta.env.DEV && $showDebug}
+		<div class="rounded-lg border border-gray-300 bg-gray-50 p-3 text-xs text-gray-600">
+			<div class="mb-2 font-semibold">Platform Information:</div>
 			<div><strong>Platform:</strong> {Capacitor.getPlatform()}</div>
 			<div><strong>Native:</strong> {isNative ? 'Yes' : 'No'}</div>
-			<div><strong>WebView:</strong> {isNative ? 'In-App' : 'Browser'}</div>
-			<div class="mt-1 text-[10px]">
-				Auth configured for: {isNative ? 'Mobile App' : 'Web Browser'}
+			<div><strong>WebView:</strong> {isNative ? 'Capacitor WebView' : 'Browser'}</div>
+			<div>
+				<strong>Storage:</strong>
+				{isNative ? 'In-Memory (no localStorage)' : 'localStorage'}
+			</div>
+
+			<!-- Debug controls -->
+			<div class="mt-3 space-y-2">
+				<button
+					class="w-full rounded border border-blue-300 bg-blue-50 p-2 text-xs text-blue-700"
+					on:click={testPluginAvailability}
+				>
+					Test Plugin Availability
+				</button>
+				<button
+					class="w-full rounded border border-green-300 bg-green-50 p-2 text-xs text-green-700"
+					on:click={runFullTest}
+				>
+					Run Full Configuration Test
+				</button>
+				<button
+					class="w-full rounded border border-purple-300 bg-purple-50 p-2 text-xs text-purple-700"
+					on:click={showDebugInfo}
+				>
+					Refresh Debug Info
+				</button>
+			</div>
+
+			<!-- Debug info display -->
+			{#if $debugInfo}
+				<div class="mt-3 rounded bg-white p-2 text-xs">
+					<div class="font-semibold">Debug Output:</div>
+					<div class="mt-1 font-mono break-words">{$debugInfo}</div>
+				</div>
+			{/if}
+
+			<div class="mt-3 text-[10px] text-gray-500">
+				<strong>Key Fix:</strong> Removed localStorage dependency for native apps. Authentication now
+				uses in-memory storage and proper Capacitor plugin integration.
 			</div>
 		</div>
 	{/if}

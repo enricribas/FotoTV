@@ -52,9 +52,20 @@ keytool -genkey -v -keystore android/app/release-key.keystore -alias release-key
 keytool -list -v -keystore android/app/release-key.keystore -alias release-key
 ```
 
-Add both fingerprints to your Firebase project:
-1. Go to **Project Settings** → **Your apps** → Android app
-2. Add SHA certificate fingerprints
+#### **CRITICAL: Google Play Store Signing Certificate**
+
+**This is the most common cause of "missing initial state" errors in production!**
+
+When you upload to Google Play Store, Google re-signs your APK with their own certificate. You MUST add Google Play's signing certificate to Firebase:
+
+1. Go to **Google Play Console** → **Your App** → **Release** → **Setup** → **App signing**
+2. Copy the **SHA-1** and **SHA-256** certificates from the "App signing key certificate" section
+3. Add these certificates to your Firebase project:
+   - Go to **Firebase Console** → **Project Settings** → **Your apps** → Android app
+   - Click **Add fingerprint** 
+   - Paste both SHA-1 and SHA-256 from Google Play Console
+
+**Without this step, Google authentication will fail with "missing initial state" in production!**
 
 ### 2.2 Update Android Manifest
 
@@ -158,21 +169,38 @@ dynamicLinkDomain: 'YOUR_PROJECT_ID.page.link'
 
 ### Common Android Issues
 
+- **"Missing initial state" error in production**: Most likely cause is missing Google Play signing certificate in Firebase (see Section 2.1)
+- **Works in debug but not release/production**: Different signing certificates - ensure all certificates are added to Firebase
 - **App not opening from browser**: Check `android:autoVerify="true"` and domain verification
 - **OAuth not working**: Ensure `google-services.json` is in correct location
 - **Build errors**: Run `npx cap sync` after configuration changes
+
+### Production-Specific Issues
+
+- **Google Play Store builds fail authentication**: 
+  1. Check Google Play Console → App Signing for the actual certificate fingerprints
+  2. Add those fingerprints to Firebase Console
+  3. Wait 1-2 hours for changes to propagate
+  
+- **Authentication works locally but not in store**:
+  1. Verify you're using the correct OAuth client ID from `google-services.json`
+  2. Ensure Firebase project has Google Play's signing certificates
+  3. Check that your app's package name matches exactly in Firebase and Google Play
 
 ## Production Checklist
 
 - [ ] Firebase project configured with correct domains
 - [ ] Google sign-in enabled with proper OAuth setup
 - [ ] SHA fingerprints added for both debug and release
+- [ ] **Google Play signing certificate SHA fingerprints added to Firebase** ⚠️ CRITICAL
 - [ ] `google-services.json` file added to Android project
 - [ ] Environment variables configured
 - [ ] Deep link domains updated in AndroidManifest.xml
 - [ ] AuthService configuration updated with correct project ID
-- [ ] App tested on physical device
+- [ ] App tested on physical device with debug build
+- [ ] App tested with release build signed with your certificate
 - [ ] Google Play Console app signing configured
+- [ ] **Production APK tested after Google Play signing** ⚠️ CRITICAL
 - [ ] OAuth consent screen configured
 
 ## Support
