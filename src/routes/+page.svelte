@@ -5,13 +5,30 @@
 	import type { User } from 'firebase/auth';
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
+	import { isAndroidTV, isTVModeEnabled } from '$lib/advancedDeviceDetection';
+
 	import LoggedInView from './LoggedInView.svelte';
 	import LoggedOutView from './LoggedOutView.svelte';
+	import TVLogin from '$lib/components/TVLogin.svelte';
 
 	const user = writable<User | null>(null);
 	const uploadedImages = writable<string[]>([]);
+	let isTVDevice = false;
+	let isTVModeForced = false;
 
 	onMount(() => {
+		// Check if TV mode is forced (for testing)
+		isTVModeForced = isTVModeEnabled();
+
+		// Check if this is a TV device
+		isAndroidTV()
+			.then((isTV) => {
+				isTVDevice = isTV;
+			})
+			.catch((error) => {
+				console.warn('Failed to detect TV device:', error);
+			});
+
 		const unsubscribe = onAuthStateChanged(auth, async (u) => {
 			user.set(u);
 			if (u) {
@@ -21,11 +38,16 @@
 				uploadedImages.set([]);
 			}
 		});
+
 		return unsubscribe;
 	});
 
 	function logout() {
 		signOut(auth).catch(console.error);
+	}
+
+	function handleTVLoginSuccess(tvUser: User) {
+		user.set(tvUser);
 	}
 </script>
 
@@ -72,7 +94,12 @@
 	>
 		<div class="flex items-center space-x-3">
 			<img src="/FotoTV-logo2.png" alt="FotoTV Logo" class="{$user ? 'h-8' : 'h-16'} w-auto" />
-			<h1 class="{$user ? 'text-lg' : 'text-3xl'} font-bold text-gray-800">FotoTV</h1>
+			<div class="flex items-center space-x-2">
+				<h1 class="{$user ? 'text-lg' : 'text-3xl'} font-bold text-gray-800">FotoTV</h1>
+				{#if isTVModeForced}
+					<span class="badge badge-secondary text-xs">TV Mode</span>
+				{/if}
+			</div>
 		</div>
 	</div>
 
@@ -80,7 +107,11 @@
 	<div class="w-full max-w-md">
 		{#if $user}
 			<LoggedInView user={$user} uploadedImages={$uploadedImages} />
+		{:else if isTVDevice || isTVModeForced}
+			<!-- TV Login Flow -->
+			<TVLogin onLoginSuccess={handleTVLoginSuccess} />
 		{:else}
+			<!-- Regular Login Flow -->
 			<LoggedOutView />
 		{/if}
 	</div>

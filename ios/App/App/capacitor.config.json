@@ -27,6 +27,7 @@
 		}
 	},
 	"packageClassList": [
-		"AppPlugin"
+		"AppPlugin",
+		"DevicePlugin"
 	]
 }

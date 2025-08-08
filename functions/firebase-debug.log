@@ -1,0 +1,1103 @@
+[debug] [2025-08-08T15:44:03.850Z] ----------------------------------------------------------------------
+[debug] [2025-08-08T15:44:03.851Z] Command:       /Users/enric/.asdf/installs/nodejs/22.9.0/bin/node /Users/enric/.asdf/installs/nodejs/22.9.0/bin/firebase emulators:start --only functions
+[debug] [2025-08-08T15:44:03.852Z] CLI Version:   13.20.2
+[debug] [2025-08-08T15:44:03.852Z] Platform:      darwin
+[debug] [2025-08-08T15:44:03.852Z] Node Version:  v22.9.0
+[debug] [2025-08-08T15:44:03.852Z] Time:          Fri Aug 08 2025 11:44:03 GMT-0400 (Eastern Daylight Saving Time)
+[debug] [2025-08-08T15:44:03.852Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-08T15:44:03.903Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-08-08T15:44:03.904Z] > authorizing via signed-in user (ribas.enric@gmail.com)
+[info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
+[debug] [2025-08-08T15:44:04.173Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-08T15:44:04.173Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2025-08-08T15:44:04.176Z] [hub] writing locator at /var/folders/g9/k7hrx7xx3q30p5myfnn16slr0000gn/T/hub-fototv-90cf0.json
+[debug] [2025-08-08T15:44:04.439Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-08T15:44:04.439Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-08T15:44:04.439Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-08T15:44:04.439Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] ⚠  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: auth, firestore, database, hosting, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mauth, firestore, database, hosting, pubsub, storage, dataconnect\u001b[22m"}}
+[debug] [2025-08-08T15:44:04.441Z] defaultcredentials: writing to file /Users/enric/.config/firebase/ribas_enric_gmail.com_application_default_credentials.json
+[debug] [2025-08-08T15:44:04.442Z] Setting GAC to /Users/enric/.config/firebase/ribas_enric_gmail.com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to /Users/enric/.config/firebase/ribas_enric_gmail.com_application_default_credentials.json"}}
+[debug] [2025-08-08T15:44:04.443Z] Checked if tokens are valid: true, expires at: 1754671160591
+[debug] [2025-08-08T15:44:04.443Z] Checked if tokens are valid: true, expires at: 1754671160591
+[debug] [2025-08-08T15:44:04.443Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/fototv-90cf0/adminSdkConfig [none]
+[debug] [2025-08-08T15:44:04.868Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/fototv-90cf0/adminSdkConfig 200
+[debug] [2025-08-08T15:44:04.868Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/fototv-90cf0/adminSdkConfig {"projectId":"fototv-90cf0","storageBucket":"fototv-90cf0.firebasestorage.app"}
+[info] i  ui: downloading ui-v1.13.0.zip... {"metadata":{"emulator":{"name":"ui"},"message":"downloading ui-v1.13.0.zip..."}}
+[debug] [2025-08-08T15:44:04.888Z] >>> [apiv2][query] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.13.0.zip 
+[debug] [2025-08-08T15:44:05.213Z] <<< [apiv2][status] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.13.0.zip 200
+[debug] [2025-08-08T15:44:05.213Z] <<< [apiv2][body] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.13.0.zip [stream]
+[debug] [2025-08-08T15:44:05.835Z] Data is 3605485
+[debug] [2025-08-08T15:44:05.835Z] [unzip] Entry: client/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2025-08-08T15:44:05.835Z] [unzip] Processing entry: client/
+[debug] [2025-08-08T15:44:05.835Z] [unzip] mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/
+[debug] [2025-08-08T15:44:05.835Z] [unzip] Entry: client/favicon-16x16.png (compressed_size=293 bytes, uncompressed_size=293 bytes)
+[debug] [2025-08-08T15:44:05.835Z] [unzip] Processing entry: client/favicon-16x16.png
+[debug] [2025-08-08T15:44:05.836Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.836Z] [unzip] Writing file: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/favicon-16x16.png
+[debug] [2025-08-08T15:44:05.836Z] [unzip] Entry: client/safari-pinned-tab.svg (compressed_size=1433 bytes, uncompressed_size=2611 bytes)
+[debug] [2025-08-08T15:44:05.836Z] [unzip] Processing entry: client/safari-pinned-tab.svg
+[debug] [2025-08-08T15:44:05.836Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.836Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/safari-pinned-tab.svg
+[debug] [2025-08-08T15:44:05.838Z] [unzip] Entry: client/favicon.ico (compressed_size=2933 bytes, uncompressed_size=13294 bytes)
+[debug] [2025-08-08T15:44:05.838Z] [unzip] Processing entry: client/favicon.ico
+[debug] [2025-08-08T15:44:05.838Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.838Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/favicon.ico
+[debug] [2025-08-08T15:44:05.839Z] [unzip] Entry: client/index.html (compressed_size=1361 bytes, uncompressed_size=3071 bytes)
+[debug] [2025-08-08T15:44:05.839Z] [unzip] Processing entry: client/index.html
+[debug] [2025-08-08T15:44:05.839Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.839Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/index.html
+[debug] [2025-08-08T15:44:05.839Z] [unzip] Entry: client/android-chrome-192x192.png (compressed_size=2684 bytes, uncompressed_size=2684 bytes)
+[debug] [2025-08-08T15:44:05.839Z] [unzip] Processing entry: client/android-chrome-192x192.png
+[debug] [2025-08-08T15:44:05.839Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.839Z] [unzip] Writing file: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/android-chrome-192x192.png
+[debug] [2025-08-08T15:44:05.839Z] [unzip] Entry: client/apple-touch-icon.png (compressed_size=2123 bytes, uncompressed_size=2152 bytes)
+[debug] [2025-08-08T15:44:05.839Z] [unzip] Processing entry: client/apple-touch-icon.png
+[debug] [2025-08-08T15:44:05.839Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.839Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/apple-touch-icon.png
+[debug] [2025-08-08T15:44:05.840Z] [unzip] Entry: client/android-chrome-512x512.png (compressed_size=5369 bytes, uncompressed_size=5411 bytes)
+[debug] [2025-08-08T15:44:05.840Z] [unzip] Processing entry: client/android-chrome-512x512.png
+[debug] [2025-08-08T15:44:05.840Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.840Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/android-chrome-512x512.png
+[debug] [2025-08-08T15:44:05.840Z] [unzip] Entry: client/manifest.json (compressed_size=245 bytes, uncompressed_size=551 bytes)
+[debug] [2025-08-08T15:44:05.840Z] [unzip] Processing entry: client/manifest.json
+[debug] [2025-08-08T15:44:05.840Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.841Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/manifest.json
+[debug] [2025-08-08T15:44:05.841Z] [unzip] Entry: client/robots.txt (compressed_size=26 bytes, uncompressed_size=26 bytes)
+[debug] [2025-08-08T15:44:05.841Z] [unzip] Processing entry: client/robots.txt
+[debug] [2025-08-08T15:44:05.841Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.841Z] [unzip] Writing file: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/robots.txt
+[debug] [2025-08-08T15:44:05.841Z] [unzip] Entry: client/mstile-150x150.png (compressed_size=2034 bytes, uncompressed_size=2034 bytes)
+[debug] [2025-08-08T15:44:05.841Z] [unzip] Processing entry: client/mstile-150x150.png
+[debug] [2025-08-08T15:44:05.841Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.841Z] [unzip] Writing file: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/mstile-150x150.png
+[debug] [2025-08-08T15:44:05.842Z] [unzip] Entry: client/assets/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2025-08-08T15:44:05.842Z] [unzip] Processing entry: client/assets/
+[debug] [2025-08-08T15:44:05.842Z] [unzip] mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/
+[debug] [2025-08-08T15:44:05.842Z] [unzip] Entry: client/assets/index-I-mhtQda.js.map (compressed_size=2322562 bytes, uncompressed_size=9922747 bytes)
+[debug] [2025-08-08T15:44:05.842Z] [unzip] Processing entry: client/assets/index-I-mhtQda.js.map
+[debug] [2025-08-08T15:44:05.842Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets
+[debug] [2025-08-08T15:44:05.842Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/index-I-mhtQda.js.map
+[debug] [2025-08-08T15:44:05.873Z] [unzip] Entry: client/assets/index-BdgySamB.css (compressed_size=35979 bytes, uncompressed_size=298654 bytes)
+[debug] [2025-08-08T15:44:05.873Z] [unzip] Processing entry: client/assets/index-BdgySamB.css
+[debug] [2025-08-08T15:44:05.873Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets
+[debug] [2025-08-08T15:44:05.873Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/index-BdgySamB.css
+[debug] [2025-08-08T15:44:05.874Z] [unzip] Entry: client/assets/index-I-mhtQda.js (compressed_size=565968 bytes, uncompressed_size=2030855 bytes)
+[debug] [2025-08-08T15:44:05.874Z] [unzip] Processing entry: client/assets/index-I-mhtQda.js
+[debug] [2025-08-08T15:44:05.874Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets
+[debug] [2025-08-08T15:44:05.874Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/index-I-mhtQda.js
+[debug] [2025-08-08T15:44:05.880Z] [unzip] Entry: client/assets/extensions/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2025-08-08T15:44:05.880Z] [unzip] Processing entry: client/assets/extensions/
+[debug] [2025-08-08T15:44:05.880Z] [unzip] mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/extensions/
+[debug] [2025-08-08T15:44:05.880Z] [unzip] Entry: client/assets/extensions/default-extension.png (compressed_size=1646 bytes, uncompressed_size=1657 bytes)
+[debug] [2025-08-08T15:44:05.880Z] [unzip] Processing entry: client/assets/extensions/default-extension.png
+[debug] [2025-08-08T15:44:05.880Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/extensions
+[debug] [2025-08-08T15:44:05.880Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/extensions/default-extension.png
+[debug] [2025-08-08T15:44:05.881Z] [unzip] Entry: client/assets/img/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2025-08-08T15:44:05.881Z] [unzip] Processing entry: client/assets/img/
+[debug] [2025-08-08T15:44:05.881Z] [unzip] mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/img/
+[debug] [2025-08-08T15:44:05.881Z] [unzip] Entry: client/assets/img/database.png (compressed_size=29449 bytes, uncompressed_size=29988 bytes)
+[debug] [2025-08-08T15:44:05.881Z] [unzip] Processing entry: client/assets/img/database.png
+[debug] [2025-08-08T15:44:05.881Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/img
+[debug] [2025-08-08T15:44:05.881Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/img/database.png
+[debug] [2025-08-08T15:44:05.881Z] [unzip] Entry: client/assets/provider-icons/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2025-08-08T15:44:05.881Z] [unzip] Processing entry: client/assets/provider-icons/
+[debug] [2025-08-08T15:44:05.881Z] [unzip] mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/
+[debug] [2025-08-08T15:44:05.881Z] [unzip] Entry: client/assets/provider-icons/auth_service_saml.svg (compressed_size=575 bytes, uncompressed_size=1226 bytes)
+[debug] [2025-08-08T15:44:05.881Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_saml.svg
+[debug] [2025-08-08T15:44:05.881Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.881Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_saml.svg
+[debug] [2025-08-08T15:44:05.881Z] [unzip] Entry: client/assets/provider-icons/auth_service_phone.svg (compressed_size=261 bytes, uncompressed_size=414 bytes)
+[debug] [2025-08-08T15:44:05.881Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_phone.svg
+[debug] [2025-08-08T15:44:05.881Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.881Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_phone.svg
+[debug] [2025-08-08T15:44:05.882Z] [unzip] Entry: client/assets/provider-icons/auth_service_facebook.svg (compressed_size=289 bytes, uncompressed_size=457 bytes)
+[debug] [2025-08-08T15:44:05.882Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_facebook.svg
+[debug] [2025-08-08T15:44:05.882Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.882Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_facebook.svg
+[debug] [2025-08-08T15:44:05.882Z] [unzip] Entry: client/assets/provider-icons/auth_service_game_center.svg (compressed_size=991 bytes, uncompressed_size=3921 bytes)
+[debug] [2025-08-08T15:44:05.882Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_game_center.svg
+[debug] [2025-08-08T15:44:05.882Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.882Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_game_center.svg
+[debug] [2025-08-08T15:44:05.882Z] [unzip] Entry: client/assets/provider-icons/auth_service_apple.svg (compressed_size=230 bytes, uncompressed_size=334 bytes)
+[debug] [2025-08-08T15:44:05.882Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_apple.svg
+[debug] [2025-08-08T15:44:05.882Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.882Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_apple.svg
+[debug] [2025-08-08T15:44:05.883Z] [unzip] Entry: client/assets/provider-icons/auth_service_github.svg (compressed_size=466 bytes, uncompressed_size=838 bytes)
+[debug] [2025-08-08T15:44:05.883Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_github.svg
+[debug] [2025-08-08T15:44:05.883Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.883Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_github.svg
+[debug] [2025-08-08T15:44:05.883Z] [unzip] Entry: client/assets/provider-icons/auth_service_mslive.svg (compressed_size=203 bytes, uncompressed_size=378 bytes)
+[debug] [2025-08-08T15:44:05.883Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_mslive.svg
+[debug] [2025-08-08T15:44:05.883Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.883Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_mslive.svg
+[debug] [2025-08-08T15:44:05.883Z] [unzip] Entry: client/assets/provider-icons/auth_service_yahoo.svg (compressed_size=577 bytes, uncompressed_size=1182 bytes)
+[debug] [2025-08-08T15:44:05.883Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_yahoo.svg
+[debug] [2025-08-08T15:44:05.883Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.883Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_yahoo.svg
+[debug] [2025-08-08T15:44:05.883Z] [unzip] Entry: client/assets/provider-icons/auth_service_twitter.svg (compressed_size=444 bytes, uncompressed_size=751 bytes)
+[debug] [2025-08-08T15:44:05.883Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_twitter.svg
+[debug] [2025-08-08T15:44:05.883Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.883Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_twitter.svg
+[debug] [2025-08-08T15:44:05.883Z] [unzip] Entry: client/assets/provider-icons/auth_service_play_games.svg (compressed_size=565 bytes, uncompressed_size=1173 bytes)
+[debug] [2025-08-08T15:44:05.884Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_play_games.svg
+[debug] [2025-08-08T15:44:05.884Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.884Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_play_games.svg
+[debug] [2025-08-08T15:44:05.884Z] [unzip] Entry: client/assets/provider-icons/auth_service_email.svg (compressed_size=228 bytes, uncompressed_size=326 bytes)
+[debug] [2025-08-08T15:44:05.884Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_email.svg
+[debug] [2025-08-08T15:44:05.884Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.884Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_email.svg
+[debug] [2025-08-08T15:44:05.884Z] [unzip] Entry: client/assets/provider-icons/auth_service_google.svg (compressed_size=409 bytes, uncompressed_size=720 bytes)
+[debug] [2025-08-08T15:44:05.884Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_google.svg
+[debug] [2025-08-08T15:44:05.884Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.884Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_google.svg
+[debug] [2025-08-08T15:44:05.884Z] [unzip] Entry: client/assets/provider-icons/auth_service_oidc.svg (compressed_size=414 bytes, uncompressed_size=858 bytes)
+[debug] [2025-08-08T15:44:05.884Z] [unzip] Processing entry: client/assets/provider-icons/auth_service_oidc.svg
+[debug] [2025-08-08T15:44:05.884Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons
+[debug] [2025-08-08T15:44:05.884Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/assets/provider-icons/auth_service_oidc.svg
+[debug] [2025-08-08T15:44:05.884Z] [unzip] Entry: client/browserconfig.xml (compressed_size=491 bytes, uncompressed_size=822 bytes)
+[debug] [2025-08-08T15:44:05.885Z] [unzip] Processing entry: client/browserconfig.xml
+[debug] [2025-08-08T15:44:05.885Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.885Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/browserconfig.xml
+[debug] [2025-08-08T15:44:05.885Z] [unzip] Entry: client/favicon-32x32.png (compressed_size=475 bytes, uncompressed_size=475 bytes)
+[debug] [2025-08-08T15:44:05.885Z] [unzip] Processing entry: client/favicon-32x32.png
+[debug] [2025-08-08T15:44:05.885Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client
+[debug] [2025-08-08T15:44:05.885Z] [unzip] Writing file: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/client/favicon-32x32.png
+[debug] [2025-08-08T15:44:05.885Z] [unzip] Entry: server/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2025-08-08T15:44:05.885Z] [unzip] Processing entry: server/
+[debug] [2025-08-08T15:44:05.885Z] [unzip] mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/server/
+[debug] [2025-08-08T15:44:05.885Z] [unzip] Entry: server/server.mjs.map (compressed_size=294629 bytes, uncompressed_size=1346672 bytes)
+[debug] [2025-08-08T15:44:05.885Z] [unzip] Processing entry: server/server.mjs.map
+[debug] [2025-08-08T15:44:05.885Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/server
+[debug] [2025-08-08T15:44:05.885Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/server/server.mjs.map
+[debug] [2025-08-08T15:44:05.890Z] [unzip] Entry: server/server.mjs (compressed_size=314679 bytes, uncompressed_size=1167517 bytes)
+[debug] [2025-08-08T15:44:05.890Z] [unzip] Processing entry: server/server.mjs
+[debug] [2025-08-08T15:44:05.890Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/server
+[debug] [2025-08-08T15:44:05.890Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/server/server.mjs
+[debug] [2025-08-08T15:44:05.893Z] [unzip] Entry: server/assets/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2025-08-08T15:44:05.893Z] [unzip] Processing entry: server/assets/
+[debug] [2025-08-08T15:44:05.893Z] [unzip] mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/server/assets/
+[debug] [2025-08-08T15:44:05.893Z] [unzip] Entry: server/assets/multipart-parser-DGCUZdXu.mjs.map (compressed_size=4791 bytes, uncompressed_size=17918 bytes)
+[debug] [2025-08-08T15:44:05.893Z] [unzip] Processing entry: server/assets/multipart-parser-DGCUZdXu.mjs.map
+[debug] [2025-08-08T15:44:05.893Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/server/assets
+[debug] [2025-08-08T15:44:05.894Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/server/assets/multipart-parser-DGCUZdXu.mjs.map
+[debug] [2025-08-08T15:44:05.894Z] [unzip] Entry: server/assets/multipart-parser-DGCUZdXu.mjs (compressed_size=2621 bytes, uncompressed_size=10390 bytes)
+[debug] [2025-08-08T15:44:05.894Z] [unzip] Processing entry: server/assets/multipart-parser-DGCUZdXu.mjs
+[debug] [2025-08-08T15:44:05.894Z] [unzip] else mkdir: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/server/assets
+[debug] [2025-08-08T15:44:05.894Z] [unzip] deflating: /Users/enric/.cache/firebase/emulators/ui-v1.13.0/server/assets/multipart-parser-DGCUZdXu.mjs
+[info] i  ui: Removing outdated emulator files: ui-v1.14.0 {"metadata":{"emulator":{"name":"ui"},"message":"Removing outdated emulator files: ui-v1.14.0"}}
+[info] i  ui: Removing outdated emulator files: ui-v1.14.0.zip {"metadata":{"emulator":{"name":"ui"},"message":"Removing outdated emulator files: ui-v1.14.0.zip"}}
+[debug] [2025-08-08T15:44:05.902Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-08-08T15:44:05.902Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-08-08T15:44:05.902Z] Starting Emulator UI with command {"binary":"node","args":["/Users/enric/.cache/firebase/emulators/ui-v1.13.0/server/server.mjs"],"optionalArgs":[],"joinArgs":false,"shell":false,"port":4000} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"/Users/enric/.cache/firebase/emulators/ui-v1.13.0/server/server.mjs\"],\"optionalArgs\":[],\"joinArgs\":false,\"shell\":false,\"port\":4000}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2025-08-08T15:44:06.050Z] Web / API server started at 127.0.0.1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at 127.0.0.1:4000\n"}}
+[debug] [2025-08-08T15:44:06.050Z] Web / API server started at ::1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at ::1:4000\n"}}
+[info] i  functions: Watching "/Users/enric/Code/PhotoTV/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/enric/Code/PhotoTV/functions\" for Cloud Functions..."}}
+[debug] [2025-08-08T15:44:06.108Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T15:44:06.593Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^4.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "@types/node": "^18.0.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T15:44:06.593Z] Building nodejs source
+[debug] [2025-08-08T15:44:06.594Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T15:44:06.594Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T15:44:06.597Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8611
+
+[debug] [2025-08-08T15:44:07.150Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetryDuration":null,"maxBackoffDuration":null,"minBackoffDuration":null},"timeZone":null},"labels":{},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetryDuration":null,"maxBackoffDuration":null,"minBackoffDuration":null},"timeZone":null},"labels":{},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}]}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[info] ✔  functions[us-central1-generateTVToken]: http function initialized (http://127.0.0.1:5001/fototv-90cf0/us-central1/generateTVToken). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/fototv-90cf0/us-central1/generateTVToken)."}}
+[info] i  functions[us-central1-cleanupExpiredCodes]: function ignored because the pubsub emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the pubsub emulator does not exist or is not running."}}
+[info] i  functions[us-central1-deleteOldCodes]: function ignored because the pubsub emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the pubsub emulator does not exist or is not running."}}
+[info] i  functions: Watching "/Users/enric/Code/PhotoTV/fototv" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/enric/Code/PhotoTV/fototv\" for Cloud Functions..."}}
+[debug] [2025-08-08T15:44:11.172Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T15:44:11.584Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[error] ⬢  functions: Failed to load function definition from source: FirebaseError: There was an error reading fototv/package.json:
+
+ fototv/lib/index.js does not exist, can't deploy Cloud Functions {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: There was an error reading fototv/package.json:\n\n fototv/lib/index.js does not exist, can't deploy Cloud Functions"}}
+[debug] [2025-08-08T15:44:11.589Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: 
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌───────────┬────────────────┬─────────────────────────────────┐
+│ Emulator  │ Host:Port      │ View in Emulator UI             │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Functions │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+└───────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub running at 127.0.0.1:4400
+  Other reserved ports: 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2025-08-08T15:45:09.571Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers"}}
+[debug] [2025-08-08T15:45:09.573Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers"}}
+[debug] [2025-08-08T15:45:10.575Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T15:45:11.073Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^4.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "@types/node": "^18.0.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T15:45:11.073Z] Building nodejs source
+[debug] [2025-08-08T15:45:11.073Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T15:45:11.074Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T15:45:11.075Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8741
+
+[debug] [2025-08-08T15:45:11.335Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetryDuration":null,"maxBackoffDuration":null,"minBackoffDuration":null},"timeZone":null},"labels":{},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetryDuration":null,"maxBackoffDuration":null,"minBackoffDuration":null},"timeZone":null},"labels":{},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}]}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T15:45:18.852Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers"}}
+[debug] [2025-08-08T15:45:18.852Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers"}}
+[debug] [2025-08-08T15:45:19.854Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T15:45:20.314Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^4.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "@types/node": "^18.0.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T15:45:20.314Z] Building nodejs source
+[debug] [2025-08-08T15:45:20.314Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T15:45:20.315Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T15:45:20.315Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8460
+
+[debug] [2025-08-08T15:45:20.558Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetryDuration":null,"maxBackoffDuration":null,"minBackoffDuration":null},"timeZone":null},"labels":{},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetryDuration":null,"maxBackoffDuration":null,"minBackoffDuration":null},"timeZone":null},"labels":{},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}]}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T15:45:53.338Z] File /Users/enric/Code/PhotoTV/functions/package-lock.json changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/package-lock.json changed, reloading triggers"}}
+[debug] [2025-08-08T15:45:53.339Z] File /Users/enric/Code/PhotoTV/functions/package.json changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/package.json changed, reloading triggers"}}
+[debug] [2025-08-08T15:45:54.349Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T15:45:55.259Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T15:45:55.259Z] Building nodejs source
+[debug] [2025-08-08T15:45:55.259Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T15:45:55.261Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T15:45:55.262Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8672
+
+[error] TypeError: functions.pubsub.schedule is not a function
+    at Object.<anonymous> (/Users/enric/Code/PhotoTV/functions/lib/index.js:95:6)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1691:10)
+    at Module.load (node:internal/modules/cjs/loader:1317:32)
+    at Module._load (node:internal/modules/cjs/loader:1127:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:217:24)
+    at Module.require (node:internal/modules/cjs/loader:1339:12)
+    at require (node:internal/modules/helpers:135:16)
+    at loadModule (/Users/enric/Code/PhotoTV/functions/node_modules/firebase-functions/lib/runtime/loader.js:40:16)
+
+[debug] [2025-08-08T15:45:55.864Z] Got response code 400; body Failed to generate manifest from function source: functions.pubsub.schedule is not a function
+[debug] [2025-08-08T15:45:57.883Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers"}}
+[debug] [2025-08-08T15:45:57.884Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers"}}
+[debug] [2025-08-08T15:45:58.886Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T15:45:59.347Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T15:45:59.347Z] Building nodejs source
+[debug] [2025-08-08T15:45:59.347Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T15:45:59.348Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T15:45:59.349Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8027
+
+[error] TypeError: functions.pubsub.schedule is not a function
+    at Object.<anonymous> (/Users/enric/Code/PhotoTV/functions/lib/index.js:95:6)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1691:10)
+    at Module.load (node:internal/modules/cjs/loader:1317:32)
+    at Module._load (node:internal/modules/cjs/loader:1127:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:217:24)
+    at Module.require (node:internal/modules/cjs/loader:1339:12)
+    at require (node:internal/modules/helpers:135:16)
+    at loadModule (/Users/enric/Code/PhotoTV/functions/node_modules/firebase-functions/lib/runtime/loader.js:40:16)
+
+[debug] [2025-08-08T15:45:59.535Z] Got response code 400; body Failed to generate manifest from function source: functions.pubsub.schedule is not a function
+[error] ⬢  functions: Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error"}}
+[error] ⬢  functions: Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error"}}
+[debug] [2025-08-08T15:46:12.000Z] File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers"}}
+[debug] [2025-08-08T15:46:13.002Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T15:46:13.738Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T15:46:13.738Z] Building nodejs source
+[debug] [2025-08-08T15:46:13.738Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T15:46:13.739Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T15:46:13.740Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8461
+
+[error] TypeError: functions.pubsub.schedule is not a function
+    at Object.<anonymous> (/Users/enric/Code/PhotoTV/functions/lib/index.js:95:6)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1691:10)
+    at Module.load (node:internal/modules/cjs/loader:1317:32)
+    at Module._load (node:internal/modules/cjs/loader:1127:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:217:24)
+    at Module.require (node:internal/modules/cjs/loader:1339:12)
+    at require (node:internal/modules/helpers:135:16)
+    at loadModule (/Users/enric/Code/PhotoTV/functions/node_modules/firebase-functions/lib/runtime/loader.js:40:16)
+
+[debug] [2025-08-08T15:46:14.018Z] Got response code 400; body Failed to generate manifest from function source: functions.pubsub.schedule is not a function
+[debug] [2025-08-08T15:46:16.366Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers"}}
+[debug] [2025-08-08T15:46:16.366Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers"}}
+[debug] [2025-08-08T15:46:17.367Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T15:46:17.784Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T15:46:17.784Z] Building nodejs source
+[debug] [2025-08-08T15:46:17.784Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T15:46:17.784Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T15:46:17.785Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8743
+
+[debug] [2025-08-08T15:46:17.955Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[error] ⬢  functions: Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error"}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T15:46:23.947Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers"}}
+[debug] [2025-08-08T15:46:23.947Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers"}}
+[debug] [2025-08-08T15:46:24.951Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T15:46:25.373Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T15:46:25.373Z] Building nodejs source
+[debug] [2025-08-08T15:46:25.373Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T15:46:25.373Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T15:46:25.374Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8686
+
+[debug] [2025-08-08T15:46:25.565Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T15:47:04.183Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers"}}
+[debug] [2025-08-08T15:47:04.183Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers"}}
+[debug] [2025-08-08T15:47:05.187Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T15:47:06.066Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T15:47:06.067Z] Building nodejs source
+[debug] [2025-08-08T15:47:06.067Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T15:47:06.068Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T15:47:06.069Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8525
+
+[debug] [2025-08-08T15:47:06.449Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T16:01:55.279Z] File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers"}}
+[debug] [2025-08-08T16:01:56.286Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:01:56.886Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:01:56.886Z] Building nodejs source
+[debug] [2025-08-08T16:01:56.886Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:01:56.888Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:01:56.889Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8702
+
+[debug] [2025-08-08T16:01:57.238Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T16:02:03.653Z] File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers"}}
+[debug] [2025-08-08T16:02:04.655Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:02:05.200Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:02:05.200Z] Building nodejs source
+[debug] [2025-08-08T16:02:05.201Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:02:05.201Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:02:05.202Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8889
+
+[debug] [2025-08-08T16:02:05.472Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T16:02:16.914Z] File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers"}}
+[debug] [2025-08-08T16:02:17.917Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:02:18.412Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:02:18.412Z] Building nodejs source
+[debug] [2025-08-08T16:02:18.412Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:02:18.413Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:02:18.414Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8881
+
+[debug] [2025-08-08T16:02:18.716Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T16:05:22.298Z] File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers"}}
+[debug] [2025-08-08T16:05:23.308Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:05:23.981Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:05:23.982Z] Building nodejs source
+[debug] [2025-08-08T16:05:23.982Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:05:23.983Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:05:23.984Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8214
+
+[debug] [2025-08-08T16:05:24.372Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T16:05:30.243Z] File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers"}}
+[debug] [2025-08-08T16:05:31.246Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:05:31.851Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:05:31.851Z] Building nodejs source
+[debug] [2025-08-08T16:05:31.851Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:05:31.852Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:05:31.853Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8971
+
+[debug] [2025-08-08T16:05:32.184Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[debug] [2025-08-08T16:05:35.492Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers"}}
+[debug] [2025-08-08T16:05:35.492Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers"}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T16:05:36.493Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:05:36.949Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:05:36.949Z] Building nodejs source
+[debug] [2025-08-08T16:05:36.949Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:05:36.950Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:05:36.950Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8550
+
+[debug] [2025-08-08T16:05:37.178Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T16:05:41.695Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers"}}
+[debug] [2025-08-08T16:05:41.695Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers"}}
+[debug] [2025-08-08T16:05:42.696Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:05:43.166Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:05:43.166Z] Building nodejs source
+[debug] [2025-08-08T16:05:43.167Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:05:43.168Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:05:43.169Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8636
+
+[debug] [2025-08-08T16:05:43.399Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T16:07:40.162Z] File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers"}}
+[debug] [2025-08-08T16:07:41.178Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:07:41.907Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:07:41.907Z] Building nodejs source
+[debug] [2025-08-08T16:07:41.907Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:07:41.907Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:07:41.908Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8504
+
+[debug] [2025-08-08T16:07:42.217Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[debug] [2025-08-08T16:07:45.006Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers"}}
+[debug] [2025-08-08T16:07:45.007Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers"}}
+[debug] [2025-08-08T16:07:46.007Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:07:46.589Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:07:46.590Z] Building nodejs source
+[debug] [2025-08-08T16:07:46.590Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:07:46.590Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:07:46.591Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[info] Serving at port 8748
+
+[debug] [2025-08-08T16:07:46.820Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T16:07:53.557Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js changed, reloading triggers"}}
+[debug] [2025-08-08T16:07:53.558Z] File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/lib/index.js.map changed, reloading triggers"}}
+[debug] [2025-08-08T16:07:54.589Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:07:55.280Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:07:55.280Z] Building nodejs source
+[debug] [2025-08-08T16:07:55.280Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:07:55.281Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:07:55.281Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8394
+
+[debug] [2025-08-08T16:07:55.498Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}
+[debug] [2025-08-08T16:10:43.496Z] File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/enric/Code/PhotoTV/functions/src/index.ts changed, reloading triggers"}}
+[debug] [2025-08-08T16:10:44.499Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-08-08T16:10:45.092Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2025-08-08T16:10:45.092Z] Building nodejs source
+[debug] [2025-08-08T16:10:45.092Z] Failed to find version of module node: reached end of search path /Users/enric/Code/PhotoTV/functions/node_modules
+[info] ✔  functions: Using node@22 from host. 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-08-08T16:10:45.093Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-08T16:10:45.094Z] Found firebase-functions binary at '/Users/enric/Code/PhotoTV/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8107
+
+[debug] [2025-08-08T16:10:45.417Z] Got response from /__/functions.yaml {"endpoints":{"generateTVToken":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"generateTVToken"},"cleanupExpiredCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 5 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"cleanupExpiredCodes"},"deleteOldCodes":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 24 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"deleteOldCodes"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: generateTVToken, cleanupExpiredCodes, deleteOldCodes."}}

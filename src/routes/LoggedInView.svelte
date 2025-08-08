@@ -1,24 +1,25 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { auth, storage } from '$lib/firebase';
+	import { storage } from '$lib/firebase';
 	import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 	import type { User } from 'firebase/auth';
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
+	import ManualCodeEntry from '$lib/components/ManualCodeEntry.svelte';
 
 	export let user: User;
 	export let uploadedImages: string[];
 
 	const uploading = writable<boolean>(false);
-	
+
 	// Create a writable store for uploadedImages to allow updates
 	const uploadedImagesStore = writable(uploadedImages);
-	
+
 	// Subscribe to changes and update the parent
 	uploadedImagesStore.subscribe((images) => {
 		uploadedImages = images;
 	});
-	
+
 	// Update the store when the prop changes
 	$: uploadedImagesStore.set(uploadedImages);
 
@@ -86,42 +87,52 @@
 />
 
 <div class="flex flex-col items-center space-y-4">
-		<!-- Upload Button -->
-		<button
-			class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600"
-			on:click={triggerFileUpload}
-			disabled={$uploading}
-		>
-			{#if $uploading}
-				<span class="loading loading-spinner loading-sm"></span>
-				Uploading...
-			{:else}
-				<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-					/>
-				</svg>
-				Upload Photo
-			{/if}
-		</button>
-
-		<!-- Slideshow Button -->
-		<button
-			class="btn w-full border-red-500 bg-red-500 text-white hover:bg-red-600"
-			on:click={() => goto('/slideshow')}
-		>
+	<!-- Upload Button -->
+	<button
+		class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600"
+		on:click={triggerFileUpload}
+		disabled={$uploading}
+	>
+		{#if $uploading}
+			<span class="loading loading-spinner loading-sm"></span>
+			Uploading...
+		{:else}
 			<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path
 					stroke-linecap="round"
 					stroke-linejoin="round"
 					stroke-width="2"
-					d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+					d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
 				/>
 			</svg>
-			Slideshow
-		</button>
+			Upload Photo
+		{/if}
+	</button>
 
-	</div> 
+	<!-- Slideshow Button -->
+	<button
+		class="btn w-full border-red-500 bg-red-500 text-white hover:bg-red-600"
+		on:click={() => goto('/slideshow')}
+	>
+		<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+			/>
+		</svg>
+		Slideshow
+	</button>
+
+	<!-- TV Login Code Entry Section -->
+	<div class="w-full">
+		<div class="collapse-arrow bg-base-200 collapse">
+			<input type="checkbox" />
+			<div class="collapse-title text-lg font-medium">📺 Approve TV Login</div>
+			<div class="collapse-content">
+				<ManualCodeEntry />
+			</div>
+		</div>
+	</div>
+</div>

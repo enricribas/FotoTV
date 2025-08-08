@@ -1,1 +1,0 @@
-import"../chunks/NZTpNUN0.js";import{e as n,h as a,O as s,a as l}from"../chunks/BEP-pFgy.js";const p=!0,c=!1,u=Object.freeze(Object.defineProperty({__proto__:null,prerender:p,ssr:c},Symbol.toStringTag,{value:"Module"}));function d(t,o){var e=n(),r=a(e);s(r,()=>o.children),l(t,e)}export{d as component,u as universal};

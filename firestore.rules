@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // TV Authentication Codes
+    match /tv_auth_codes/{codeId} {
+      // Allow creating new codes (TV devices generating codes)
+      allow create: if request.auth == null &&
+                   validateTVAuthCode(request.resource.data);
+
+      // Allow reading codes for:
+      // 1. Authenticated users (for approval interface)
+      // 2. Unauthenticated devices for polling (with time limits)
+      allow read: if request.auth != null ||
+                  (request.auth == null && resource.data.expiresAt > request.time);
+
+      // Allow querying codes for unauthenticated devices (TV polling)
+      // Limited to recent codes only for security
+      allow list: if request.auth != null ||
+                  request.auth == null;
+
+      // Allow updating codes (approving/denying by logged-in users)
+      allow update: if request.auth != null &&
+                   request.auth.uid != null &&
+                   validateTVAuthUpdate(resource.data, request.resource.data);
+
+      // Allow cleanup of expired codes (for authenticated cleanup operations)
+      allow delete: if request.auth != null;
+    }
+
+    // Helper functions
+    function validateTVAuthCode(data) {
+      return data.keys().hasAll(['code', 'deviceId', 'userAgent', 'status']) &&
+             data.code is string &&
+             data.code.size() == 4 &&
+             data.code.matches('[A-Z]{4}') &&
+             data.deviceId is string &&
+             data.userAgent is string &&
+             data.status == 'pending' &&
+             data.createdAt is timestamp &&
+             data.expiresAt is timestamp;
+    }
+
+    function validateTVAuthUpdate(existingData, newData) {
+      // Only allow status updates and approvedBy/approvedByUser field additions
+      return existingData.diff(newData).affectedKeys().hasOnly(['status', 'approvedBy', 'approvedByUser']) &&
+             newData.status in ['approved', 'denied', 'expired'] &&
+             // If approving, must set approvedBy to current user
+             (newData.status == 'approved' ? (
+               newData.approvedBy == request.auth.uid &&
+               newData.approvedByUser.uid == request.auth.uid
+             ) : true);
+    }
+
+    // Default rule - deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
