@@ -102,7 +102,7 @@ export const generateTVToken = onCall(async (request: CallableRequest) => {
  * Clean up expired TV auth codes
  * Runs every 5 minutes
  */
-export const cleanupExpiredCodes = onSchedule('every 5 minutes', async (event) => {
+export const cleanupExpiredCodes = onSchedule('every 5 minutes', async () => {
 	try {
 		const now = new Date();
 		const codesRef = db.collection('tv_auth_codes');
@@ -133,7 +133,7 @@ export const cleanupExpiredCodes = onSchedule('every 5 minutes', async (event) =
  * Delete old expired codes
  * Runs daily to clean up database
  */
-export const deleteOldCodes = onSchedule('every 24 hours', async (event) => {
+export const deleteOldCodes = onSchedule('every 24 hours', async () => {
 	try {
 		const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 		const codesRef = db.collection('tv_auth_codes');

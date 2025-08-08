@@ -227,8 +227,8 @@
 
 		// Create a temporary image to get natural dimensions
 		const tempImg = new Image();
-		tempImg.onload = function (this: HTMLImageElement) {
-			const imageAspectRatio = this.naturalWidth / this.naturalHeight;
+		tempImg.onload = () => {
+			const imageAspectRatio = tempImg.naturalWidth / tempImg.naturalHeight;
 			const screenAspectRatio = frameWidth / frameHeight;
 
 			let paddingTop, paddingRight, paddingBottom, paddingLeft;

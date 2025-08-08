@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { TVAuthService } from '$lib/tvAuth';
+	import { onMount } from 'svelte';
 
 	export let onSuccess: (() => void) | undefined = undefined;
 
@@ -7,6 +8,7 @@
 	let loading = false;
 	let message = '';
 	let messageType: 'success' | 'error' | 'info' = 'info';
+	let codeInput: HTMLInputElement;
 
 	async function approveCode() {
 		if (code.length !== 4) {
@@ -34,28 +36,6 @@
 		}
 	}
 
-	async function denyCode() {
-		if (code.length !== 4) {
-			showMessage('Please enter a 4-letter code', 'error');
-			return;
-		}
-
-		loading = true;
-		try {
-			const result = await TVAuthService.denyCode(code);
-			if (result.success) {
-				showMessage('TV login denied', 'info');
-				code = '';
-			} else {
-				showMessage(result.error || 'Failed to deny code', 'error');
-			}
-		} catch {
-			showMessage('Failed to deny code', 'error');
-		} finally {
-			loading = false;
-		}
-	}
-
 	function showMessage(text: string, type: 'success' | 'error' | 'info') {
 		message = text;
 		messageType = type;
@@ -69,15 +49,18 @@
 			approveCode();
 		}
 	}
+
+	onMount(() => {
+		// Automatically focus the input when the component mounts
+		if (codeInput) {
+			codeInput.focus();
+		}
+	});
 </script>
 
 <div class="mx-auto w-full max-w-md p-4">
 	<!-- Header -->
 	<div class="mb-6">
-		<h2 class="flex items-center text-xl font-bold text-gray-800">
-			<span class="mr-2">📺</span>
-			TV Login Code
-		</h2>
 		<p class="mt-1 text-sm text-gray-600">Enter the 4-letter code from your TV to approve login</p>
 	</div>
 
@@ -96,10 +79,8 @@
 	<!-- Code Input -->
 	<div class="space-y-4">
 		<div>
-			<label class="label" for="tv-code-input">
-				<span class="label-text">4-Letter Code:</span>
-			</label>
 			<input
+				bind:this={codeInput}
 				id="tv-code-input"
 				type="text"
 				class="input input-bordered w-full text-center font-mono text-2xl tracking-widest uppercase"
@@ -137,15 +118,6 @@
 					</svg>
 					Approve TV Login
 				{/if}
-			</button>
-
-			<button
-				class="btn btn-error btn-sm w-full"
-				disabled={code.length !== 4 || loading}
-				on:click={denyCode}
-			>
-				<span class="mr-1">✗</span>
-				Deny
 			</button>
 		</div>
 	</div>

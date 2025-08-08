@@ -5,9 +5,7 @@ import {
 	collection,
 	doc,
 	addDoc,
-	getDoc,
 	updateDoc,
-	deleteDoc,
 	query,
 	where,
 	getDocs,
@@ -193,7 +191,7 @@ export class TVAuthService {
 		approvedBy?: string
 	): Promise<boolean> {
 		try {
-			const updateData: any = { status };
+			const updateData: { status: TVAuthCode['status']; approvedBy?: string } = { status };
 			if (approvedBy) {
 				updateData.approvedBy = approvedBy;
 			}
@@ -213,7 +211,12 @@ export class TVAuthService {
 		codeId: string,
 		status: TVAuthCode['status'],
 		approvedBy: string,
-		approvedByUser: any
+		approvedByUser: {
+			uid: string;
+			email: string | null;
+			displayName: string | null;
+			photoURL: string | null;
+		}
 	): Promise<boolean> {
 		try {
 			const updateData = {
@@ -306,7 +309,11 @@ export class TVAuthService {
 			// Auto-expire after timeout
 			setTimeout(() => {
 				clearInterval(pollInterval);
-				if (this.authStatus.getValue?.() === 'waiting') {
+				// Check if still waiting - use get() method for Svelte store
+				let currentStatus: string;
+				const unsubscribe = this.authStatus.subscribe((status) => (currentStatus = status));
+				unsubscribe();
+				if (currentStatus === 'waiting') {
 					this.authStatus.set('expired');
 					this.authCode.set(null);
 					resolve({ success: false, error: 'Code expired' });
@@ -320,7 +327,12 @@ export class TVAuthService {
 	 */
 	private static async authenticateWithCustomToken(
 		resolve: (value: { success: boolean; user?: User; error?: string }) => void,
-		approvedByUser?: any,
+		approvedByUser?: {
+			uid: string;
+			email: string | null;
+			displayName: string | null;
+			photoURL: string | null;
+		},
 		code?: string
 	): Promise<void> {
 		try {
@@ -334,7 +346,7 @@ export class TVAuthService {
 			const generateTVToken = httpsCallable(functions, 'generateTVToken');
 
 			const result = await generateTVToken({ code });
-			const { customToken, userInfo } = result.data as any;
+			const { customToken } = result.data as { customToken: string; userInfo: unknown };
 
 			if (!customToken) {
 				resolve({ success: false, error: 'Failed to generate authentication token' });
@@ -348,15 +360,30 @@ export class TVAuthService {
 				success: true,
 				user: userCredential.user
 			});
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error('Custom token authentication failed:', error);
 
 			let errorMessage = 'Authentication failed';
-			if (error?.code === 'functions/not-found') {
+			if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error &&
+				error.code === 'functions/not-found'
+			) {
 				errorMessage = 'Code not found or not approved';
-			} else if (error?.code === 'functions/deadline-exceeded') {
+			} else if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error &&
+				error.code === 'functions/deadline-exceeded'
+			) {
 				errorMessage = 'Code has expired';
-			} else if (error?.message) {
+			} else if (
+				error &&
+				typeof error === 'object' &&
+				'message' in error &&
+				typeof error.message === 'string'
+			) {
 				errorMessage = error.message;
 			}
 

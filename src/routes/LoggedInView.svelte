@@ -6,11 +6,13 @@
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
 	import ManualCodeEntry from '$lib/components/ManualCodeEntry.svelte';
+	import { browser } from '$app/environment';
 
 	export let user: User;
 	export let uploadedImages: string[];
 
 	let showTVApproval = false;
+	let showHelperText = true;
 
 	const uploading = writable<boolean>(false);
 
@@ -85,6 +87,21 @@
 	function handleTVApprovalSuccess() {
 		showTVApproval = false;
 	}
+
+	function closeHelperText() {
+		showHelperText = false;
+		if (browser) {
+			localStorage.setItem('photoTV_hideHelper', 'true');
+		}
+	}
+
+	// Check localStorage on component mount
+	if (browser) {
+		const hideHelper = localStorage.getItem('photoTV_hideHelper');
+		if (hideHelper === 'true') {
+			showHelperText = false;
+		}
+	}
 </script>
 
 <!-- Hidden file input -->
@@ -97,6 +114,33 @@
 />
 
 <div class="flex flex-col items-center space-y-4">
+	{#if showHelperText}
+		<div class="relative mt-6 mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 sm:mb-0">
+			<button
+				class="absolute top-2 right-2 text-lg leading-none text-gray-400 hover:text-gray-600"
+				on:click={closeHelperText}
+				aria-label="Close helper text"
+			>
+				×
+			</button>
+			<div class="space-y-2 pr-6 text-sm text-gray-600">
+				<div class="flex items-center">
+					<span class="mr-2">📱</span>
+					<span><strong>Phone:</strong> Upload photos and approve TV logins</span>
+				</div>
+				<div class="flex items-center">
+					<span class="mr-2">📺</span>
+					<span><strong>TV:</strong> View slideshow on the big screen</span>
+				</div>
+			</div>
+			<div class="mt-3 rounded bg-blue-50 p-2 text-center">
+				<p class="text-xs text-blue-700">
+					<strong>Recommended:</strong> Sign in on your phone first, then use "Approve TV Login" to connect
+					your TV
+				</p>
+			</div>
+		</div>
+	{/if}
 	<!-- Upload Button -->
 	<button
 		class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600"
@@ -136,10 +180,7 @@
 	</button>
 
 	<!-- TV Approval Button -->
-	<button
-		class="btn w-full border-green-500 bg-green-500 text-white hover:bg-green-600"
-		on:click={toggleTVApproval}
-	>
+	<button class="btn w-full bg-red-900 text-white hover:bg-red-600" on:click={toggleTVApproval}>
 		<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 			<path
 				stroke-linecap="round"
