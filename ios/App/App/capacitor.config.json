@@ -27,9 +27,6 @@
 		}
 	},
 	"packageClassList": [
-		"FirebaseAuthenticationPlugin",
-		"AppPlugin",
-		"CAPBrowserPlugin",
-		"SocialLoginPlugin"
+		"AppPlugin"
 	]
 }
