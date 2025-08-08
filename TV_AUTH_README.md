@@ -120,7 +120,8 @@ The system includes Firestore security rules that:
 
 1. **Mobile Mode**: `npm run dev:mobile` (port 5173)
 2. **TV Mode**: `npm run dev:tv` (port 5174)
-3. **Flow**: 
+3. **Android Build**: `npm run android:debug` (for debug) or `npm run android:release` (for release)
+4. **Flow**: 
    - Sign in on mobile first
    - Generate code on TV
    - Manually enter code in mobile app's "Approve TV Login" section

@@ -94,7 +94,7 @@ async function main() {
 	console.log('\n✨ Version update completed successfully!');
 	console.log('\nNext steps:');
 	console.log('1. Run: npx cap sync');
-	console.log('2. Build: npx cap build android');
+	console.log('2. Build: npm run android:debug (or android:release)');
 	console.log('3. Test your app');
 	console.log(
 		'4. Commit your changes: git add . && git commit -m "bump version to ' + newVersion + '"'
