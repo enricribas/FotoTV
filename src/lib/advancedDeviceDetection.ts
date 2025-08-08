@@ -170,11 +170,6 @@ export class AdvancedDeviceDetector {
 			return false;
 		}
 
-		// iOS detection
-		if (Capacitor.getPlatform() === 'ios') {
-			return await this.detectIOSKeyboard();
-		}
-
 		return false;
 	}
 
@@ -244,21 +239,6 @@ export class AdvancedDeviceDetector {
 	}
 
 	/**
-	 * iOS keyboard detection
-	 */
-	private static async detectIOSKeyboard(): Promise<boolean> {
-		// iOS devices typically don't have physical keyboards
-		// iPad might have external keyboards, but detection is limited
-
-		if (this.deviceInfo?.model?.toLowerCase().includes('ipad')) {
-			// iPad might have external keyboard, but we can't reliably detect it
-			return false;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Enhanced touch device detection
 	 */
 	static async isTouchDevice(): Promise<boolean> {
@@ -274,11 +254,6 @@ export class AdvancedDeviceDetector {
 			if (await this.isAndroidTV()) {
 				return false;
 			}
-			return true;
-		}
-
-		// iOS devices are touch devices
-		if (Capacitor.getPlatform() === 'ios') {
 			return true;
 		}
 
@@ -328,7 +303,7 @@ export class AdvancedDeviceDetector {
 			const model = this.deviceInfo.model?.toLowerCase() || '';
 
 			// Tablet detection based on model names
-			if (model.includes('tablet') || model.includes('ipad')) {
+			if (model.includes('tablet')) {
 				return 'tablet';
 			}
 

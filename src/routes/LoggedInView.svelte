@@ -7,12 +7,14 @@
 	import { ImageService } from '$lib/imageService';
 	import ManualCodeEntry from '$lib/components/ManualCodeEntry.svelte';
 	import { browser } from '$app/environment';
+	import { shouldUseTVUI } from '$lib/tvUtils';
 
 	export let user: User;
 	export let uploadedImages: string[];
 
 	let showTVApproval = false;
 	let showHelperText = true;
+	let isTVMode = false;
 
 	const uploading = writable<boolean>(false);
 
@@ -95,12 +97,20 @@
 		}
 	}
 
-	// Check localStorage on component mount
+	// Check localStorage and TV mode on component mount
 	if (browser) {
 		const hideHelper = localStorage.getItem('photoTV_hideHelper');
 		if (hideHelper === 'true') {
 			showHelperText = false;
 		}
+
+		// Check if in TV mode and hide helper text accordingly
+		shouldUseTVUI().then((isTV) => {
+			isTVMode = isTV;
+			if (isTV) {
+				showHelperText = false;
+			}
+		});
 	}
 </script>
 
@@ -114,7 +124,7 @@
 />
 
 <div class="flex flex-col items-center space-y-4">
-	{#if showHelperText}
+	{#if showHelperText && !isTVMode}
 		<div class="relative mt-6 mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 sm:mb-0">
 			<button
 				class="absolute top-2 right-2 text-lg leading-none text-gray-400 hover:text-gray-600"

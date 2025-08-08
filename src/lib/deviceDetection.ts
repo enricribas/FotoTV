@@ -70,11 +70,6 @@ export function hasPhysicalKeyboard(): boolean {
 		return false;
 	}
 
-	// For iOS, typically no physical keyboard on phones/tablets
-	if (Capacitor.getPlatform() === 'ios') {
-		return false;
-	}
-
 	// Default to false for unknown platforms
 	return false;
 }
@@ -87,8 +82,8 @@ export function isTouchDevice(): boolean {
 		return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 	}
 
-	// Mobile platforms are touch devices
-	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
+	// Android platform is a touch device
+	if (Capacitor.getPlatform() === 'android') {
 		// Android TV might not have touch
 		if (isAndroidTV()) {
 			return false;

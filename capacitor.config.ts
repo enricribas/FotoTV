@@ -17,9 +17,6 @@ const config: CapacitorConfig = {
 			backgroundColor: '#000000',
 			showSpinner: false
 		},
-		Browser: {
-			presentationStyle: 'popover'
-		},
 		FirebaseAuthentication: {
 			skipNativeAuth: false,
 			providers: ['google.com'],
