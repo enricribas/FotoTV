@@ -22,7 +22,6 @@ export class AuthService {
 				await updateProfile(user, { displayName });
 			}
 
-			console.log('User registered successfully:', user.uid);
 			return user;
 		} catch (error: unknown) {
 			console.error('Registration error:', error);
@@ -37,7 +36,7 @@ export class AuthService {
 	static async signIn(email: string, password: string): Promise<User> {
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
-			console.log('User signed in successfully:', userCredential.user.uid);
+
 			return userCredential.user;
 		} catch (error: unknown) {
 			console.error('Sign in error:', error);
@@ -52,7 +51,6 @@ export class AuthService {
 	static async resetPassword(email: string): Promise<void> {
 		try {
 			await sendPasswordResetEmail(auth, email);
-			console.log('Password reset email sent to:', email);
 		} catch (error: unknown) {
 			console.error('Password reset error:', error);
 			const authError = error as { code?: string; message?: string };
@@ -66,7 +64,6 @@ export class AuthService {
 	static async signOut(): Promise<void> {
 		try {
 			await auth.signOut();
-			console.log('User signed out successfully');
 		} catch (error: unknown) {
 			console.error('Sign out error:', error);
 			throw error;

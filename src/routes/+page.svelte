@@ -43,7 +43,9 @@
 	});
 
 	function logout() {
-		signOut(auth).catch(console.error);
+		signOut(auth).catch(() => {
+			// Logout failed, but we'll ignore errors since user can retry
+		});
 	}
 
 	function handleTVLoginSuccess(tvUser: User) {
@@ -96,9 +98,6 @@
 			<img src="/FotoTV-logo2.png" alt="FotoTV Logo" class="{$user ? 'h-8' : 'h-16'} w-auto" />
 			<div class="flex items-center space-x-2">
 				<h1 class="{$user ? 'text-lg' : 'text-3xl'} font-bold text-gray-800">FotoTV</h1>
-				{#if isTVModeForced}
-					<span class="badge badge-secondary text-xs">TV Mode</span>
-				{/if}
 			</div>
 		</div>
 	</div>

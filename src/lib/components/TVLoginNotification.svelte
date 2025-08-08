@@ -259,8 +259,18 @@
 
 			<!-- Action Buttons -->
 			<div class="space-y-3">
-				<button class="btn btn-success btn-lg w-full text-lg" on:click={approveRequest}>
-					<span class="mr-2">✓</span>
+				<button
+					class="btn btn-lg w-full border-blue-500 bg-blue-500 text-lg text-white hover:bg-blue-600"
+					on:click={approveRequest}
+				>
+					<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M5 13l4 4L19 7"
+						/>
+					</svg>
 					Approve TV Login
 				</button>
 

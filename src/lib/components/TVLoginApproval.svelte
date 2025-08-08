@@ -164,10 +164,17 @@
 						<!-- Action Buttons -->
 						<div class="flex space-x-2">
 							<button
-								class="btn btn-success btn-sm flex-1"
+								class="btn btn-sm flex-1 border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
 								on:click={() => approveRequest(request)}
 							>
-								<span class="mr-1">✓</span>
+								<svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M5 13l4 4L19 7"
+									/>
+								</svg>
 								Approve
 							</button>
 							<button class="btn btn-error btn-sm flex-1" on:click={() => denyRequest(request)}>
@@ -218,10 +225,18 @@
 				</div>
 				<div class="flex space-x-2">
 					<button
-						class="btn btn-success btn-sm flex-1"
+						class="btn btn-sm flex-1 border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
 						disabled={inputCode.length !== 4}
 						on:click={approveByCode}
 					>
+						<svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M5 13l4 4L19 7"
+							/>
+						</svg>
 						Approve
 					</button>
 					<button

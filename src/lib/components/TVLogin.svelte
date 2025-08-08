@@ -31,6 +31,9 @@
 				stopTimeUpdater();
 			}
 		});
+
+		// Automatically start TV authentication
+		startTVAuth();
 	});
 
 	onDestroy(() => {
@@ -75,7 +78,6 @@
 			}
 		} catch (err) {
 			error = 'Failed to start TV authentication';
-			console.error('TV Auth error:', err);
 		} finally {
 			loading = false;
 		}
@@ -118,9 +120,7 @@
 	}
 </script>
 
-<div
-	class="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900 p-8"
->
+<div class="flex min-h-screen flex-col items-center justify-center p-8">
 	<div
 		class="bg-opacity-10 w-full max-w-md rounded-2xl bg-white p-8 text-center text-white shadow-xl backdrop-blur-lg"
 	>
@@ -135,8 +135,8 @@
 			<p class="mt-2 text-blue-200">Simple authentication for your TV</p>
 		</div>
 
-		{#if authStatus === 'idle'}
-			<!-- Initial state - show start button -->
+		{#if loading && authStatus === 'idle' && !error}
+			<!-- Loading state - auto-starting authentication -->
 			<div class="space-y-6">
 				<div class="bg-opacity-10 rounded-lg bg-white p-4">
 					<p class="text-sm text-blue-200">
@@ -145,20 +145,27 @@
 					</p>
 				</div>
 
-				<button
-					class="btn btn-primary btn-lg w-full text-lg"
-					class:loading
-					disabled={loading}
-					on:click={startTVAuth}
-				>
-					{loading ? 'Starting...' : 'Start TV Sign In'}
-				</button>
+				<div class="flex flex-col items-center justify-center space-y-4">
+					<span class="loading loading-spinner loading-lg text-white"></span>
+					<p class="text-blue-200">Starting TV authentication...</p>
+				</div>
+			</div>
+		{:else if authStatus === 'idle' && error}
+			<!-- Error state -->
+			<div class="space-y-6">
+				<div class="bg-opacity-10 rounded-lg bg-white p-4">
+					<p class="text-sm text-blue-200">
+						To sign in on your TV, you'll need to approve the login from a device where you're
+						already signed in.
+					</p>
+				</div>
 
-				{#if error}
-					<div class="alert alert-error">
-						<span>❌ {error}</span>
-					</div>
-				{/if}
+				<div class="alert alert-error">
+					<span>❌ {error}</span>
+				</div>
+				<button class="btn btn-primary btn-lg w-full text-lg" on:click={startTVAuth}>
+					Try Again
+				</button>
 			</div>
 		{:else if authStatus === 'waiting' && authCode}
 			<!-- Waiting state - show code -->
@@ -168,7 +175,7 @@
 
 					<!-- Large code display -->
 					<div class="mx-auto mb-4 inline-flex space-x-2">
-						{#each authCode.split('') as letter}
+						{#each authCode.split('') as letter, index (index)}
 							<div
 								class="flex h-16 w-16 items-center justify-center rounded-lg bg-white text-3xl font-bold text-black"
 							>

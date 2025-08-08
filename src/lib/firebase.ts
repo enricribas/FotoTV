@@ -28,5 +28,3 @@ setPersistence(auth, browserLocalPersistence).catch((err) =>
 // Initialize Firestore and Storage
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-
-console.log('Firebase initialized with email/password authentication');
