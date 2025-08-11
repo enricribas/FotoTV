@@ -1,38 +1,83 @@
-# sv
+# PhotoTV
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A personal photo viewing app that lets you display your photos on your TV or larger screen.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- Upload and view your personal photos
+- Display photos in a slideshow on your TV
+- Connect your phone to your TV for viewing
+- Private and secure - only you can see your photos
+- TV-optimized interface with device detection
+- Simple 4-letter code pairing system
 
-```bash
-# create a new project in the current directory
-npx sv create
+## Development
 
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Install dependencies and start the development server:
 
 ```bash
+npm install
 npm run dev
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# For mobile development
+npm run dev:mobile
+
+# For TV development  
+npm run dev:tv
 ```
 
 ## Building
 
-To create a production version of your app:
+Build the application for production:
 
 ```bash
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+Preview the production build locally:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```bash
+npm run preview
+```
+
+## Deployment
+
+### Netlify Deployment
+
+The app is configured for automatic deployment to Netlify:
+
+```bash
+# Deploy to production
+npm run deploy
+
+# Deploy a preview/draft version
+npm run deploy:preview
+
+# Quick deploy (without rebuild)
+npm run deploy:quick
+```
+
+The `predeploy` script will automatically run linting and tests before deployment.
+
+### Android Build
+
+Build the Android app:
+
+```bash
+# Sync web assets to Android
+npx cap sync
+
+# Build debug version
+npm run android:debug
+
+# Build release version (requires signing setup)
+npm run android:release
+```
+
+## Project Structure
+
+- `src/routes/` - SvelteKit pages and components
+- `src/lib/` - Shared utilities and services
+- `android/` - Android native project
+- `build/` - Production build output
+- `static/` - Static assets
