@@ -6,6 +6,8 @@
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
 	import { isAndroidTV, isTVModeEnabled } from '$lib/advancedDeviceDetection';
+	import { goto } from '$app/navigation';
+	import { shouldUseTVUI } from '$lib/tvUtils';
 
 	import LoggedInView from './LoggedInView.svelte';
 	import LoggedOutView from './LoggedOutView.svelte';
@@ -48,8 +50,14 @@
 		});
 	}
 
-	function handleTVLoginSuccess(tvUser: User) {
+	async function handleTVLoginSuccess(tvUser: User) {
 		user.set(tvUser);
+
+		// Check if this is a TV device and redirect to slideshow
+		const isTV = await shouldUseTVUI();
+		if (isTV) {
+			goto('/slideshow');
+		}
 	}
 </script>
 
