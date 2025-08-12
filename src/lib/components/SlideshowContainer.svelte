@@ -30,17 +30,39 @@
 	let frameUpdater = new ReactiveFrameUpdater();
 
 	const actions: SlideshowActions = {
-		setUser: (user) => (state.user = user),
-		setImageRefs: (refs) => (state.imageRefs = refs),
-		setCurrentImageIndex: (index) => (state.currentImageIndex = index),
-		setCurrentImageUrl: (url) => (state.currentImageUrl = url),
-		setLoading: (loading) => (state.loading = loading),
-		setError: (error) => (state.error = error),
-		setLoadingNext: (loading) => (state.loadingNext = loading),
-		setShowControls: (show) => (state.showControls = show),
-		setShowDeleteConfirm: (show) => (state.showDeleteConfirm = show),
-		setDeleting: (deleting) => (state.deleting = deleting),
-		setCurrentCollectionUuid: (uuid) => (state.currentCollectionUuid = uuid)
+		setUser: (user) => {
+			state.user = user;
+		},
+		setImageRefs: (refs) => {
+			state.imageRefs = refs;
+		},
+		setCurrentImageIndex: (index) => {
+			state.currentImageIndex = index;
+		},
+		setCurrentImageUrl: (url) => {
+			state.currentImageUrl = url;
+		},
+		setLoading: (loading) => {
+			state.loading = loading;
+		},
+		setError: (error) => {
+			state.error = error;
+		},
+		setLoadingNext: (loading) => {
+			state.loadingNext = loading;
+		},
+		setShowControls: (show) => {
+			state.showControls = show;
+		},
+		setShowDeleteConfirm: (show) => {
+			state.showDeleteConfirm = show;
+		},
+		setDeleting: (deleting) => {
+			state.deleting = deleting;
+		},
+		setCurrentCollectionUuid: (uuid) => {
+			state.currentCollectionUuid = uuid;
+		}
 	};
 
 	// Initialize auth listener and frame manager
