@@ -13,7 +13,6 @@
 	import { shouldUseTVUI } from '$lib/tvUtils';
 
 	export let user: User;
-	export let uploadedImages: string[];
 
 	let showTVApproval = false;
 	let showHelperText = true;
@@ -23,16 +22,8 @@
 
 	const uploading = writable<boolean>(false);
 
-	// Create a writable store for uploadedImages to allow updates
-	const uploadedImagesStore = writable(uploadedImages);
-
-	// Subscribe to changes and update the parent
-	uploadedImagesStore.subscribe((images) => {
-		uploadedImages = images;
-	});
-
-	// Update the store when the prop changes
-	$: uploadedImagesStore.set(uploadedImages);
+	// Create a writable store for uploadedImages
+	const uploadedImagesStore = writable<string[]>([]);
 
 	let fileInput: HTMLInputElement;
 
@@ -42,7 +33,7 @@
 			await UserService.getOrCreateUserProfile(user);
 			currentCollectionUuid = await CollectionService.getPrimaryCollection(user);
 
-			// Load images for this collection and update the parent component
+			// Load images for this collection
 			const images = await ImageService.loadCollectionImages(currentCollectionUuid);
 			uploadedImagesStore.set(images);
 
@@ -123,12 +114,12 @@
 			await CollectionService.incrementImageCount(user, collectionUuid);
 
 			// Immediately add the new image to the list
-			uploadedImagesStore.set([...uploadedImages, downloadURL]);
+			uploadedImagesStore.set([...$uploadedImagesStore, downloadURL]);
 
 			// Retry loading with backoff to ensure Firebase has updated
 			const refreshedImages = await ImageService.loadUserImagesWithRetry(
 				user,
-				uploadedImages.length - 1
+				$uploadedImagesStore.length - 1
 			);
 			uploadedImagesStore.set(refreshedImages);
 

@@ -1,8 +1,8 @@
 <script lang="ts">
+	import type { User } from 'firebase/auth';
 	import { onMount } from 'svelte';
 	import { auth } from '$lib/firebase';
 	import { onAuthStateChanged, signOut } from 'firebase/auth';
-	import type { User } from 'firebase/auth';
 	import { writable } from 'svelte/store';
 	import { UserService } from '$lib/userService';
 	import { isAndroidTV, isTVModeEnabled } from '$lib/advancedDeviceDetection';
@@ -14,15 +14,12 @@
 	import TVLogin from '$lib/components/TVLogin.svelte';
 
 	const user = writable<User | null>(null);
-	const uploadedImages = writable<string[]>([]);
 	let isTVDevice = false;
 	let isTVModeForced = false;
 
 	onMount(() => {
-		// Check if TV mode is forced (for testing)
 		isTVModeForced = isTVModeEnabled();
 
-		// Check if this is a TV device
 		isAndroidTV()
 			.then((isTV) => {
 				isTVDevice = isTV;
@@ -38,17 +35,10 @@
 					// Small delay to ensure auth state is fully settled
 					await new Promise((resolve) => setTimeout(resolve, 100));
 
-					// Ensure user profile exists (creates one if this is first login)
 					await UserService.getOrCreateUserProfile(u);
-
-					// Images will be loaded by LoggedInView component to avoid duplicate collection creation
-					uploadedImages.set([]);
 				} catch (error) {
 					console.error('Error setting up user data:', error);
-					uploadedImages.set([]);
 				}
-			} else {
-				uploadedImages.set([]);
 			}
 		});
 
@@ -64,7 +54,6 @@
 	async function handleTVLoginSuccess(tvUser: User) {
 		user.set(tvUser);
 
-		// Check if this is a TV device and redirect to slideshow
 		const isTV = await shouldUseTVUI();
 		if (isTV) {
 			goto('/slideshow');
@@ -75,7 +64,6 @@
 <div
 	class="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-orange-100 to-red-100 p-4"
 >
-	<!-- User info and logout button in top right corner of entire page -->
 	{#if $user}
 		<div class="absolute top-4 right-4 z-10 flex items-center space-x-2">
 			{#if $user.photoURL}
@@ -107,7 +95,6 @@
 		</div>
 	{/if}
 
-	<!-- FotoTV logo and text - centered when logged out, top-left when logged in -->
 	<div
 		class="{$user
 			? 'absolute top-4 left-4'
@@ -121,15 +108,12 @@
 		</div>
 	</div>
 
-	<!-- Main content centered -->
 	<div class="w-full max-w-md">
 		{#if $user}
-			<LoggedInView user={$user} uploadedImages={$uploadedImages} />
+			<LoggedInView user={$user} />
 		{:else if isTVDevice || isTVModeForced}
-			<!-- TV Login Flow -->
 			<TVLogin onLoginSuccess={handleTVLoginSuccess} />
 		{:else}
-			<!-- Regular Login Flow -->
 			<LoggedOutView />
 		{/if}
 	</div>
