@@ -6,6 +6,7 @@
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
 	import { CollectionService } from '$lib/collectionService';
+	import { UserService } from '$lib/userService';
 	import { isAndroidTV, isTVModeEnabled } from '$lib/advancedDeviceDetection';
 	import { goto } from '$app/navigation';
 	import { shouldUseTVUI } from '$lib/tvUtils';
@@ -36,12 +37,16 @@
 			user.set(u);
 			if (u) {
 				try {
-					// Ensure user has at least one collection
-					await CollectionService.getPrimaryCollection(u);
-					const images = await ImageService.loadUserImages(u);
-					uploadedImages.set(images);
+					// Small delay to ensure auth state is fully settled
+					await new Promise((resolve) => setTimeout(resolve, 100));
+
+					// Ensure user profile exists (creates one if this is first login)
+					await UserService.getOrCreateUserProfile(u);
+
+					// Images will be loaded by LoggedInView component to avoid duplicate collection creation
+					uploadedImages.set([]);
 				} catch (error) {
-					console.error('Error setting up user collections:', error);
+					console.error('Error setting up user data:', error);
 					uploadedImages.set([]);
 				}
 			} else {

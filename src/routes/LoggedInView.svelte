@@ -6,7 +6,9 @@
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
 	import { CollectionService } from '$lib/collectionService';
+	import { UserService } from '$lib/userService';
 	import ManualCodeEntry from '$lib/components/ManualCodeEntry.svelte';
+	import UploadLimitDisplay from '$lib/components/UploadLimitDisplay.svelte';
 	import { browser } from '$app/environment';
 	import { shouldUseTVUI } from '$lib/tvUtils';
 
@@ -16,6 +18,8 @@
 	let showTVApproval = false;
 	let showHelperText = true;
 	let isTVMode = false;
+	let uploadLimit = { canUpload: true, remaining: 10, limit: 10 };
+	let currentCollectionUuid = '';
 
 	const uploading = writable<boolean>(false);
 
@@ -32,7 +36,43 @@
 
 	let fileInput: HTMLInputElement;
 
+	// Initialize user profile and collection upload limits
+	async function initializeUserProfile() {
+		try {
+			await UserService.getOrCreateUserProfile(user);
+			currentCollectionUuid = await CollectionService.getPrimaryCollection(user);
+
+			// Load images for this collection and update the parent component
+			const images = await ImageService.loadCollectionImages(currentCollectionUuid);
+			uploadedImagesStore.set(images);
+
+			// Sync collection image count with actual uploaded images
+			await CollectionService.syncImageCount(user, currentCollectionUuid);
+
+			await updateUploadLimits();
+		} catch (error) {
+			console.error('Error initializing user profile:', error);
+		}
+	}
+
+	// Update upload limits based on current collection
+	async function updateUploadLimits() {
+		try {
+			if (currentCollectionUuid) {
+				uploadLimit = await CollectionService.canUploadImage(user, currentCollectionUuid);
+			}
+		} catch (error) {
+			console.error('Error checking upload limits:', error);
+		}
+	}
+
 	function triggerFileUpload() {
+		if (!uploadLimit.canUpload) {
+			alert(
+				`Upload limit reached for this collection! You can upload up to ${uploadLimit.limit} images per collection. You have ${uploadLimit.remaining} uploads remaining in this collection.`
+			);
+			return;
+		}
 		fileInput?.click();
 	}
 
@@ -41,6 +81,16 @@
 		const files = target.files;
 
 		if (!files || files.length === 0 || !user) return;
+
+		// Check upload limits before proceeding
+		await updateUploadLimits();
+		if (!uploadLimit.canUpload) {
+			alert(
+				`Upload limit reached for this collection! You can upload up to ${uploadLimit.limit} images per collection. You have ${uploadLimit.remaining} uploads remaining in this collection.`
+			);
+			target.value = '';
+			return;
+		}
 
 		uploading.set(true);
 
@@ -54,7 +104,9 @@
 			}
 
 			// Get the user's primary collection UUID
-			const collectionUuid = await CollectionService.getPrimaryCollection(user);
+			const collectionUuid =
+				currentCollectionUuid || (await CollectionService.getPrimaryCollection(user));
+			currentCollectionUuid = collectionUuid;
 
 			// Create a unique filename
 			const timestamp = Date.now();
@@ -67,6 +119,9 @@
 			// Get the download URL
 			const downloadURL = await getDownloadURL(snapshot.ref);
 
+			// Increment collection's image count in Firestore
+			await CollectionService.incrementImageCount(user, collectionUuid);
+
 			// Immediately add the new image to the list
 			uploadedImagesStore.set([...uploadedImages, downloadURL]);
 
@@ -76,6 +131,9 @@
 				uploadedImages.length - 1
 			);
 			uploadedImagesStore.set(refreshedImages);
+
+			// Update upload limits after successful upload
+			await updateUploadLimits();
 		} catch (error) {
 			console.error('Upload failed:', error);
 			alert('Upload failed. Please try again.');
@@ -115,6 +173,9 @@
 				showHelperText = false;
 			}
 		});
+
+		// Initialize user profile and upload limits
+		initializeUserProfile();
 	}
 </script>
 
@@ -155,15 +216,32 @@
 			</div>
 		</div>
 	{/if}
+	<!-- Upload Limit Display -->
+	<UploadLimitDisplay
+		remaining={uploadLimit.remaining}
+		limit={uploadLimit.limit}
+		canUpload={uploadLimit.canUpload}
+	/>
+
 	<!-- Upload Button -->
 	<button
-		class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600"
+		class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
 		on:click={triggerFileUpload}
-		disabled={$uploading}
+		disabled={$uploading || !uploadLimit.canUpload}
 	>
 		{#if $uploading}
 			<span class="loading loading-spinner loading-sm"></span>
 			Uploading...
+		{:else if !uploadLimit.canUpload}
+			<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+				/>
+			</svg>
+			Upload Limit Reached
 		{:else}
 			<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path

@@ -22,6 +22,9 @@ export class AuthService {
 				await updateProfile(user, { displayName });
 			}
 
+			// Note: User profile will be created in the auth state change handler
+			// to ensure the auth state is fully settled
+
 			return user;
 		} catch (error: unknown) {
 			console.error('Registration error:', error);
