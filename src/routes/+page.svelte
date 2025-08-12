@@ -5,6 +5,7 @@
 	import type { User } from 'firebase/auth';
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
+	import { CollectionService } from '$lib/collectionService';
 	import { isAndroidTV, isTVModeEnabled } from '$lib/advancedDeviceDetection';
 	import { goto } from '$app/navigation';
 	import { shouldUseTVUI } from '$lib/tvUtils';
@@ -34,8 +35,15 @@
 		const unsubscribe = onAuthStateChanged(auth, async (u) => {
 			user.set(u);
 			if (u) {
-				const images = await ImageService.loadUserImages(u);
-				uploadedImages.set(images);
+				try {
+					// Ensure user has at least one collection
+					await CollectionService.getPrimaryCollection(u);
+					const images = await ImageService.loadUserImages(u);
+					uploadedImages.set(images);
+				} catch (error) {
+					console.error('Error setting up user collections:', error);
+					uploadedImages.set([]);
+				}
 			} else {
 				uploadedImages.set([]);
 			}

@@ -5,6 +5,7 @@
 	import type { User } from 'firebase/auth';
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
+	import { CollectionService } from '$lib/collectionService';
 	import ManualCodeEntry from '$lib/components/ManualCodeEntry.svelte';
 	import { browser } from '$app/environment';
 	import { shouldUseTVUI } from '$lib/tvUtils';
@@ -52,10 +53,13 @@
 				return;
 			}
 
+			// Get the user's primary collection UUID
+			const collectionUuid = await CollectionService.getPrimaryCollection(user);
+
 			// Create a unique filename
 			const timestamp = Date.now();
-			const fileName = `${user.uid}/${timestamp}_${file.name}`;
-			const storageRef = ref(storage, `images/${fileName}`);
+			const fileName = `${timestamp}_${file.name}`;
+			const storageRef = ref(storage, `images/${collectionUuid}/${fileName}`);
 
 			// Upload the file
 			const snapshot = await uploadBytes(storageRef, file);

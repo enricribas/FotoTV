@@ -1,10 +1,11 @@
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
 import { storage } from '$lib/firebase';
 import type { User } from 'firebase/auth';
+import { CollectionService } from './collectionService';
 
 export class ImageService {
 	/**
-	 * Load all images for a specific user from Firebase Storage
+	 * Load all images for a specific user from Firebase Storage using their primary collection
 	 * @param user - The authenticated user
 	 * @returns Array of image URLs sorted by upload time
 	 */
@@ -14,8 +15,24 @@ export class ImageService {
 		}
 
 		try {
-			const userRef = ref(storage, `images/${user.uid}`);
-			const result = await listAll(userRef);
+			// Get the user's primary collection UUID
+			const collectionUuid = await CollectionService.getPrimaryCollection(user);
+			return await this.loadCollectionImages(collectionUuid);
+		} catch (error) {
+			console.error('Error loading user images:', error);
+			return [];
+		}
+	}
+
+	/**
+	 * Load all images for a specific collection UUID from Firebase Storage
+	 * @param collectionUuid - The collection UUID
+	 * @returns Array of image URLs sorted by upload time
+	 */
+	static async loadCollectionImages(collectionUuid: string): Promise<string[]> {
+		try {
+			const collectionRef = ref(storage, `images/${collectionUuid}`);
+			const result = await listAll(collectionRef);
 
 			// Sort items by name (which includes timestamp for consistent ordering)
 			const sortedItems = result.items.sort((a, b) => {
@@ -31,7 +48,7 @@ export class ImageService {
 
 			return imageUrls;
 		} catch (error) {
-			console.error('Error loading images:', error);
+			console.error('Error loading collection images:', error);
 			return [];
 		}
 	}
@@ -63,6 +80,40 @@ export class ImageService {
 			}
 
 			imageUrls = await this.loadUserImages(user);
+
+			// If we found more images than before, we're done
+			if (imageUrls.length > previousCount) {
+				break;
+			}
+
+			retries++;
+		}
+
+		return imageUrls;
+	}
+
+	/**
+	 * Retry loading collection images with exponential backoff
+	 * @param collectionUuid - The collection UUID
+	 * @param previousCount - Previous image count to verify new images were added
+	 * @param maxRetries - Maximum number of retry attempts (default: 3)
+	 * @returns Array of image URLs
+	 */
+	static async loadCollectionImagesWithRetry(
+		collectionUuid: string,
+		previousCount: number = 0,
+		maxRetries: number = 3
+	): Promise<string[]> {
+		let retries = 0;
+		let imageUrls: string[] = [];
+
+		while (retries < maxRetries) {
+			// Wait with exponential backoff
+			if (retries > 0) {
+				await new Promise((resolve) => setTimeout(resolve, 500 * retries));
+			}
+
+			imageUrls = await this.loadCollectionImages(collectionUuid);
 
 			// If we found more images than before, we're done
 			if (imageUrls.length > previousCount) {

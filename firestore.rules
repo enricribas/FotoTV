@@ -51,6 +51,13 @@ service cloud.firestore {
              ) : true);
     }
 
+    // User Collections - each user can manage their own collections
+    match /users/{userId}/collections/{collectionId} {
+      // Users can read, create, update, and delete their own collections
+      allow read, write: if request.auth != null &&
+                         request.auth.uid == userId;
+    }
+
     // Default rule - deny all other access
     match /{document=**} {
       allow read, write: if false;

@@ -11,6 +11,7 @@
 		type StorageReference
 	} from 'firebase/storage';
 	import type { User } from 'firebase/auth';
+	import { CollectionService } from '$lib/collectionService';
 
 	let user: User | null = null;
 	let imageRefs: StorageReference[] = [];
@@ -23,6 +24,7 @@
 	let showControls = false;
 	let showDeleteConfirm = false;
 	let deleting = false;
+	let currentCollectionUuid = '';
 
 	onMount(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (u) => {
@@ -48,8 +50,10 @@
 
 		try {
 			loading = true;
-			const userRef = ref(storage, `images/${user.uid}`);
-			const result = await listAll(userRef);
+			// Get the user's primary collection UUID
+			currentCollectionUuid = await CollectionService.getPrimaryCollection(user);
+			const collectionRef = ref(storage, `images/${currentCollectionUuid}`);
+			const result = await listAll(collectionRef);
 
 			// Sort items by name (which includes timestamp)
 			imageRefs = result.items.sort((a, b) => a.name.localeCompare(b.name));
@@ -117,11 +121,11 @@
 	}
 
 	async function refreshImageList() {
-		if (!user) return;
+		if (!user || !currentCollectionUuid) return;
 
 		try {
-			const userRef = ref(storage, `images/${user.uid}`);
-			const result = await listAll(userRef);
+			const collectionRef = ref(storage, `images/${currentCollectionUuid}`);
+			const result = await listAll(collectionRef);
 			const newImageRefs = result.items.sort((a, b) => a.name.localeCompare(b.name));
 
 			// If we have new images, update the list
