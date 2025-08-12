@@ -24,7 +24,6 @@ vi.mock('./imageService', () => ({
 }));
 
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { ImageService } from './imageService';
 
 // Mock user object
 const mockUser: User = {
@@ -41,8 +40,8 @@ describe('UserService', () => {
 	describe('createUserProfile', () => {
 		it('should create a user profile with default upload limit', async () => {
 			const mockDocRef = {};
-			(doc as any).mockReturnValue(mockDocRef);
-			(setDoc as any).mockResolvedValue(undefined);
+			vi.mocked(doc).mockReturnValue(mockDocRef as ReturnType<typeof doc>);
+			vi.mocked(setDoc).mockResolvedValue(undefined);
 
 			const result = await UserService.createUserProfile(mockUser);
 
@@ -71,8 +70,8 @@ describe('UserService', () => {
 				updatedAt: { seconds: 1234567890 }
 			};
 
-			(doc as any).mockReturnValue(mockDocRef);
-			(getDoc as any).mockResolvedValue({
+			vi.mocked(doc).mockReturnValue(mockDocRef as ReturnType<typeof doc>);
+			vi.mocked(getDoc).mockResolvedValue({
 				exists: () => true,
 				data: () => mockDocData
 			});
@@ -84,8 +83,8 @@ describe('UserService', () => {
 
 		it('should return null when profile does not exist', async () => {
 			const mockDocRef = {};
-			(doc as any).mockReturnValue(mockDocRef);
-			(getDoc as any).mockResolvedValue({
+			vi.mocked(doc).mockReturnValue(mockDocRef as ReturnType<typeof doc>);
+			vi.mocked(getDoc).mockResolvedValue({
 				exists: () => false
 			});
 
@@ -98,8 +97,8 @@ describe('UserService', () => {
 	describe('updateProfile', () => {
 		it('should update user profile fields', async () => {
 			const mockDocRef = {};
-			(doc as any).mockReturnValue(mockDocRef);
-			(updateDoc as any).mockResolvedValue(undefined);
+			vi.mocked(doc).mockReturnValue(mockDocRef as ReturnType<typeof doc>);
+			vi.mocked(updateDoc).mockResolvedValue(undefined);
 
 			await UserService.updateProfile(mockUser, { displayName: 'Updated Name' });
 

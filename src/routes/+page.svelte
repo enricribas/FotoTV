@@ -4,8 +4,6 @@
 	import { onAuthStateChanged, signOut } from 'firebase/auth';
 	import type { User } from 'firebase/auth';
 	import { writable } from 'svelte/store';
-	import { ImageService } from '$lib/imageService';
-	import { CollectionService } from '$lib/collectionService';
 	import { UserService } from '$lib/userService';
 	import { isAndroidTV, isTVModeEnabled } from '$lib/advancedDeviceDetection';
 	import { goto } from '$app/navigation';

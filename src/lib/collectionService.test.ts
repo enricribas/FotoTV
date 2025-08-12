@@ -28,8 +28,6 @@ vi.mock('./imageService', () => ({
 	}
 }));
 
-import { collection, getDocs, doc, setDoc, updateDoc } from 'firebase/firestore';
-
 // Mock user object
 const mockUser: User = {
 	uid: 'test-user-123',
@@ -86,8 +84,8 @@ describe('CollectionService', () => {
 				})
 			};
 
-			vi.mocked(collection).mockReturnValue({} as any);
-			vi.mocked(getDocs).mockResolvedValue(mockSnapshot as any);
+			vi.mocked(collection).mockReturnValue({} as ReturnType<typeof collection>);
+			vi.mocked(getDocs).mockResolvedValue(mockSnapshot as ReturnType<typeof getDocs>);
 
 			const result = await CollectionService.getUserCollections(mockUser);
 
@@ -113,7 +111,9 @@ describe('CollectionService', () => {
 				createdAt: { seconds: 1234567890 },
 				updatedAt: { seconds: 1234567890 }
 			};
-			vi.spyOn(CollectionQuery, 'getCollectionInfo').mockResolvedValue(mockCollection as any);
+			vi.spyOn(CollectionQuery, 'getCollectionInfo').mockResolvedValue(
+				mockCollection as Awaited<ReturnType<typeof CollectionQuery.getCollectionInfo>>
+			);
 		});
 
 		it('should allow upload when under limit', async () => {
@@ -135,7 +135,9 @@ describe('CollectionService', () => {
 				createdAt: { seconds: 1234567890 },
 				updatedAt: { seconds: 1234567890 }
 			};
-			vi.spyOn(CollectionQuery, 'getCollectionInfo').mockResolvedValue(mockCollection as any);
+			vi.spyOn(CollectionQuery, 'getCollectionInfo').mockResolvedValue(
+				mockCollection as Awaited<ReturnType<typeof CollectionQuery.getCollectionInfo>>
+			);
 
 			const result = await CollectionService.canUploadImage(mockUser, 'collection-1');
 
@@ -165,7 +167,9 @@ describe('CollectionService', () => {
 				createdAt: { seconds: 1234567890 },
 				updatedAt: { seconds: 1234567890 }
 			};
-			vi.spyOn(CollectionQuery, 'getCollectionInfo').mockResolvedValue(mockCollection as any);
+			vi.spyOn(CollectionQuery, 'getCollectionInfo').mockResolvedValue(
+				mockCollection as Awaited<ReturnType<typeof CollectionQuery.getCollectionInfo>>
+			);
 			vi.spyOn(CollectionMutation, 'updateImageCount').mockResolvedValue();
 
 			await CollectionService.incrementImageCount(mockUser, 'collection-1');
