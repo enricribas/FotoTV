@@ -20,6 +20,7 @@
 		"deploy:preview": "npm run build && npx netlify deploy --dir=build",
 		"deploy:draft": "npm run build && npx netlify deploy --dir=build --alias=draft",
 		"deploy:quick": "npx netlify deploy --prod --dir=build",
+		"deploy:firebase": "npm run build && firebase deploy --only hosting",
 		"predeploy": "npm run lint && npm run test",
 		"netlify:build": "npm run build",
 		"netlify:deploy": "npx netlify deploy --prod --dir=build",
