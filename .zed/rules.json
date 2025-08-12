@@ -1,0 +1,14 @@
+{
+	"rules": [
+		"Try to create small files. Ideally a file is less than 100 lines long.",
+		"If you have a purely functional component, write a simple test for it.",
+		"Try to break down complex components into smaller ones so they can be moved to separate files and tested independently.",
+		"If there is a method or function that can be reused, move it to a separate file.",
+		"Avoid use of 'this' in javascript whenever possible.",
+		"Use Svelte runes instead of old version code.",
+		"Do not use comments to describe what is happening, use comments to explain the why code is written in this way, if it is not obvious.",
+		"Do not write README files for each new feature or component. We will do those at the end of the project.",
+		"Use functional components instead of class components.",
+		"If using interfaces, move them to a separate file to avoid cluttering the main file."
+	]
+}

@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CollectionService } from './collectionService';
+import { CollectionQuery } from './services/collectionQuery';
+import { CollectionMutation } from './services/collectionMutation';
 import type { User } from 'firebase/auth';
 
 // Mock Firebase modules
@@ -18,6 +20,8 @@ vi.mock('$lib/firebase', () => ({
 	db: {}
 }));
 
+// Import the mocked functions
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 vi.mock('./imageService', () => ({
 	ImageService: {
 		loadCollectionImages: vi.fn()
@@ -41,8 +45,8 @@ describe('CollectionService', () => {
 	describe('createCollection', () => {
 		it('should create a collection with default upload limit', async () => {
 			const mockDocRef = {};
-			(doc as any).mockReturnValue(mockDocRef);
-			(setDoc as any).mockResolvedValue(undefined);
+			vi.mocked(doc).mockReturnValue(mockDocRef);
+			vi.mocked(setDoc).mockResolvedValue(undefined);
 
 			// Mock crypto.randomUUID
 			const mockUuid = 'test-uuid-123';
@@ -53,11 +57,14 @@ describe('CollectionService', () => {
 			const result = await CollectionService.createCollection(mockUser, 'Test Collection');
 
 			expect(doc).toHaveBeenCalledWith({}, `users/${mockUser.uid}/collections`, mockUuid);
-			expect(setDoc).toHaveBeenCalledWith(mockDocRef, expect.objectContaining({
-				name: 'Test Collection',
-				imageUploadLimit: 10,
-				currentImageCount: 0
-			}));
+			expect(setDoc).toHaveBeenCalledWith(
+				mockDocRef,
+				expect.objectContaining({
+					name: 'Test Collection',
+					imageUploadLimit: 10,
+					currentImageCount: 0
+				})
+			);
 			expect(result).toBe(mockUuid);
 		});
 	});
@@ -79,8 +86,8 @@ describe('CollectionService', () => {
 				})
 			};
 
-			(collection as any).mockReturnValue({});
-			(getDocs as any).mockResolvedValue(mockSnapshot);
+			vi.mocked(collection).mockReturnValue({} as any);
+			vi.mocked(getDocs).mockResolvedValue(mockSnapshot as any);
 
 			const result = await CollectionService.getUserCollections(mockUser);
 
@@ -98,15 +105,15 @@ describe('CollectionService', () => {
 
 	describe('canUploadImage', () => {
 		beforeEach(() => {
-			const mockCollections = [{
+			const mockCollection = {
 				uuid: 'collection-1',
 				name: 'Test Collection',
 				imageUploadLimit: 10,
 				currentImageCount: 5,
 				createdAt: { seconds: 1234567890 },
 				updatedAt: { seconds: 1234567890 }
-			}];
-			vi.spyOn(CollectionService, 'getUserCollections').mockResolvedValue(mockCollections as any);
+			};
+			vi.spyOn(CollectionQuery, 'getCollectionInfo').mockResolvedValue(mockCollection as any);
 		});
 
 		it('should allow upload when under limit', async () => {
@@ -120,15 +127,15 @@ describe('CollectionService', () => {
 		});
 
 		it('should prevent upload when at limit', async () => {
-			const mockCollections = [{
+			const mockCollection = {
 				uuid: 'collection-1',
 				name: 'Test Collection',
 				imageUploadLimit: 10,
 				currentImageCount: 10,
 				createdAt: { seconds: 1234567890 },
 				updatedAt: { seconds: 1234567890 }
-			}];
-			vi.spyOn(CollectionService, 'getUserCollections').mockResolvedValue(mockCollections as any);
+			};
+			vi.spyOn(CollectionQuery, 'getCollectionInfo').mockResolvedValue(mockCollection as any);
 
 			const result = await CollectionService.canUploadImage(mockUser, 'collection-1');
 
@@ -140,6 +147,8 @@ describe('CollectionService', () => {
 		});
 
 		it('should throw error when collection not found', async () => {
+			vi.spyOn(CollectionQuery, 'getCollectionInfo').mockResolvedValue(null);
+
 			await expect(
 				CollectionService.canUploadImage(mockUser, 'non-existent-collection')
 			).rejects.toThrow('Collection non-existent-collection not found');
@@ -148,68 +157,54 @@ describe('CollectionService', () => {
 
 	describe('incrementImageCount', () => {
 		it('should increment collection image count by 1', async () => {
-			const mockCollections = [{
+			const mockCollection = {
 				uuid: 'collection-1',
 				name: 'Test Collection',
 				imageUploadLimit: 10,
 				currentImageCount: 5,
 				createdAt: { seconds: 1234567890 },
 				updatedAt: { seconds: 1234567890 }
-			}];
-			vi.spyOn(CollectionService, 'getUserCollections').mockResolvedValue(mockCollections as any);
-			vi.spyOn(CollectionService, 'updateImageCount').mockResolvedValue(undefined);
+			};
+			vi.spyOn(CollectionQuery, 'getCollectionInfo').mockResolvedValue(mockCollection as any);
+			vi.spyOn(CollectionMutation, 'updateImageCount').mockResolvedValue();
 
 			await CollectionService.incrementImageCount(mockUser, 'collection-1');
 
-			expect(CollectionService.updateImageCount).toHaveBeenCalledWith(mockUser, 'collection-1', 6);
+			expect(CollectionMutation.updateImageCount).toHaveBeenCalledWith(mockUser, 'collection-1', 6);
 		});
 	});
 
 	describe('updateImageCount', () => {
 		it('should update collection image count', async () => {
-			const mockDocRef = {};
-			(doc as any).mockReturnValue(mockDocRef);
-			(updateDoc as any).mockResolvedValue(undefined);
+			vi.spyOn(CollectionMutation, 'updateImageCount').mockResolvedValue();
 
 			await CollectionService.updateImageCount(mockUser, 'collection-1', 7);
 
-			expect(doc).toHaveBeenCalledWith({}, `users/${mockUser.uid}/collections`, 'collection-1');
-			expect(updateDoc).toHaveBeenCalledWith(mockDocRef, expect.objectContaining({
-				currentImageCount: 7
-			}));
+			expect(CollectionMutation.updateImageCount).toHaveBeenCalledWith(mockUser, 'collection-1', 7);
 		});
 	});
 
 	describe('syncImageCount', () => {
 		it('should sync collection image count with actual storage', async () => {
-			const mockImages = ['image1.jpg', 'image2.jpg', 'image3.jpg'];
-			vi.spyOn(CollectionService, 'updateImageCount').mockResolvedValue(undefined);
-
-			// Mock the dynamic import
-			vi.doMock('./imageService', () => ({
-				ImageService: {
-					loadCollectionImages: vi.fn().mockResolvedValue(mockImages)
-				}
-			}));
+			vi.spyOn(CollectionMutation, 'syncImageCount').mockResolvedValue();
 
 			await CollectionService.syncImageCount(mockUser, 'collection-1');
 
-			expect(CollectionService.updateImageCount).toHaveBeenCalledWith(mockUser, 'collection-1', 3);
+			expect(CollectionMutation.syncImageCount).toHaveBeenCalledWith(mockUser, 'collection-1');
 		});
 	});
 
 	describe('updateUploadLimit', () => {
 		it('should update collection upload limit', async () => {
-			const mockDocRef = {};
-			(doc as any).mockReturnValue(mockDocRef);
-			(updateDoc as any).mockResolvedValue(undefined);
+			vi.spyOn(CollectionMutation, 'updateUploadLimit').mockResolvedValue();
 
 			await CollectionService.updateUploadLimit(mockUser, 'collection-1', 20);
 
-			expect(doc).toHaveBeenCalledWith({}, `users/${mockUser.uid}/collections`, 'collection-1');
-			expect(updateDoc).toHaveBeenCalledWith(mockDocRef, expect.objectContaining({
-				imageUploadLimit: 20
-			}));
+			expect(CollectionMutation.updateUploadLimit).toHaveBeenCalledWith(
+				mockUser,
+				'collection-1',
+				20
+			);
 		});
 	});
 });

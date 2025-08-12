@@ -1,30 +1,17 @@
 import { doc, getDoc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '$lib/firebase';
 import type { User } from 'firebase/auth';
-
-export interface UserProfile {
-	uid: string;
-	email: string;
-	displayName?: string | null;
-	createdAt: Timestamp;
-	updatedAt: Timestamp;
-}
+import type { UserProfile, UserProfileUpdates } from '$lib/types/user.types';
 
 export class UserService {
-	/**
-	 * Create a new user profile in Firestore when they first log in
-	 * @param user - The authenticated user
-	 * @returns The created user profile
-	 */
 	static async createUserProfile(user: User): Promise<UserProfile> {
-		const userProfile: any = {
+		const userProfile: Partial<UserProfile> = {
 			uid: user.uid,
 			email: user.email || '',
 			createdAt: Timestamp.now(),
 			updatedAt: Timestamp.now()
 		};
 
-		// Only add displayName if it exists to avoid undefined values in Firestore
 		if (user.displayName) {
 			userProfile.displayName = user.displayName;
 		}
@@ -39,11 +26,6 @@ export class UserService {
 		}
 	}
 
-	/**
-	 * Get user profile from Firestore
-	 * @param user - The authenticated user
-	 * @returns The user profile or null if not found
-	 */
 	static async getUserProfile(user: User): Promise<UserProfile | null> {
 		try {
 			const userDocRef = doc(db, 'users', user.uid);
@@ -67,11 +49,6 @@ export class UserService {
 		}
 	}
 
-	/**
-	 * Get or create user profile - ensures a profile exists
-	 * @param user - The authenticated user
-	 * @returns The user profile
-	 */
 	static async getOrCreateUserProfile(user: User): Promise<UserProfile> {
 		let profile = await this.getUserProfile(user);
 
@@ -82,26 +59,14 @@ export class UserService {
 		return profile;
 	}
 
-	/**
-	 * Update user profile
-	 * @param user - The authenticated user
-	 * @param updates - Fields to update
-	 */
-	static async updateProfile(
-		user: User,
-		updates: Partial<Pick<UserProfile, 'displayName'>>
-	): Promise<void> {
+	static async updateProfile(user: User, updates: UserProfileUpdates): Promise<void> {
 		try {
 			const userDocRef = doc(db, 'users', user.uid);
 
-			// Filter out undefined values to avoid Firestore errors
-			const cleanUpdates: any = {
-				updatedAt: Timestamp.now()
+			const cleanUpdates: Record<string, unknown> = {
+				updatedAt: Timestamp.now(),
+				...Object.fromEntries(Object.entries(updates).filter(([, value]) => value !== undefined))
 			};
-
-			if (updates.displayName !== undefined) {
-				cleanUpdates.displayName = updates.displayName;
-			}
 
 			await updateDoc(userDocRef, cleanUpdates);
 		} catch (error) {
