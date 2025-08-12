@@ -31,8 +31,8 @@
 			0 0 0 1px rgba(0, 0, 0, 0.1),
 			0 4px 8px rgba(0, 0, 0, 0.15),
 			0 8px 16px rgba(0, 0, 0, 0.1),
-			inset 0 1px 0 rgba(255, 255, 255, 0.8),
-			inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+			inset 4px 4px 8px rgba(0, 0, 0, 0.3),
+			inset 0 0 0 2px rgba(0, 0, 0, 0.15);
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -50,7 +50,10 @@
 		left: calc(var(--frame-border-width) / 2);
 		right: calc(var(--frame-border-width) / 2);
 		bottom: calc(var(--frame-border-width) / 2);
-		border: 1px solid rgba(0, 0, 0, 0.1);
+		background-color: gray;
+		box-shadow:
+			inset 4px 4px 8px rgba(0, 0, 0, 0.3),
+			inset 0 0 0 2px rgba(0, 0, 0, 0.15);
 		pointer-events: none;
 	}
 
@@ -61,6 +64,12 @@
 		width: auto;
 		height: auto;
 		object-fit: contain;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		box-shadow:
+			inset 4px 4px 8px rgba(0, 0, 0, 0.3),
+			inset 0 0 0 2px rgba(0, 0, 0, 0.15),
+			0 1px 3px rgba(0, 0, 0, 0.1);
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		position: relative;
+		z-index: 1;
 	}
 </style>
