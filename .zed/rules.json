@@ -9,6 +9,7 @@
 		"Do not use comments to describe what is happening, use comments to explain the why code is written in this way, if it is not obvious.",
 		"Do not write README files for each new feature or component. We will do those at the end of the project.",
 		"Use functional components instead of class components.",
+		"Use separate svelte components to keep file size small.",
 		"If using interfaces, move them to a separate file to avoid cluttering the main file."
 	]
 }

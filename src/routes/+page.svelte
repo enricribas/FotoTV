@@ -1,13 +1,16 @@
 <script lang="ts">
 	import type { User } from 'firebase/auth';
 	import { onMount } from 'svelte';
-	import { auth } from '$lib/firebase';
-	import { onAuthStateChanged, signOut } from 'firebase/auth';
 	import { writable } from 'svelte/store';
-	import { UserService } from '$lib/userService';
-	import { isAndroidTV, isTVModeEnabled } from '$lib/advancedDeviceDetection';
+	import {
+		setupAuthStateListener,
+		handleLogout,
+		getUserInitials,
+		getUserDisplayText,
+		handleTVLoginSuccess,
+		setupDeviceDetection
+	} from '$lib/utils/authUtils';
 	import { goto } from '$app/navigation';
-	import { shouldUseTVUI } from '$lib/tvUtils';
 
 	import LoggedInView from './LoggedInView.svelte';
 	import LoggedOutView from './LoggedOutView.svelte';
@@ -18,46 +21,34 @@
 	let isTVModeForced = false;
 
 	onMount(() => {
-		isTVModeForced = isTVModeEnabled();
+		let unsubscribe: (() => void) | undefined;
 
-		isAndroidTV()
-			.then((isTV) => {
-				isTVDevice = isTV;
-			})
-			.catch((error) => {
-				console.warn('Failed to detect TV device:', error);
-			});
-
-		const unsubscribe = onAuthStateChanged(auth, async (u) => {
-			user.set(u);
-			if (u) {
-				try {
-					// Small delay to ensure auth state is fully settled
-					await new Promise((resolve) => setTimeout(resolve, 100));
-
-					await UserService.getOrCreateUserProfile(u);
-				} catch (error) {
-					console.error('Error setting up user data:', error);
-				}
-			}
+		// Setup device detection
+		setupDeviceDetection().then((deviceInfo) => {
+			isTVDevice = deviceInfo.isTVDevice;
+			isTVModeForced = deviceInfo.isTVModeForced;
 		});
 
-		return unsubscribe;
+		// Setup auth listener
+		unsubscribe = setupAuthStateListener(
+			(u) => user.set(u),
+			(error) => console.error('Auth error:', error)
+		);
+
+		return () => {
+			unsubscribe?.();
+		};
 	});
 
-	function logout() {
-		signOut(auth).catch(() => {
-			// Logout failed, but we'll ignore errors since user can retry
-		});
+	async function logout() {
+		const result = await handleLogout();
+		if (!result.success && result.error) {
+			console.error('Logout error:', result.error);
+		}
 	}
 
-	async function handleTVLoginSuccess(tvUser: User) {
-		user.set(tvUser);
-
-		const isTV = await shouldUseTVUI();
-		if (isTV) {
-			goto('/slideshow');
-		}
+	function onTVLoginSuccess(tvUser: User) {
+		handleTVLoginSuccess(tvUser, (u) => user.set(u), goto);
 	}
 </script>
 
@@ -77,14 +68,12 @@
 					class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 ring ring-orange-500 ring-offset-1 ring-offset-white"
 				>
 					<span class="text-sm font-semibold text-white">
-						{$user.displayName
-							? $user.displayName.charAt(0).toUpperCase()
-							: $user.email?.charAt(0).toUpperCase() || 'U'}
+						{getUserInitials($user)}
 					</span>
 				</div>
 			{/if}
 			<div class="text-sm text-gray-800">
-				<span class="font-semibold">{$user.displayName || $user.email}</span>
+				<span class="font-semibold">{getUserDisplayText($user)}</span>
 			</div>
 			<button
 				class="btn btn-sm ml-2 border-white bg-white text-gray-700 hover:bg-gray-100"
@@ -112,7 +101,7 @@
 		{#if $user}
 			<LoggedInView user={$user} />
 		{:else if isTVDevice || isTVModeForced}
-			<TVLogin onLoginSuccess={handleTVLoginSuccess} />
+			<TVLogin onLoginSuccess={onTVLoginSuccess} />
 		{:else}
 			<LoggedOutView />
 		{/if}
