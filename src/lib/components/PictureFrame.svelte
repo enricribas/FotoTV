@@ -22,6 +22,7 @@
 	:root {
 		--frame-border-width: 70px;
 		--frame-color: #f0f0f0;
+		--tiny-frame-border-width: 5px;
 	}
 
 	.picture-frame {
@@ -52,7 +53,7 @@
 		width: auto;
 		height: auto;
 		object-fit: contain;
-		border: 10px solid var(--frame-color);
+		border: var(--tiny-frame-border-width) solid var(--frame-color);
 		box-shadow:
 			0 0 10px rgba(0, 0, 0, 0.3),
 			0 0 20px rgba(0, 0, 0, 0.15);
