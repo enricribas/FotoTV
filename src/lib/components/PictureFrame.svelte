@@ -20,9 +20,9 @@
 
 <style>
 	:root {
-		--frame-border-width: 70px;
+		--frame-border-width: 50px;
 		--frame-color: #f0f0f0;
-		--tiny-frame-border-width: 5px;
+		--inside-frame-border-width: 5px;
 	}
 
 	.picture-frame {
@@ -43,17 +43,16 @@
 	.image-container {
 		position: relative;
 		display: inline-block;
-		border: var(--frame-border-width) solid var(--frame-color);
 	}
 
 	.framed-image {
 		display: block;
-		max-width: calc(100vw - 200px);
-		max-height: calc(100vh - 200px);
+		max-width: calc(100vw - var(--frame-border-width));
+		max-height: calc(100vh - var(--frame-border-width));
 		width: auto;
 		height: auto;
 		object-fit: contain;
-		border: var(--tiny-frame-border-width) solid var(--frame-color);
+		border: var(--inside-frame-border-width) solid var(--frame-color);
 		box-shadow:
 			0 0 10px rgba(0, 0, 0, 0.3),
 			0 0 20px rgba(0, 0, 0, 0.15);
