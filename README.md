@@ -22,7 +22,7 @@ npm run dev
 # For mobile development
 npm run dev:mobile
 
-# For TV development  
+# For TV development
 npm run dev:tv
 ```
 

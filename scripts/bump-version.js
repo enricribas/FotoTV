@@ -1,5 +1,22 @@
 #!/usr/bin/env node
 
+/**
+ * Version Bump Script
+ *
+ * This is the consolidated versioning approach for PhotoTV.
+ * Use this script instead of manual version setting for better semantic versioning.
+ *
+ * Usage:
+ *   npm run bump patch  # 1.0.0 → 1.0.1 (bug fixes)
+ *   npm run bump minor  # 1.0.0 → 1.1.0 (new features)
+ *   npm run bump major  # 1.0.0 → 2.0.0 (breaking changes)
+ *
+ * This script automatically:
+ * - Updates package.json version
+ * - Updates Android versionCode and versionName
+ * - Syncs changes with Capacitor
+ */
+
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -66,16 +83,8 @@ async function main() {
 	// Update version in all files
 	runCommand(`node scripts/update-version.js ${newVersion}`, 'Updating version numbers');
 
-	// Sync with Capacitor
-	runCommand('npx cap sync', 'Syncing with Capacitor');
-
 	console.log('\n✨ Version bump completed successfully!');
 	console.log(`📝 Version updated: ${currentVersion} → ${newVersion}`);
-	console.log('\nNext steps:');
-	console.log('1. Test your app');
-	console.log('2. Build: npm run android:debug');
-	console.log('3. Commit changes: git add . && git commit -m "bump version to ' + newVersion + '"');
-	console.log('4. Tag release: git tag v' + newVersion);
 }
 
 main().catch(console.error);

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount, onDestroy } from 'svelte';
 	import { auth } from '$lib/firebase';
 	import { onAuthStateChanged } from 'firebase/auth';
 	import { handleSlideshowKeydown } from '$lib/utils/slideshowUtils';
@@ -23,53 +24,55 @@
 	import DeleteConfirmDialog from './DeleteConfirmDialog.svelte';
 	import SlideshowDisplay from './SlideshowDisplay.svelte';
 
-	let state = $state(createInitialSlideshowState());
-	let frameElement = $state();
+	let state = createInitialSlideshowState();
+	let frameElement: HTMLElement | undefined;
 	let slideshowManager = createSlideshowManager();
 	let frameManager = createFrameManager();
 	let frameUpdater = new ReactiveFrameUpdater();
 
 	const actions: SlideshowActions = {
 		setUser: (user) => {
-			state.user = user;
+			state = { ...state, user };
 		},
 		setImageRefs: (refs) => {
-			state.imageRefs = refs;
+			state = { ...state, imageRefs: refs };
 		},
 		setCurrentImageIndex: (index) => {
-			state.currentImageIndex = index;
+			state = { ...state, currentImageIndex: index };
 		},
 		setCurrentImageUrl: (url) => {
-			state.currentImageUrl = url;
+			state = { ...state, currentImageUrl: url };
 		},
 		setLoading: (loading) => {
-			state.loading = loading;
+			state = { ...state, loading };
 		},
 		setError: (error) => {
-			state.error = error;
+			state = { ...state, error };
 		},
 		setLoadingNext: (loading) => {
-			state.loadingNext = loading;
+			state = { ...state, loadingNext: loading };
 		},
 		setShowControls: (show) => {
-			state.showControls = show;
+			state = { ...state, showControls: show };
 		},
 		setShowDeleteConfirm: (show) => {
-			state.showDeleteConfirm = show;
+			state = { ...state, showDeleteConfirm: show };
 		},
 		setDeleting: (deleting) => {
-			state.deleting = deleting;
+			state = { ...state, deleting };
 		},
 		setCurrentCollectionUuid: (uuid) => {
-			state.currentCollectionUuid = uuid;
+			state = { ...state, currentCollectionUuid: uuid };
 		}
 	};
 
 	// Initialize auth listener and frame manager
-	$effect(() => {
+	let unsubscribeAuth: (() => void) | undefined;
+
+	onMount(() => {
 		frameManager.startListening();
 
-		const unsubscribe = onAuthStateChanged(auth, async (u) => {
+		unsubscribeAuth = onAuthStateChanged(auth, async (u) => {
 			actions.setUser(u);
 			if (u) {
 				await loadImages();
@@ -77,21 +80,21 @@
 				goto('/');
 			}
 		});
+	});
 
-		return () => {
-			slideshowManager.stop();
-			frameManager.stopListening();
-			frameUpdater.cancel();
-			unsubscribe();
-		};
+	onDestroy(() => {
+		slideshowManager.stop();
+		frameManager.stopListening();
+		frameUpdater.cancel();
+		if (unsubscribeAuth) {
+			unsubscribeAuth();
+		}
 	});
 
 	// Update frame when image changes
-	$effect(() => {
-		if (state.currentImageUrl && frameElement) {
-			frameUpdater.updateFrame(state.currentImageUrl, frameElement);
-		}
-	});
+	$: if (state.currentImageUrl && frameElement) {
+		frameUpdater.updateFrame(state.currentImageUrl, frameElement);
+	}
 
 	async function loadImages() {
 		const result = await loadImageList(state.user, actions);

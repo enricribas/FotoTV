@@ -9,21 +9,25 @@ PhotoTV now includes upload limits to manage storage usage and provide a control
 ## How It Works
 
 ### User Registration
+
 - When a new user registers, a user profile is automatically created in Firestore
 - The profile includes basic user metadata (email, display name, timestamps)
 - When the user's first collection is created, it includes upload limit settings
 
 ### Collection Creation
+
 - Each new collection is created with:
   - `imageUploadLimit`: 10 (default)
   - `currentImageCount`: 0 (starts at zero)
   - Collection metadata (name, creation timestamp)
 
 ### Existing Users
+
 - When existing users sign in, the system automatically creates a profile if one doesn't exist
 - The system syncs each collection's image count with actual uploaded images
 
 ### Upload Process
+
 1. **Pre-upload check**: Before allowing file selection, the system checks if the current collection has remaining uploads
 2. **Limit enforcement**: If collection limit is reached, upload is prevented with a clear message
 3. **Count tracking**: After successful upload, the collection's image count is incremented
@@ -32,6 +36,7 @@ PhotoTV now includes upload limits to manage storage usage and provide a control
 ## User Interface
 
 ### Upload Limit Display
+
 - Shows current collection usage (e.g., "7/10 uploads remaining in this collection")
 - Visual progress bar with color coding:
   - Green: Normal usage
@@ -40,6 +45,7 @@ PhotoTV now includes upload limits to manage storage usage and provide a control
 - Warning messages for low/exhausted collection limits
 
 ### Upload Button States
+
 - **Normal**: Standard upload button
 - **Uploading**: Shows spinner and "Uploading..." text
 - **Limit Reached**: Disabled button with warning icon and "Collection Upload Limit Reached" text
@@ -47,6 +53,7 @@ PhotoTV now includes upload limits to manage storage usage and provide a control
 ## Technical Implementation
 
 ### Files Modified/Created
+
 - `src/lib/userService.ts` - New service for managing user profiles
 - `src/lib/collectionService.ts` - Updated to include upload limits per collection
 - `src/lib/auth.ts` - Updated to create profiles on registration
@@ -56,6 +63,7 @@ PhotoTV now includes upload limits to manage storage usage and provide a control
 - `firestore.rules` - Updated to allow user profile and collection access
 
 ### Firestore Structure
+
 ```
 users/{userId} {
   uid: string,
@@ -75,6 +83,7 @@ users/{userId}/collections/{collectionId} {
 ```
 
 ### Key Methods
+
 - `UserService.getOrCreateUserProfile(user)` - Ensures user profile exists
 - `CollectionService.canUploadImage(user, collectionUuid)` - Checks if upload is allowed for collection
 - `CollectionService.incrementImageCount(user, collectionUuid)` - Updates collection count after upload
@@ -91,6 +100,7 @@ users/{userId}/collections/{collectionId} {
 ## Future Enhancements
 
 ### Potential Features
+
 - Admin interface to adjust collection limits
 - Premium plans with higher collection limits
 - Temporary limit increases per collection
@@ -98,6 +108,7 @@ users/{userId}/collections/{collectionId} {
 - Multiple collections with different limits
 
 ### Migration for Existing Collections
+
 - Existing collections will automatically get upload limit fields when accessed
 - New collections are created with default limits
 - Image counts are synced with actual storage on collection access
@@ -112,12 +123,14 @@ users/{userId}/collections/{collectionId} {
 ## Monitoring
 
 ### Recommended Monitoring
+
 - Track profile and collection creation success rates
 - Monitor collection image count accuracy
 - Watch for users hitting collection limits frequently
 - Track sync operation performance per collection
 
 ### Debugging
+
 - Check browser console for upload limit errors
 - Verify Firestore rules allow profile and collection access
 - Ensure user profiles and collections are created on first login

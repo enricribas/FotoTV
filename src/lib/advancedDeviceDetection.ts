@@ -7,7 +7,11 @@ export interface AdvancedDeviceInfo {
 	isTouchDevice: boolean;
 	screenType: 'mobile' | 'tablet' | 'tv' | 'desktop';
 	inputMethods: string[];
-	deviceInfo?: Record<string, unknown>;
+	deviceInfo?: {
+		model?: string;
+		manufacturer?: string;
+		[key: string]: unknown;
+	};
 	uiMode?: string;
 	isLeanback: boolean;
 	hasHardwareKeyboard: boolean;
@@ -19,7 +23,11 @@ export interface AdvancedDeviceInfo {
  * Enhanced device detection using Capacitor Device plugin
  */
 export class AdvancedDeviceDetector {
-	private static deviceInfo: Record<string, unknown> | null = null;
+	private static deviceInfo: {
+		model?: string;
+		manufacturer?: string;
+		[key: string]: unknown;
+	} | null = null;
 	private static initialized = false;
 
 	/**
@@ -30,7 +38,11 @@ export class AdvancedDeviceDetector {
 
 		try {
 			if (Capacitor.isNativePlatform()) {
-				this.deviceInfo = await Device.getInfo();
+				this.deviceInfo = (await Device.getInfo()) as unknown as {
+					model?: string;
+					manufacturer?: string;
+					[key: string]: unknown;
+				};
 			}
 			this.initialized = true;
 		} catch (error) {
@@ -384,17 +396,20 @@ export class AdvancedDeviceDetector {
 					inputMethods.includes('remote') ||
 					(!isTouchDevice && inputMethods.includes('gamepad'))));
 
+		const hasHardwareKeyboard = hasPhysicalKeyboard;
+		const supportsGamepad = this.supportsGamepad();
+
 		return {
 			isTV,
 			hasPhysicalKeyboard,
 			isTouchDevice,
 			screenType,
 			inputMethods,
-			deviceInfo: this.deviceInfo,
+			deviceInfo: this.deviceInfo || undefined,
 			uiMode,
 			isLeanback,
-			hasHardwareKeyboard: hasPhysicalKeyboard,
-			supportsGamepad: this.supportsGamepad(),
+			hasHardwareKeyboard,
+			supportsGamepad,
 			shouldUseTVUI
 		};
 	}

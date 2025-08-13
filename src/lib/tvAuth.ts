@@ -310,7 +310,7 @@ export class TVAuthService {
 			setTimeout(() => {
 				clearInterval(pollInterval);
 				// Check if still waiting - use get() method for Svelte store
-				let currentStatus: string;
+				let currentStatus: string = '';
 				const unsubscribe = this.authStatus.subscribe((status) => (currentStatus = status));
 				unsubscribe();
 				if (currentStatus === 'waiting') {

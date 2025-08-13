@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, Timestamp, FieldValue } from 'firebase/firestore';
 import { db } from '$lib/firebase';
 import type { User } from 'firebase/auth';
 import type { UserProfile, UserProfileUpdates } from '$lib/types/user.types';
@@ -68,7 +68,7 @@ export class UserService {
 				...Object.fromEntries(Object.entries(updates).filter(([, value]) => value !== undefined))
 			};
 
-			await updateDoc(userDocRef, cleanUpdates);
+			await updateDoc(userDocRef, cleanUpdates as { [x: string]: FieldValue | Partial<unknown> });
 		} catch (error) {
 			console.error('Error updating user profile:', error);
 			throw error;

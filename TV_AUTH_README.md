@@ -47,40 +47,43 @@ src/lib/
 ## Usage Examples
 
 ### Detecting TV Devices
+
 ```javascript
 import { isAndroidTV } from '$lib/advancedDeviceDetection';
 
 const isTV = await isAndroidTV();
 if (isTV) {
-  // Show TV-specific UI
+	// Show TV-specific UI
 }
 ```
 
 ### Starting TV Authentication (TV Device)
+
 ```javascript
 import { TVAuthService } from '$lib/tvAuth';
 
 const result = await TVAuthService.requestTVAuth();
 if (result.success) {
-  // User is now logged in
+	// User is now logged in
 }
 ```
 
 ### Approving from Mobile (Manual Entry)
+
 ```javascript
 import { TVAuthService } from '$lib/tvAuth';
 
 // User manually enters the 4-letter code
 const result = await TVAuthService.approveCode('ABCD');
 if (result.success) {
-  // TV login approved
+	// TV login approved
 }
 ```
 
 ## Current Implementation Status
 
 - ✅ TV device detection
-- ✅ 4-letter code generation and display  
+- ✅ 4-letter code generation and display
 - ✅ Manual code entry interface for mobile
 - ✅ Automatic UI switching based on device type
 - ✅ Firestore integration for secure code storage
@@ -110,6 +113,7 @@ For a production version, you would need to:
 ## Firestore Security Rules
 
 The system includes Firestore security rules that:
+
 - Allow TV devices to create new codes (unauthenticated)
 - Allow logged-in users to read and update codes
 - Validate code format and structure
@@ -121,7 +125,7 @@ The system includes Firestore security rules that:
 1. **Mobile Mode**: `npm run dev:mobile` (port 5173)
 2. **TV Mode**: `npm run dev:tv` (port 5174)
 3. **Android Build**: `npm run android:debug` (for debug) or `npm run android:release` (for release)
-4. **Flow**: 
+4. **Flow**:
    - Sign in on mobile first
    - Generate code on TV
    - Manually enter code in mobile app's "Approve TV Login" section

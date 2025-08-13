@@ -4,14 +4,17 @@ import { getAdvancedDeviceInfo } from './advancedDeviceDetection';
  * TV-specific utility functions for conditional UI and behavior
  */
 export class TVUtils {
-	private static cachedDeviceInfo: Record<string, unknown> | null = null;
+	private static cachedDeviceInfo: import('./advancedDeviceDetection').AdvancedDeviceInfo | null =
+		null;
 	private static cacheTime = 0;
 	private static readonly CACHE_DURATION = 5000; // 5 seconds
 
 	/**
 	 * Get cached device info or fetch fresh if expired
 	 */
-	private static async getCachedDeviceInfo() {
+	private static async getCachedDeviceInfo(): Promise<
+		import('./advancedDeviceDetection').AdvancedDeviceInfo | null
+	> {
 		const now = Date.now();
 		if (!this.cachedDeviceInfo || now - this.cacheTime > this.CACHE_DURATION) {
 			this.cachedDeviceInfo = await getAdvancedDeviceInfo();
@@ -25,7 +28,7 @@ export class TVUtils {
 	 */
 	static async shouldUseTVUI(): Promise<boolean> {
 		const deviceInfo = await this.getCachedDeviceInfo();
-		return deviceInfo.shouldUseTVUI;
+		return deviceInfo?.shouldUseTVUI ?? false;
 	}
 
 	/**
@@ -75,7 +78,7 @@ export class TVUtils {
 	 */
 	static async hasPhysicalKeyboard(): Promise<boolean> {
 		const deviceInfo = await this.getCachedDeviceInfo();
-		return deviceInfo.hasPhysicalKeyboard;
+		return deviceInfo?.hasPhysicalKeyboard ?? false;
 	}
 
 	/**
@@ -83,7 +86,7 @@ export class TVUtils {
 	 */
 	static async isTouchDevice(): Promise<boolean> {
 		const deviceInfo = await this.getCachedDeviceInfo();
-		return deviceInfo.isTouchDevice;
+		return deviceInfo?.isTouchDevice ?? true;
 	}
 
 	/**
@@ -219,6 +222,7 @@ export class TVUtils {
 	 */
 	static async getImageSizes(): Promise<string> {
 		const deviceInfo = await this.getCachedDeviceInfo();
+		if (!deviceInfo) return 'mobile';
 
 		switch (deviceInfo.screenType) {
 			case 'tv':
@@ -238,7 +242,7 @@ export class TVUtils {
 	 */
 	static async shouldShowVirtualKeyboard(): Promise<boolean> {
 		const deviceInfo = await this.getCachedDeviceInfo();
-		return deviceInfo.isTV && !deviceInfo.hasPhysicalKeyboard;
+		return !!(deviceInfo?.isTV && !deviceInfo?.hasPhysicalKeyboard);
 	}
 
 	/**
@@ -256,6 +260,7 @@ export class TVUtils {
 	 */
 	static async getTVPlatform(): Promise<string | null> {
 		const deviceInfo = await this.getCachedDeviceInfo();
+		if (!deviceInfo) return null;
 
 		if (!deviceInfo.isTV) return null;
 

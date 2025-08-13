@@ -1,33 +1,33 @@
 {
-  "indexes": [
-    {
-      "collectionGroup": "tv_auth_codes",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "code",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "tv_auth_codes",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "expiresAt",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        }
-      ]
-    }
-  ],
-  "fieldOverrides": []
+	"indexes": [
+		{
+			"collectionGroup": "tv_auth_codes",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{
+					"fieldPath": "code",
+					"order": "ASCENDING"
+				},
+				{
+					"fieldPath": "status",
+					"order": "ASCENDING"
+				}
+			]
+		},
+		{
+			"collectionGroup": "tv_auth_codes",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{
+					"fieldPath": "expiresAt",
+					"order": "ASCENDING"
+				},
+				{
+					"fieldPath": "status",
+					"order": "ASCENDING"
+				}
+			]
+		}
+	],
+	"fieldOverrides": []
 }

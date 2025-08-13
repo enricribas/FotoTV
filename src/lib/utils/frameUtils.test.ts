@@ -304,16 +304,26 @@ describe('frameUtils', () => {
 		});
 
 		it('can be manually cancelled', async () => {
+			let wasResolved = false;
 			vi.mocked(getImageDimensions).mockImplementation(
-				() => new Promise((resolve) => setTimeout(() => resolve({ width: 800, height: 600 }), 200))
+				() =>
+					new Promise((resolve) =>
+						setTimeout(() => {
+							wasResolved = true;
+							resolve({ width: 800, height: 600 });
+						}, 200)
+					)
 			);
 
 			const promise = updater.updateFrame('https://example.com/image.jpg', mockFrameElement);
+			// Allow the operation to start before cancelling
+			await new Promise((resolve) => setTimeout(resolve, 10));
 			updater.cancel();
 
 			await promise;
 
-			expect(getImageDimensions).toHaveBeenCalled();
+			// The cancellation should prevent the update from completing
+			expect(wasResolved).toBe(false);
 		});
 
 		it('handles errors gracefully', async () => {
