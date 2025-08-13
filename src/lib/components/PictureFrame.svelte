@@ -12,7 +12,7 @@
 {:else if imageUrl}
 	<div class="picture-frame">
 		<div class="image-container">
-			<img src={imageUrl} alt="" class="framed-image" />
+			<img src={imageUrl} alt="" />
 			<div class="shadow-overlay"></div>
 		</div>
 	</div>
@@ -21,8 +21,8 @@
 <style>
 	:root {
 		--frame-border-width: 50px;
-		--frame-color: #f0f0f0;
 		--inside-frame-border-width: 5px;
+		--frame-color: #f0f0f0;
 	}
 
 	.picture-frame {
@@ -45,17 +45,14 @@
 		display: inline-block;
 	}
 
-	.framed-image {
+	img {
 		display: block;
 		max-width: calc(100vw - var(--frame-border-width));
 		max-height: calc(100vh - var(--frame-border-width));
 		width: auto;
 		height: auto;
 		object-fit: contain;
-		border: var(--inside-frame-border-width) solid var(--frame-color);
-		box-shadow:
-			0 0 10px rgba(0, 0, 0, 0.3),
-			0 0 20px rgba(0, 0, 0, 0.15);
+		border: var(--inside-frame-border-width) solid white;
 	}
 
 	.shadow-overlay {
