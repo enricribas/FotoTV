@@ -28,7 +28,6 @@
 		try {
 			// Only proceed if we have a collection UUID
 			if (!currentCollectionUuid) {
-				console.log('No collection UUID available yet, skipping image loading');
 				return;
 			}
 
