@@ -11,6 +11,9 @@
 		setupDeviceDetection
 	} from '$lib/utils/authUtils';
 	import { goto } from '$app/navigation';
+	import { CollectionService } from '$lib/collectionService';
+	import { UserService } from '$lib/userService';
+	import UploadLimitDisplay from '$lib/components/UploadLimitDisplay.svelte';
 
 	import LoggedInView from './LoggedInView.svelte';
 	import LoggedOutView from './LoggedOutView.svelte';
@@ -19,6 +22,10 @@
 	const user = writable<User | null>(null);
 	let isTVDevice = false;
 	let isTVModeForced = false;
+	let uploadLimit = { canUpload: true, remaining: 10, limit: 10 };
+	let currentCollectionUuid = '';
+	let showUploadLimit = false;
+	let currentUser: User | null = null;
 
 	onMount(() => {
 		let unsubscribe: (() => void) | undefined;
@@ -31,7 +38,10 @@
 
 		// Setup auth listener
 		unsubscribe = setupAuthStateListener(
-			(u) => user.set(u),
+			(u) => {
+				user.set(u);
+				handleUserChange(u);
+			},
 			(error) => console.error('Auth error:', error)
 		);
 
@@ -49,6 +59,41 @@
 
 	function onTVLoginSuccess(tvUser: User) {
 		handleTVLoginSuccess(tvUser, (u) => user.set(u), goto);
+	}
+
+	// Handle user authentication state changes
+	async function handleUserChange(newUser: User | null) {
+		if (newUser && newUser !== currentUser) {
+			currentUser = newUser;
+			await initializeUploadLimits(newUser);
+		} else if (!newUser) {
+			currentUser = null;
+			showUploadLimit = false;
+			currentCollectionUuid = '';
+		}
+	}
+
+	// Initialize upload limits when user logs in
+	async function initializeUploadLimits(user: User) {
+		try {
+			await UserService.getOrCreateUserProfile(user);
+			currentCollectionUuid = await CollectionService.getPrimaryCollection(user);
+			await updateUploadLimits(user);
+			showUploadLimit = true;
+		} catch (error) {
+			console.error('Error initializing upload limits:', error);
+		}
+	}
+
+	// Update upload limits based on current collection
+	async function updateUploadLimits(user: User) {
+		try {
+			if (currentCollectionUuid) {
+				uploadLimit = await CollectionService.canUploadImage(user, currentCollectionUuid);
+			}
+		} catch (error) {
+			console.error('Error checking upload limits:', error);
+		}
 	}
 </script>
 
@@ -99,11 +144,26 @@
 
 	<div class="w-full max-w-md">
 		{#if $user}
-			<LoggedInView user={$user} />
+			<LoggedInView
+				user={$user}
+				{uploadLimit}
+				{currentCollectionUuid}
+				onLimitsUpdate={() => updateUploadLimits($user)}
+			/>
 		{:else if isTVDevice || isTVModeForced}
 			<TVLogin onLoginSuccess={onTVLoginSuccess} />
 		{:else}
 			<LoggedOutView />
 		{/if}
 	</div>
+
+	{#if $user && showUploadLimit}
+		<div class="fixed bottom-4 left-1/2 z-10 w-full max-w-xs -translate-x-1/2 transform px-4">
+			<UploadLimitDisplay
+				remaining={uploadLimit.remaining}
+				limit={uploadLimit.limit}
+				canUpload={uploadLimit.canUpload}
+			/>
+		</div>
+	{/if}
 </div>

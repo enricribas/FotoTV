@@ -3,8 +3,7 @@
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
 	import { CollectionService } from '$lib/collectionService';
-	import { UserService } from '$lib/userService';
-	import UploadLimitDisplay from '$lib/components/UploadLimitDisplay.svelte';
+
 	import HelperText from '$lib/components/HelperText.svelte';
 	import FileUploadButton from '$lib/components/FileUploadButton.svelte';
 	import TVApprovalModal from '$lib/components/TVApprovalModal.svelte';
@@ -13,21 +12,25 @@
 	import { goto } from '$app/navigation';
 
 	export let user: User;
+	export let uploadLimit: { canUpload: boolean; remaining: number; limit: number };
+	export let currentCollectionUuid: string;
+	export let onLimitsUpdate: () => Promise<void>;
 
 	let showTVApproval = false;
 	let showHelperText = true;
 	let isTVMode = false;
-	let uploadLimit = { canUpload: true, remaining: 10, limit: 10 };
-	let currentCollectionUuid = '';
 
 	// Create a writable store for uploadedImages
 	const uploadedImagesStore = writable<string[]>([]);
 
-	// Initialize user profile and collection upload limits
+	// Initialize user profile and load images
 	async function initializeUserProfile() {
 		try {
-			await UserService.getOrCreateUserProfile(user);
-			currentCollectionUuid = await CollectionService.getPrimaryCollection(user);
+			// Only proceed if we have a collection UUID
+			if (!currentCollectionUuid) {
+				console.log('No collection UUID available yet, skipping image loading');
+				return;
+			}
 
 			// Load images for this collection
 			const images = await ImageService.loadCollectionImages(currentCollectionUuid);
@@ -36,20 +39,9 @@
 			// Sync collection image count with actual uploaded images
 			await CollectionService.syncImageCount(user, currentCollectionUuid);
 
-			await updateUploadLimits();
+			await onLimitsUpdate();
 		} catch (error) {
 			console.error('Error initializing user profile:', error);
-		}
-	}
-
-	// Update upload limits based on current collection
-	async function updateUploadLimits() {
-		try {
-			if (currentCollectionUuid) {
-				uploadLimit = await CollectionService.canUploadImage(user, currentCollectionUuid);
-			}
-		} catch (error) {
-			console.error('Error checking upload limits:', error);
 		}
 	}
 
@@ -95,7 +87,12 @@
 			}
 		});
 
-		// Initialize user profile and upload limits
+		// Initialize user profile
+		initializeUserProfile();
+	}
+
+	// Re-initialize when currentCollectionUuid becomes available
+	$: if (currentCollectionUuid) {
 		initializeUserProfile();
 	}
 </script>
@@ -103,19 +100,12 @@
 <div class="flex flex-col items-center space-y-4">
 	<HelperText {showHelperText} {isTVMode} onClose={closeHelperText} />
 
-	<!-- Upload Limit Display -->
-	<UploadLimitDisplay
-		remaining={uploadLimit.remaining}
-		limit={uploadLimit.limit}
-		canUpload={uploadLimit.canUpload}
-	/>
-
 	<FileUploadButton
 		{user}
 		{uploadLimit}
 		{currentCollectionUuid}
 		onUploadSuccess={handleUploadSuccess}
-		onLimitsUpdate={updateUploadLimits}
+		{onLimitsUpdate}
 	/>
 
 	<!-- Slideshow Button -->
