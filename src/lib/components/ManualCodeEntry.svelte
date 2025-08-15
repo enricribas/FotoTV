@@ -116,7 +116,7 @@
 							d="M5 13l4 4L19 7"
 						/>
 					</svg>
-					Approve TV Login
+					Connect TV
 				{/if}
 			</button>
 		</div>
@@ -128,7 +128,7 @@
 		<ol class="list-inside list-decimal space-y-1 text-xs text-blue-700">
 			<li>Your TV displays a 4-letter code</li>
 			<li>Enter the exact code here</li>
-			<li>Click "Approve" to sign in your TV</li>
+			<li>Click "Connect TV" to sign in your TV</li>
 		</ol>
 		<p class="mt-2 text-xs text-blue-600">⚠️ Only approve codes you recognize from your own TV</p>
 	</div>

@@ -7,3 +7,13 @@ bun.lockb
 
 # Miscellaneous
 /static/
+
+# Build outputs and generated files
+android/
+build/
+.svelte-kit/
+dist/
+functions/
+
+# Scripts (may have different formatting preferences)
+scripts/

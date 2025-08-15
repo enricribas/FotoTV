@@ -25,8 +25,8 @@
 		</div>
 		<div class="mt-3 rounded bg-blue-50 p-2 text-center">
 			<p class="text-xs text-blue-700">
-				<strong>Recommended:</strong> Sign in on your phone first, then use "Approve TV Login" to connect
-				your TV
+				<strong>Recommended:</strong> Sign in on your phone first, then use "Connect TV TV Login" to
+				connect your TV
 			</p>
 		</div>
 	</div>

@@ -177,9 +177,9 @@
 				<div class="space-y-2 text-left text-sm text-gray-600">
 					<ol class="ml-4 list-inside list-decimal space-y-1">
 						<li>Open FotoTV on your phone</li>
-						<li>Go to "Approve TV Login" section</li>
+						<li>Go to "Connect TV" section</li>
 						<li>Enter the code: <span class="font-mono font-bold text-white">{authCode}</span></li>
-						<li>Tap "Approve TV Login" to sign in</li>
+						<li>Tap "Connect TV" to sign in</li>
 					</ol>
 				</div>
 
