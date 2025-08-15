@@ -120,7 +120,7 @@
 
 	<!-- Slideshow Button -->
 	<button
-		class="btn w-full border-red-500 bg-red-500 text-white hover:bg-red-600"
+		class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
 		on:click={() => goto('/slideshow')}
 	>
 		<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,7 +135,10 @@
 	</button>
 
 	<!-- TV Approval Button -->
-	<button class="btn w-full bg-red-900 text-white hover:bg-red-600" on:click={toggleTVApproval}>
+	<button
+		class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+		on:click={toggleTVApproval}
+	>
 		<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 			<path
 				stroke-linecap="round"

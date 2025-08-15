@@ -17,7 +17,7 @@
 	function triggerFileUpload() {
 		if (!uploadLimit.canUpload) {
 			alert(
-				`Upload limit reached for this collection! You can upload up to ${uploadLimit.limit} images per collection. You have ${uploadLimit.remaining} uploads remaining in this collection.`
+				`Upload limit reached for this collection! You can upload up to ${uploadLimit.limit} images per collection. You have ${uploadLimit.remaining} uploads remaining.`
 			);
 			return;
 		}
@@ -34,7 +34,7 @@
 		await onLimitsUpdate();
 		if (!uploadLimit.canUpload) {
 			alert(
-				`Upload limit reached for this collection! You can upload up to ${uploadLimit.limit} images per collection. You have ${uploadLimit.remaining} uploads remaining in this collection.`
+				`Upload limit reached for this collection! You can upload up to ${uploadLimit.limit} images per collection. You have ${uploadLimit.remaining} uploads remaining.`
 			);
 			target.value = '';
 			return;

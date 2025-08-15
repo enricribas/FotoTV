@@ -14,7 +14,7 @@ describe('UploadLimitDisplay', () => {
 		});
 
 		const statusText = page.getByText('5/10');
-		const remainingText = page.getByText('5 uploads remaining in this collection');
+		const remainingText = page.getByText('5 uploads remaining');
 
 		await expect.element(statusText).toBeInTheDocument();
 		await expect.element(remainingText).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe('UploadLimitDisplay', () => {
 		});
 
 		const statusText = page.getByText('3/10');
-		const remainingText = page.getByText('7 uploads remaining in this collection');
+		const remainingText = page.getByText('7 uploads remaining');
 
 		await expect.element(statusText).toBeInTheDocument();
 		await expect.element(remainingText).toBeInTheDocument();

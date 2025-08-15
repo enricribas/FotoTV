@@ -53,7 +53,7 @@
 </script>
 
 <div
-	class="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-orange-100 to-red-100 p-4"
+	class="to-cyan-0 relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-t from-orange-100 p-4"
 >
 	{#if $user}
 		<div class="absolute top-4 right-4 z-10 flex items-center space-x-2">

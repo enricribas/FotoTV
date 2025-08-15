@@ -11,7 +11,7 @@
 
 <div class="w-full rounded-lg border bg-white p-4 shadow-sm">
 	<div class="mb-3 flex items-center justify-between">
-		<h3 class="text-sm font-medium text-gray-700">Collection Upload Limit</h3>
+		<h3 class="text-sm font-medium text-gray-700">Upload Limit</h3>
 		<span
 			class="text-sm font-semibold"
 			class:text-green-600={canUpload && !isLow}
@@ -69,7 +69,7 @@
 						d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
 					/>
 				</svg>
-				{remaining} uploads remaining in this collection
+				{remaining} uploads remaining
 			</span>
 		{/if}
 	</div>
