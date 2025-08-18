@@ -154,7 +154,7 @@
 
 		slideshowManager.start(async () => {
 			await handleNextImage(state, actions, refreshImages);
-		}, 10000);
+		}, 30000);
 	}
 
 	function goBack() {
