@@ -166,7 +166,7 @@
 	class="to-cyan-0 relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-t from-orange-100 p-4"
 >
 	{#if $user}
-		<div class="absolute top-4 right-4 z-10 flex items-center space-x-2">
+		<div class="absolute top-[66px] right-4 z-10 flex items-center space-x-2">
 			{#if $user.photoURL}
 				<div class="avatar">
 					<div class="h-8 w-8 rounded-full ring ring-orange-500 ring-offset-1 ring-offset-white">
@@ -196,8 +196,8 @@
 
 	<div
 		class="{$user
-			? 'absolute top-4 left-4'
-			: 'absolute top-8 left-1/2 -translate-x-1/2 transform'} z-10"
+			? 'absolute top-[66px] left-4'
+			: 'absolute top-[66px] left-1/2 -translate-x-1/2 transform'} z-10"
 	>
 		<div class="flex items-center space-x-3">
 			<img src="/FotoTV-logo2.png" alt="FotoTV Logo" class="{$user ? 'h-8' : 'h-16'} w-auto" />
@@ -234,7 +234,7 @@
 	</div>
 
 	{#if $user && showUploadLimit}
-		<div class="fixed bottom-4 left-1/2 z-10 w-full max-w-xs -translate-x-1/2 transform px-4">
+		<div class="fixed bottom-[66px] left-1/2 z-10 w-full max-w-xs -translate-x-1/2 transform px-4">
 			<UploadLimitDisplay
 				remaining={uploadLimit.remaining}
 				limit={uploadLimit.limit}
