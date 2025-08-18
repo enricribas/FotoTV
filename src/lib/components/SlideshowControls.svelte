@@ -13,7 +13,7 @@
 {#if showControls}
 	<!-- Back Button -->
 	<button
-		class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-4 left-4 z-20 bg-gray-200 text-gray-700 hover:bg-gray-300"
+		class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-[66px] left-4 z-20 bg-gray-200 text-gray-700 hover:bg-gray-300"
 		onclick={onGoBack}
 		aria-label="Go back to main menu"
 	>
@@ -28,7 +28,7 @@
 	</button>
 
 	<!-- Navigation Controls -->
-	<div class="fixed top-4 right-4 z-20 flex space-x-2">
+	<div class="fixed top-[66px] right-4 z-20 flex space-x-2">
 		<button
 			class="btn btn-circle btn-ghost hover:bg-opacity-20 bg-gray-200 text-gray-700 hover:bg-gray-300"
 			onclick={onPrevious}
@@ -52,7 +52,7 @@
 
 	<!-- Delete Button -->
 	<button
-		class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-4 left-1/2 z-20 -translate-x-1/2 transform bg-gray-200 text-gray-700 hover:bg-gray-300"
+		class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-[66px] left-1/2 z-20 -translate-x-1/2 transform bg-gray-200 text-gray-700 hover:bg-gray-300"
 		onclick={onDelete}
 		aria-label="Delete current image"
 	>
