@@ -10,6 +10,7 @@
 	import { browser } from '$app/environment';
 	import { shouldUseTVUI } from '$lib/tvUtils';
 	import { goto } from '$app/navigation';
+	import { collectionStore } from '$lib/stores/collectionStore';
 
 	export let user: User;
 	export let uploadLimit: { canUpload: boolean; remaining: number; limit: number };
@@ -49,8 +50,8 @@
 		uploadedImagesStore.set([...$uploadedImagesStore, downloadURL]);
 
 		// Retry loading with backoff to ensure Firebase has updated
-		const refreshedImages = await ImageService.loadUserImagesWithRetry(
-			user,
+		const refreshedImages = await ImageService.loadCollectionImagesWithRetry(
+			currentCollectionUuid,
 			$uploadedImagesStore.length - 1
 		);
 		uploadedImagesStore.set(refreshedImages);
@@ -90,8 +91,8 @@
 		initializeUserProfile();
 	}
 
-	// Re-initialize when currentCollectionUuid becomes available
-	$: if (currentCollectionUuid) {
+	// Re-initialize when currentCollectionUuid changes
+	$: if (currentCollectionUuid && browser) {
 		initializeUserProfile();
 	}
 </script>
@@ -110,7 +111,11 @@
 	<!-- Slideshow Button -->
 	<button
 		class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
-		on:click={() => goto('/slideshow')}
+		on:click={() => {
+			// Ensure the current collection is set in the store before navigating
+			collectionStore.setSelectedCollection(currentCollectionUuid, user.uid);
+			goto('/slideshow');
+		}}
 	>
 		<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 			<path

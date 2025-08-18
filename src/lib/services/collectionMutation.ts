@@ -1,5 +1,5 @@
 import type { User } from 'firebase/auth';
-import { doc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { db } from '$lib/firebase';
 import type { CollectionUploadStatus } from '$lib/types/collection.types';
 import { generateCollectionDefaults, calculateUploadStatus } from '$lib/utils/collectionUtils';
@@ -19,7 +19,25 @@ export class CollectionMutation {
 		try {
 			const collectionDocRef = doc(db, `users/${user.uid}/collections`, uuid);
 			await setDoc(collectionDocRef, newCollection);
-			return uuid;
+
+			// Wait for Firestore consistency
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			// Verify the collection was created successfully
+			let verifyAttempts = 0;
+			const maxVerifyAttempts = 5;
+
+			while (verifyAttempts < maxVerifyAttempts) {
+				const createdDoc = await getDoc(collectionDocRef);
+				if (createdDoc.exists()) {
+					return uuid;
+				}
+
+				await new Promise((resolve) => setTimeout(resolve, 500));
+				verifyAttempts++;
+			}
+
+			throw new Error('Collection was created but could not be verified');
 		} catch (error) {
 			console.error('Error creating collection:', error);
 			throw error;

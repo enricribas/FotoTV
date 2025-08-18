@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount, onDestroy } from 'svelte';
 	import { auth } from '$lib/firebase';
-	import { onAuthStateChanged } from 'firebase/auth';
+	import { onAuthStateChanged, type User } from 'firebase/auth';
 	import { handleSlideshowKeydown } from '$lib/utils/slideshowUtils';
 	import {
 		createInitialSlideshowState,
@@ -20,6 +20,8 @@
 		type SlideshowActions
 	} from '$lib/utils/slideshowStateUtils';
 	import { createFrameManager, ReactiveFrameUpdater } from '$lib/utils/frameUtils';
+	import { collectionStore } from '$lib/stores/collectionStore';
+	import { CollectionService } from '$lib/collectionService';
 	import SlideshowControls from './SlideshowControls.svelte';
 	import DeleteConfirmDialog from './DeleteConfirmDialog.svelte';
 	import SlideshowDisplay from './SlideshowDisplay.svelte';
@@ -75,7 +77,7 @@
 		unsubscribeAuth = onAuthStateChanged(auth, async (u) => {
 			actions.setUser(u);
 			if (u) {
-				await loadImages();
+				await initializeCollectionAndLoadImages(u);
 			} else {
 				goto('/');
 			}
@@ -96,8 +98,46 @@
 		frameUpdater.updateFrame(state.currentImageUrl, frameElement);
 	}
 
-	async function loadImages() {
-		const result = await loadImageList(state.user, actions);
+	async function initializeCollectionAndLoadImages(user: User) {
+		try {
+			// Load user collections
+			const collections = await CollectionService.getUserCollections(user);
+			collectionStore.setCollections(collections, user.uid);
+
+			// Get the selected collection UUID from the store, or use primary if none selected
+			let selectedUuid: string = $collectionStore.selectedCollectionUuid;
+
+			// Try to restore from localStorage if not already set
+			if (!selectedUuid) {
+				const storedUuid = collectionStore.getStoredSelection(user.uid);
+				if (storedUuid) {
+					selectedUuid = storedUuid;
+				}
+			}
+
+			// Verify the stored selection is valid
+			if (selectedUuid && !collections.some((c) => c.uuid === selectedUuid)) {
+				selectedUuid = '';
+			}
+
+			// If no valid stored selection, use primary collection
+			if (!selectedUuid) {
+				selectedUuid = await CollectionService.getPrimaryCollection(user);
+			}
+
+			collectionStore.setSelectedCollection(selectedUuid, user.uid);
+
+			// Load images for the selected collection
+			await loadImages(selectedUuid);
+		} catch (error) {
+			console.error('Error initializing collection and loading images:', error);
+			actions.setError('Failed to load slideshow data. Please try again.');
+		}
+	}
+
+	async function loadImages(collectionUuid?: string) {
+		const uuid = collectionUuid || state.currentCollectionUuid;
+		const result = await loadImageList(state.user, actions, uuid);
 		if (result.success && result.imageRefs) {
 			await loadCurrentImage(result.imageRefs, 0, actions);
 			startSlideshow();
@@ -105,7 +145,8 @@
 	}
 
 	async function refreshImages() {
-		await refreshImageList(state.imageRefs, state.currentCollectionUuid, actions);
+		const currentUuid = $collectionStore.selectedCollectionUuid || state.currentCollectionUuid;
+		await refreshImageList(state.imageRefs, currentUuid, actions);
 	}
 
 	function startSlideshow() {

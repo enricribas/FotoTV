@@ -67,7 +67,8 @@ export function createInitialSlideshowState(): SlideshowState {
  */
 export async function loadImageList(
 	user: User | null,
-	actions: SlideshowActions
+	actions: SlideshowActions,
+	collectionUuid?: string
 ): Promise<{ success: boolean; imageRefs?: StorageReference[] }> {
 	if (!user) return { success: false };
 
@@ -75,7 +76,8 @@ export async function loadImageList(
 		actions.setLoading(true);
 		actions.setError('');
 
-		const currentCollectionUuid = await CollectionService.getPrimaryCollection(user);
+		const currentCollectionUuid =
+			collectionUuid || (await CollectionService.getPrimaryCollection(user));
 		actions.setCurrentCollectionUuid(currentCollectionUuid);
 
 		const result = await loadCollectionImageRefs(currentCollectionUuid);

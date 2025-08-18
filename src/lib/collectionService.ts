@@ -24,6 +24,10 @@ export class CollectionService {
 		return CollectionMutation.createCollection(user, name);
 	}
 
+	static async verifyCollectionExists(user: User, uuid: string): Promise<boolean> {
+		return CollectionQuery.verifyCollectionExists(user, uuid);
+	}
+
 	static async updateImageCount(
 		user: User,
 		collectionUuid: string,

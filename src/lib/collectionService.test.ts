@@ -8,6 +8,7 @@ import type { User } from 'firebase/auth';
 vi.mock('firebase/firestore', () => ({
 	collection: vi.fn(),
 	getDocs: vi.fn(),
+	getDoc: vi.fn(),
 	doc: vi.fn(),
 	setDoc: vi.fn(),
 	updateDoc: vi.fn(),
@@ -21,7 +22,7 @@ vi.mock('$lib/firebase', () => ({
 }));
 
 // Import the mocked functions
-import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc, setDoc } from 'firebase/firestore';
 vi.mock('./imageService', () => ({
 	ImageService: {
 		loadCollectionImages: vi.fn()
@@ -46,6 +47,11 @@ describe('CollectionService', () => {
 			vi.mocked(doc).mockReturnValue(mockDocRef);
 			vi.mocked(setDoc).mockResolvedValue(undefined);
 
+			// Mock getDoc to return a document that exists
+			vi.mocked(getDoc).mockResolvedValue({
+				exists: () => true
+			});
+
 			// Mock crypto.randomUUID
 			const mockUuid = 'test-uuid-123';
 			vi.stubGlobal('crypto', {
@@ -55,14 +61,13 @@ describe('CollectionService', () => {
 			const result = await CollectionService.createCollection(mockUser, 'Test Collection');
 
 			expect(doc).toHaveBeenCalledWith({}, `users/${mockUser.uid}/collections`, mockUuid);
-			expect(setDoc).toHaveBeenCalledWith(
-				mockDocRef,
-				expect.objectContaining({
-					name: 'Test Collection',
-					imageUploadLimit: 10,
-					currentImageCount: 0
-				})
-			);
+			expect(setDoc).toHaveBeenCalledWith(mockDocRef, {
+				name: 'Test Collection',
+				imageUploadLimit: 10,
+				currentImageCount: 0,
+				createdAt: { seconds: 1234567890, nanoseconds: 0 },
+				updatedAt: { seconds: 1234567890, nanoseconds: 0 }
+			});
 			expect(result).toBe(mockUuid);
 		});
 	});

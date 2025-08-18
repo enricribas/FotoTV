@@ -1,5 +1,5 @@
 import type { User } from 'firebase/auth';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '$lib/firebase';
 import type { ImageCollection } from '$lib/types/collection.types';
 import { sortCollectionsByDate } from '$lib/utils/collectionUtils';
@@ -45,5 +45,16 @@ export class CollectionQuery {
 		}
 
 		return collections[0].uuid;
+	}
+
+	static async verifyCollectionExists(user: User, uuid: string): Promise<boolean> {
+		try {
+			const collectionDocRef = doc(db, `users/${user.uid}/collections`, uuid);
+			const collectionDoc = await getDoc(collectionDocRef);
+			return collectionDoc.exists();
+		} catch (error) {
+			console.error('Error verifying collection exists:', error);
+			return false;
+		}
 	}
 }

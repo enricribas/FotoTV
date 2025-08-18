@@ -14,6 +14,9 @@
 	import { CollectionService } from '$lib/collectionService';
 	import { UserService } from '$lib/userService';
 	import UploadLimitDisplay from '$lib/components/UploadLimitDisplay.svelte';
+	import CollectionSelector from '$lib/components/CollectionSelector.svelte';
+	import { collectionStore } from '$lib/stores/collectionStore';
+	import type { ImageCollection } from '$lib/types/collection.types';
 
 	import LoggedInView from './LoggedInView.svelte';
 	import LoggedOutView from './LoggedOutView.svelte';
@@ -26,6 +29,7 @@
 	let currentCollectionUuid = '';
 	let showUploadLimit = false;
 	let currentUser: User | null = null;
+	let userCollections: ImageCollection[] = [];
 
 	onMount(() => {
 		let unsubscribe: (() => void) | undefined;
@@ -45,8 +49,16 @@
 			(error) => console.error('Auth error:', error)
 		);
 
+		// Listen for collection changes
+		const handleCollectionsChanged = () => {
+			handleCollectionsUpdated();
+		};
+
+		window.addEventListener('collectionsChanged', handleCollectionsChanged);
+
 		return () => {
 			unsubscribe?.();
+			window.removeEventListener('collectionsChanged', handleCollectionsChanged);
 		};
 	});
 
@@ -65,23 +77,49 @@
 	async function handleUserChange(newUser: User | null) {
 		if (newUser && newUser !== currentUser) {
 			currentUser = newUser;
-			await initializeUploadLimits(newUser);
+			await initializeUserData(newUser);
 		} else if (!newUser) {
+			const previousUserId = currentUser?.uid;
 			currentUser = null;
 			showUploadLimit = false;
 			currentCollectionUuid = '';
+			collectionStore.reset(previousUserId);
+			userCollections = [];
 		}
 	}
 
-	// Initialize upload limits when user logs in
-	async function initializeUploadLimits(user: User) {
+	// Initialize user data when user logs in
+	async function initializeUserData(user: User) {
 		try {
+			collectionStore.setLoading(true);
 			await UserService.getOrCreateUserProfile(user);
-			currentCollectionUuid = await CollectionService.getPrimaryCollection(user);
+
+			// Load user collections
+			userCollections = await CollectionService.getUserCollections(user);
+			collectionStore.setCollections(userCollections, user.uid);
+
+			// Try to restore stored selection first, otherwise use primary collection
+			let selectedUuid = collectionStore.getStoredSelection(user.uid);
+
+			// Verify the stored selection is valid
+			if (selectedUuid && !userCollections.some((c) => c.uuid === selectedUuid)) {
+				selectedUuid = null;
+			}
+
+			// If no valid stored selection, use primary collection
+			if (!selectedUuid) {
+				selectedUuid = await CollectionService.getPrimaryCollection(user);
+			}
+
+			currentCollectionUuid = selectedUuid;
+			collectionStore.setSelectedCollection(selectedUuid, user.uid);
+
 			await updateUploadLimits(user);
 			showUploadLimit = true;
 		} catch (error) {
-			console.error('Error initializing upload limits:', error);
+			console.error('Error initializing user data:', error);
+		} finally {
+			collectionStore.setLoading(false);
 		}
 	}
 
@@ -93,6 +131,33 @@
 			}
 		} catch (error) {
 			console.error('Error checking upload limits:', error);
+		}
+	}
+
+	// Handle collection selection change
+	function handleCollectionChange(
+		event: CustomEvent<{ collectionUuid: string; collection: ImageCollection }>
+	) {
+		const { collectionUuid } = event.detail;
+		currentCollectionUuid = collectionUuid;
+		collectionStore.setSelectedCollection(collectionUuid, currentUser?.uid);
+
+		// Update upload limits for the new collection
+		if (currentUser) {
+			updateUploadLimits(currentUser);
+		}
+	}
+
+	// Handle collections being updated (e.g., new collection created)
+	async function handleCollectionsUpdated() {
+		if (currentUser) {
+			try {
+				// Reload collections
+				userCollections = await CollectionService.getUserCollections(currentUser);
+				collectionStore.setCollections(userCollections, currentUser.uid);
+			} catch (error) {
+				console.error('Error refreshing collections:', error);
+			}
 		}
 	}
 </script>
@@ -144,6 +209,17 @@
 
 	<div class="w-full max-w-md">
 		{#if $user}
+			<!-- Collection Selector - only show if user has multiple collections -->
+			<div class="mb-6">
+				<CollectionSelector
+					selectedCollectionUuid={currentCollectionUuid}
+					collections={userCollections}
+					user={$user}
+					on:collectionChange={handleCollectionChange}
+					on:collectionsUpdated={handleCollectionsUpdated}
+				/>
+			</div>
+
 			<LoggedInView
 				user={$user}
 				{uploadLimit}

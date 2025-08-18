@@ -28,5 +28,10 @@ export function generateCollectionDefaults(name: string) {
 }
 
 export function sortCollectionsByDate(collections: ImageCollection[]): ImageCollection[] {
-	return collections.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+	return collections.sort((a, b) => {
+		// Handle missing or invalid createdAt fields
+		const aSeconds = a.createdAt?.seconds || 0;
+		const bSeconds = b.createdAt?.seconds || 0;
+		return bSeconds - aSeconds;
+	});
 }
