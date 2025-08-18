@@ -21,7 +21,7 @@
 <style>
 	:root {
 		--frame-border-width: 50px;
-		--inside-frame-border-width: 5px;
+		--inside-frame-border-width: 2px;
 		--frame-color: #f0f0f0;
 	}
 
