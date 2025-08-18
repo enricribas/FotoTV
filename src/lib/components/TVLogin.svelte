@@ -4,6 +4,7 @@
 	import type { User } from 'firebase/auth';
 
 	export let onLoginSuccess: (user: User) => void = () => {};
+	export let onBackToLogin: (() => void) | undefined = undefined;
 
 	let authCode = '';
 	let authStatus: 'idle' | 'waiting' | 'approved' | 'denied' | 'expired' = 'idle';
@@ -89,6 +90,27 @@
 		error = '';
 	}
 
+	function handleBackToLogin() {
+		// Cancel any ongoing auth first
+		cancelAuth();
+		// Always try to disable TV mode directly as fallback
+		if (typeof window !== 'undefined') {
+			localStorage.removeItem('tv_mode');
+			const urlParams = new URLSearchParams(window.location.search);
+			if (urlParams.has('tv')) {
+				urlParams.delete('tv');
+				const newUrl =
+					window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+				window.history.replaceState({}, '', newUrl);
+			}
+			window.location.reload();
+		}
+		// Also call the callback if available
+		if (onBackToLogin) {
+			onBackToLogin();
+		}
+	}
+
 	function getStatusMessage() {
 		switch (authStatus) {
 			case 'waiting':
@@ -123,6 +145,14 @@
 					<span class="loading loading-spinner loading-lg text-white"></span>
 					<p class="text-gray-600">Starting TV authentication...</p>
 				</div>
+
+				<!-- Always show back button -->
+				<button
+					class="btn btn-sm mt-4 w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+					on:click={handleBackToLogin}
+				>
+					← Back to Login
+				</button>
 			</div>
 		{:else if authStatus === 'idle' && error}
 			<!-- Error state -->
@@ -139,6 +169,14 @@
 				</div>
 				<button class="btn btn-primary btn-lg w-full text-lg" on:click={startTVAuth}>
 					Try Again
+				</button>
+
+				<!-- Always show back button -->
+				<button
+					class="btn btn-sm w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+					on:click={handleBackToLogin}
+				>
+					← Back to Login
 				</button>
 			</div>
 		{:else if authStatus === 'waiting' && authCode}
@@ -185,6 +223,14 @@
 
 				<!-- Cancel button -->
 				<button class="btn btn-ghost btn-sm w-full" on:click={cancelAuth}> Cancel </button>
+
+				<!-- Back to Login button - always show -->
+				<button
+					class="btn btn-sm mt-2 w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+					on:click={handleBackToLogin}
+				>
+					← Back to Login
+				</button>
 			</div>
 		{:else}
 			<!-- Other states - approved, denied, expired -->
@@ -196,6 +242,14 @@
 				{#if authStatus === 'denied' || authStatus === 'expired'}
 					<button class="btn btn-primary btn-lg w-full" on:click={startTVAuth}> Try Again </button>
 				{/if}
+
+				<!-- Always show back button -->
+				<button
+					class="btn btn-sm mt-2 w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+					on:click={handleBackToLogin}
+				>
+					← Back to Login
+				</button>
 			</div>
 		{/if}
 	</div>

@@ -10,6 +10,7 @@
 		handleTVLoginSuccess,
 		setupDeviceDetection
 	} from '$lib/utils/authUtils';
+	import { disableTVMode } from '$lib/advancedDeviceDetection';
 	import { goto } from '$app/navigation';
 	import { CollectionService } from '$lib/collectionService';
 	import { UserService } from '$lib/userService';
@@ -67,6 +68,11 @@
 		if (!result.success && result.error) {
 			console.error('Logout error:', result.error);
 		}
+	}
+
+	// Handle going back to normal login from TV mode
+	function onBackToLogin() {
+		disableTVMode();
 	}
 
 	function onTVLoginSuccess(tvUser: User) {
@@ -227,7 +233,7 @@
 				onLimitsUpdate={() => updateUploadLimits($user)}
 			/>
 		{:else if isTVDevice || isTVModeForced}
-			<TVLogin onLoginSuccess={onTVLoginSuccess} />
+			<TVLogin onLoginSuccess={onTVLoginSuccess} {onBackToLogin} />
 		{:else}
 			<LoggedOutView />
 		{/if}
