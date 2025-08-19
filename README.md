@@ -11,6 +11,30 @@ A personal photo viewing app that lets you display your photos on your TV or lar
 - TV-optimized interface with device detection
 - Simple 4-letter code pairing system
 
+## Slideshow Configuration
+
+You can customize the slideshow timing by adding a `time` field to your collection data in Firebase:
+
+- The `time` field should be set in **seconds** (not milliseconds)
+- If no `time` field is present, the slideshow defaults to 30 seconds between images
+- Valid values are any positive number (e.g., 5, 10, 45, 120)
+- Invalid values (0, negative numbers, or missing field) will use the 30-second default
+
+### Example Firebase Collection Document
+
+```json
+{
+	"name": "My Photos",
+	"imageUploadLimit": 10,
+	"currentImageCount": 5,
+	"time": 45,
+	"createdAt": "2024-01-01T00:00:00Z",
+	"updatedAt": "2024-01-01T00:00:00Z"
+}
+```
+
+In this example, images will transition every 45 seconds instead of the default 30 seconds.
+
 ## Development
 
 Install dependencies and start the development server:

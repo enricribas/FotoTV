@@ -7,6 +7,7 @@ export interface ImageCollection {
 	imageUploadLimit: number;
 	currentImageCount: number;
 	updatedAt: Timestamp;
+	time?: number; // Transition time in seconds
 }
 
 export interface CollectionUploadStatus {

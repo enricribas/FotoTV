@@ -28,7 +28,7 @@
 	import SlideshowDisplay from './SlideshowDisplay.svelte';
 
 	// Configuration
-	const SLIDESHOW_INTERVAL_MS = 30000; // 30 seconds
+	let slideshowIntervalMs = 30000; // Default 30 seconds
 
 	let state = createInitialSlideshowState();
 	let frameElement: HTMLElement | undefined;
@@ -144,6 +144,7 @@
 		const uuid = collectionUuid || state.currentCollectionUuid;
 		const result = await loadImageList(state.user, actions, uuid);
 		if (result.success && result.imageRefs) {
+			await updateSlideshowInterval(uuid);
 			await loadCurrentImage(result.imageRefs, 0, actions);
 			startSlideshow();
 		}
@@ -152,6 +153,26 @@
 	async function refreshImages() {
 		const currentUuid = $collectionStore.selectedCollectionUuid || state.currentCollectionUuid;
 		await refreshImageList(state.imageRefs, currentUuid, actions);
+		// Also check if collection time setting has changed
+		await updateSlideshowInterval(currentUuid);
+	}
+
+	async function updateSlideshowInterval(collectionUuid: string) {
+		if (!state.user) return;
+
+		try {
+			const collection = await CollectionService.getCollectionInfo(state.user, collectionUuid);
+			if (collection?.time && collection.time > 0) {
+				// Convert seconds to milliseconds
+				slideshowIntervalMs = collection.time * 1000;
+			} else {
+				// Use default 30 seconds
+				slideshowIntervalMs = 30000;
+			}
+		} catch (error) {
+			console.error('Error getting collection time setting:', error);
+			slideshowIntervalMs = 30000; // Fallback to default
+		}
 	}
 
 	function startSlideshow() {
@@ -159,7 +180,7 @@
 
 		slideshowManager.start(async () => {
 			await handleNextImage(state, actions, refreshImages);
-		}, SLIDESHOW_INTERVAL_MS);
+		}, slideshowIntervalMs);
 	}
 
 	function goBack() {
@@ -168,10 +189,12 @@
 
 	async function nextImage() {
 		await handleNextImage(state, actions, refreshImages);
+		startSlideshow(); // Restart with correct interval
 	}
 
 	async function previousImage() {
 		await handlePreviousImage(state, actions);
+		startSlideshow(); // Restart with correct interval
 	}
 
 	function handleKeydown(event: KeyboardEvent) {

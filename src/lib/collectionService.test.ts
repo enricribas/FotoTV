@@ -104,6 +104,64 @@ describe('CollectionService', () => {
 				updatedAt: { seconds: 1234567890 }
 			});
 		});
+
+		it('should return collections with time field when present', async () => {
+			const mockSnapshot = {
+				forEach: vi.fn((callback) => {
+					// Collection with time field
+					callback({
+						id: 'collection-1',
+						data: () => ({
+							name: 'Collection with Time',
+							imageUploadLimit: 10,
+							currentImageCount: 3,
+							time: 45, // 45 seconds
+							createdAt: { seconds: 1234567892 },
+							updatedAt: { seconds: 1234567892 }
+						})
+					});
+					// Collection without time field
+					callback({
+						id: 'collection-2',
+						data: () => ({
+							name: 'Collection without Time',
+							imageUploadLimit: 15,
+							currentImageCount: 2,
+							createdAt: { seconds: 1234567891 },
+							updatedAt: { seconds: 1234567891 }
+						})
+					});
+				})
+			};
+
+			vi.mocked(collection).mockReturnValue({} as ReturnType<typeof collection>);
+			vi.mocked(getDocs).mockResolvedValue(mockSnapshot as ReturnType<typeof getDocs>);
+
+			const result = await CollectionService.getUserCollections(mockUser);
+
+			expect(result).toHaveLength(2);
+
+			// Collection with time field
+			expect(result[0]).toEqual({
+				uuid: 'collection-1',
+				name: 'Collection with Time',
+				imageUploadLimit: 10,
+				currentImageCount: 3,
+				time: 45,
+				createdAt: { seconds: 1234567892 },
+				updatedAt: { seconds: 1234567892 }
+			});
+
+			// Collection without time field (should not have time property)
+			expect(result[1]).toEqual({
+				uuid: 'collection-2',
+				name: 'Collection without Time',
+				imageUploadLimit: 15,
+				currentImageCount: 2,
+				createdAt: { seconds: 1234567891 },
+				updatedAt: { seconds: 1234567891 }
+			});
+		});
 	});
 
 	describe('canUploadImage', () => {
