@@ -5,12 +5,14 @@
 		"Try to break down complex components into smaller ones so they can be moved to separate files and tested independently.",
 		"If there is a method or function that can be reused, move it to a separate file.",
 		"Avoid use of 'this' in javascript whenever possible.",
-		"Use Svelte runes instead of old version code.",
+		"Use Svelte 5 runes instead of old version code.",
 		"Do not use comments to describe what is happening, use comments to explain the why code is written in this way, if it is not obvious.",
 		"Do not write README files for each new feature or component. We will do those at the end of the project.",
 		"Use functional components instead of class components.",
+		"move html code into separate Sveltecomponents when iterating over data",
 		"Do not build or run dev server for me, I will do that. You can run tests or type checker or linter",
 		"Use separate svelte components to keep file size small.",
+		"make sure there are no Typescript errors or prettier errors",
 		"If using interfaces, move them to a separate file to avoid cluttering the main file."
 	]
 }

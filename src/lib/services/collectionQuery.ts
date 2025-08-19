@@ -28,8 +28,14 @@ export class CollectionQuery {
 	}
 
 	static async hasAccessToCollection(user: User, uuid: string): Promise<boolean> {
-		const collections = await this.getUserCollections(user);
-		return collections.some((collection) => collection.uuid === uuid);
+		try {
+			const collectionDocRef = doc(db, `users/${user.uid}/collections`, uuid);
+			const collectionDoc = await getDoc(collectionDocRef);
+			return collectionDoc.exists();
+		} catch (error) {
+			console.error('Error checking collection access:', error);
+			return false;
+		}
 	}
 
 	static async getCollectionInfo(user: User, uuid: string): Promise<ImageCollection | null> {

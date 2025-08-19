@@ -3,6 +3,7 @@
 	import { writable } from 'svelte/store';
 	import { ImageService } from '$lib/imageService';
 	import { CollectionService } from '$lib/collectionService';
+	import type { ImageCollection } from '$lib/types/collection.types';
 
 	import HelperText from '$lib/components/HelperText.svelte';
 	import FileUploadButton from '$lib/components/FileUploadButton.svelte';
@@ -15,6 +16,7 @@
 	export let user: User;
 	export let uploadLimit: { canUpload: boolean; remaining: number; limit: number };
 	export let currentCollectionUuid: string;
+	export let collections: ImageCollection[] = [];
 	export let onLimitsUpdate: () => Promise<void>;
 
 	let showTVApproval = false;
@@ -104,6 +106,7 @@
 		{user}
 		{uploadLimit}
 		{currentCollectionUuid}
+		{collections}
 		onUploadSuccess={handleUploadSuccess}
 		{onLimitsUpdate}
 	/>

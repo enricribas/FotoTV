@@ -230,6 +230,7 @@
 				user={$user}
 				{uploadLimit}
 				{currentCollectionUuid}
+				collections={userCollections}
 				onLimitsUpdate={() => updateUploadLimits($user)}
 			/>
 		{:else if isTVDevice || isTVModeForced}
