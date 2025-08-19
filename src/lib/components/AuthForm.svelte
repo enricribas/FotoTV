@@ -5,7 +5,7 @@
 	export let onShowPasswordReset: () => void;
 
 	// Form state
-	const isRegistering = writable(true);
+	const stage = writable<1 | 2>(1); // 1: email/password, 2: name/confirm password
 	const isLoading = writable(false);
 
 	// Form data
@@ -18,19 +18,6 @@
 	const message = writable('');
 	const messageType = writable<'success' | 'error'>('error');
 
-	function toggleMode() {
-		isRegistering.update((v) => !v);
-		clearForm();
-	}
-
-	function clearForm() {
-		email.set('');
-		password.set('');
-		confirmPassword.set('');
-		displayName.set('');
-		message.set('');
-	}
-
 	function clearMessage() {
 		message.set('');
 	}
@@ -40,7 +27,7 @@
 		messageType.set(type);
 	}
 
-	function validateForm(): boolean {
+	function validateStage1(): boolean {
 		if (!$email || !$password) {
 			setMessage('Please fill in all required fields');
 			return false;
@@ -57,79 +44,108 @@
 			return false;
 		}
 
-		if ($isRegistering) {
-			if (!$displayName?.trim()) {
-				setMessage('Please enter your name');
-				return false;
-			}
+		return true;
+	}
 
-			if ($password !== $confirmPassword) {
-				setMessage('Passwords do not match');
-				return false;
-			}
+	function validateStage2(): boolean {
+		if (!$displayName?.trim()) {
+			setMessage('Please enter your name');
+			return false;
+		}
+
+		if ($password !== $confirmPassword) {
+			setMessage('Passwords do not match');
+			return false;
 		}
 
 		return true;
 	}
 
-	async function handleSubmit() {
-		if ($isLoading) return;
-
-		clearMessage();
-
-		if (!validateForm()) {
+	async function handleStage1Submit() {
+		if (!validateStage1()) {
 			return;
 		}
 
 		isLoading.set(true);
+		clearMessage();
 
 		try {
-			if ($isRegistering) {
-				await AuthService.register($email, $password, $displayName);
-				setMessage('Account created successfully! You are now signed in.', 'success');
-			} else {
-				await AuthService.signIn($email, $password);
-				setMessage('Signed in successfully!', 'success');
-			}
-		} catch (error: unknown) {
-			const authError = error as { message?: string };
-			setMessage(authError.message || 'An error occurred. Please try again.');
+			// Attempt to sign in first
+			await AuthService.trySignIn($email, $password);
+			setMessage('Signed in successfully!', 'success');
+		} catch {
+			// Any authentication failure means we should proceed to stage 2
+			// (could be wrong password, user doesn't exist, etc.)
+			stage.set(2);
+			clearMessage();
 		} finally {
 			isLoading.set(false);
 		}
+	}
+
+	async function handleStage2Submit() {
+		if (!validateStage2()) {
+			return;
+		}
+
+		isLoading.set(true);
+		clearMessage();
+
+		try {
+			await AuthService.register($email, $password, $displayName);
+			setMessage('Account created successfully! You are now signed in.', 'success');
+		} catch (error: unknown) {
+			const authError = error as { message?: string };
+
+			// If user already exists, automatically return to stage 1
+			if (authError.message?.includes('email address is already registered')) {
+				console.info(
+					'%c[PhotoTV Auth]%c User already exists - redirecting back to stage 1 for password correction.',
+					'color: #2563eb; font-weight: bold',
+					'color: #6b7280'
+				);
+				setMessage(
+					'An account with this email already exists. Please check your password and try again.'
+				);
+				// Clear stage 2 fields and return to stage 1
+				displayName.set('');
+				confirmPassword.set('');
+				stage.set(1);
+			} else {
+				setMessage(authError.message || 'An error occurred during registration. Please try again.');
+			}
+		} finally {
+			isLoading.set(false);
+		}
+	}
+
+	async function handleSubmit() {
+		if ($isLoading) return;
+
+		if ($stage === 1) {
+			await handleStage1Submit();
+		} else {
+			await handleStage2Submit();
+		}
+	}
+
+	function goBackToStage1() {
+		stage.set(1);
+		confirmPassword.set('');
+		displayName.set('');
+		clearMessage();
 	}
 </script>
 
 <div class="space-y-4">
 	<div class="text-center">
 		<h2 class="text-2xl font-bold text-gray-800">
-			{$isRegistering ? 'Create Account' : 'Sign In'}
+			{$stage === 1 ? '' : 'Complete Your Account'}
 		</h2>
-		<p class="mt-2 text-sm text-gray-600">
-			{$isRegistering
-				? 'Create your FotoTV account to get started'
-				: 'Welcome back! Please sign in to continue'}
-		</p>
 	</div>
 
-	<!-- Mode toggle at the top for better visibility -->
-	{#if !$isRegistering}
-		<div class="text-center">
-			<p class="text-sm text-gray-600">
-				Don't have an account?
-				<button
-					class="ml-1 font-semibold text-orange-600 underline hover:text-orange-700"
-					on:click={toggleMode}
-					disabled={$isLoading}
-				>
-					Create Account
-				</button>
-			</p>
-		</div>
-	{/if}
-
 	<form on:submit|preventDefault={handleSubmit} class="space-y-4">
-		{#if $isRegistering}
+		{#if $stage === 2}
 			<div>
 				<label for="display-name" class="mb-1 block text-sm font-medium text-gray-700">
 					Display Name
@@ -148,39 +164,32 @@
 		{/if}
 
 		<div>
-			<label for="email" class="mb-1 block text-sm font-medium text-gray-700">
-				Email Address
-			</label>
 			<input
 				id="email"
 				type="email"
 				placeholder="Enter your email"
 				bind:value={$email}
 				class="input input-bordered w-full"
-				disabled={$isLoading}
+				disabled={$isLoading || $stage === 2}
 				on:input={clearMessage}
 				required
 			/>
 		</div>
 
 		<div>
-			<label for="password" class="mb-1 block text-sm font-medium text-gray-700"> Password </label>
 			<input
 				id="password"
 				type="password"
 				placeholder="Enter your password"
 				bind:value={$password}
 				class="input input-bordered w-full"
-				disabled={$isLoading}
+				disabled={$isLoading || $stage === 2}
 				on:input={clearMessage}
 				required
 			/>
-			{#if $isRegistering}
-				<p class="mt-1 text-xs text-gray-500">Password must be at least 6 characters long</p>
-			{/if}
 		</div>
 
-		{#if $isRegistering}
+		{#if $stage === 2}
 			<div>
 				<label for="confirm-password" class="mb-1 block text-sm font-medium text-gray-700">
 					Confirm Password
@@ -195,6 +204,7 @@
 					on:input={clearMessage}
 					required
 				/>
+				<p class="mt-1 text-xs text-gray-500">Password must be at least 6 characters long</p>
 			</div>
 		{/if}
 
@@ -205,16 +215,29 @@
 		>
 			{#if $isLoading}
 				<span class="loading loading-spinner loading-sm mr-2"></span>
-				{$isRegistering ? 'Creating Account...' : 'Signing In...'}
+				{$stage === 1 ? 'Checking your account...' : 'Creating Account...'}
 			{:else}
-				{$isRegistering ? 'Create Account' : 'Sign In'}
+				{$stage === 1 ? 'Sign-in / Sign-up' : 'Create Account'}
 			{/if}
 		</button>
 	</form>
 
+	<!-- Stage 2 back button -->
+	{#if $stage === 2}
+		<div class="text-center">
+			<button
+				class="text-sm text-blue-600 underline hover:text-blue-700"
+				on:click={goBackToStage1}
+				disabled={$isLoading}
+			>
+				← Back to sign in
+			</button>
+		</div>
+	{/if}
+
 	<!-- Bottom actions -->
-	<div class="space-y-2 text-center">
-		{#if !$isRegistering}
+	{#if $stage === 1}
+		<div class="text-center">
 			<button
 				class="text-sm text-blue-600 underline hover:text-blue-700"
 				on:click={onShowPasswordReset}
@@ -222,27 +245,8 @@
 			>
 				Forgot your password?
 			</button>
-		{/if}
-
-		{#if $isRegistering}
-			<div class="flex items-center">
-				<div class="flex-1 border-t border-gray-300"></div>
-				<span class="px-3 text-sm text-gray-500">or</span>
-				<div class="flex-1 border-t border-gray-300"></div>
-			</div>
-
-			<p class="text-sm text-gray-600">
-				Already have an account?
-				<button
-					class="ml-1 text-blue-600 underline hover:text-blue-700"
-					on:click={toggleMode}
-					disabled={$isLoading}
-				>
-					Sign In
-				</button>
-			</p>
-		{/if}
-	</div>
+		</div>
+	{/if}
 
 	<!-- Message Display -->
 	{#if $message}

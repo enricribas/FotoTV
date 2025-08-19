@@ -49,6 +49,42 @@ export class AuthService {
 	}
 
 	/**
+	 * Attempt sign in for unified login/signup flow
+	 * Does not log expected errors to console
+	 *
+	 * Note: Browser will still show 400 Bad Request in console for failed authentication.
+	 * This is expected behavior and cannot be suppressed as it's logged by the browser
+	 * automatically for failed HTTP requests to Firebase Auth API.
+	 */
+	static async trySignIn(email: string, password: string): Promise<User> {
+		try {
+			const userCredential = await signInWithEmailAndPassword(auth, email, password);
+			return userCredential.user;
+		} catch (error: unknown) {
+			const authError = error as { code?: string; message?: string };
+
+			// Only log unexpected errors to console
+			if (
+				authError.code !== 'auth/user-not-found' &&
+				authError.code !== 'auth/invalid-credential' &&
+				authError.code !== 'auth/wrong-password'
+			) {
+				console.error('Unexpected sign in error:', error);
+			} else {
+				// Log helpful message for expected authentication failures
+				console.info(
+					'%c[PhotoTV Auth]%c Expected authentication check - proceeding to account creation. The 400 HTTP error above is normal behavior during unified login/signup flow.',
+					'color: #2563eb; font-weight: bold',
+					'color: #6b7280'
+				);
+			}
+
+			// For any authentication failure, throw error to proceed to stage 2
+			throw new Error(this.getErrorMessage(authError.code));
+		}
+	}
+
+	/**
 	 * Send password reset email
 	 */
 	static async resetPassword(email: string): Promise<void> {
