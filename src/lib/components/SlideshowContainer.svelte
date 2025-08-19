@@ -22,9 +22,13 @@
 	import { createFrameManager, ReactiveFrameUpdater } from '$lib/utils/frameUtils';
 	import { collectionStore } from '$lib/stores/collectionStore';
 	import { CollectionService } from '$lib/collectionService';
+	import { imagePreloader } from '$lib/utils/imagePreloader';
 	import SlideshowControls from './SlideshowControls.svelte';
 	import DeleteConfirmDialog from './DeleteConfirmDialog.svelte';
 	import SlideshowDisplay from './SlideshowDisplay.svelte';
+
+	// Configuration
+	const SLIDESHOW_INTERVAL_MS = 30000; // 30 seconds
 
 	let state = createInitialSlideshowState();
 	let frameElement: HTMLElement | undefined;
@@ -88,6 +92,7 @@
 		slideshowManager.stop();
 		frameManager.stopListening();
 		frameUpdater.cancel();
+		imagePreloader.clearCache();
 		if (unsubscribeAuth) {
 			unsubscribeAuth();
 		}
@@ -154,7 +159,7 @@
 
 		slideshowManager.start(async () => {
 			await handleNextImage(state, actions, refreshImages);
-		}, 30000);
+		}, SLIDESHOW_INTERVAL_MS);
 	}
 
 	function goBack() {
@@ -236,7 +241,6 @@
 		loading={state.loading}
 		error={state.error}
 		imageRefs={state.imageRefs}
-		loadingNext={state.loadingNext}
 		currentImageUrl={state.currentImageUrl}
 		onGoBack={goBack}
 	/>

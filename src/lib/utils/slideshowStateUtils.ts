@@ -14,6 +14,7 @@ import {
 	adjustIndexAfterDeletion,
 	createSlideshowInterval
 } from './slideshowUtils';
+import { imagePreloader } from './imagePreloader';
 
 export interface SlideshowState {
 	user: User | null;
@@ -94,6 +95,15 @@ export async function loadImageList(
 			return { success: false };
 		}
 
+		// Start preloading first few images in background
+		if (result.imageRefs.length > 0) {
+			const initialPreloadCount = Math.min(3, result.imageRefs.length);
+			const imagesToPreload = result.imageRefs.slice(0, initialPreloadCount);
+			imagePreloader
+				.preloadImages(imagesToPreload)
+				.catch((err) => console.warn('Failed to preload initial images:', err));
+		}
+
 		return { success: true, imageRefs: result.imageRefs };
 	} catch (err) {
 		console.error('Error loading image list:', err);
@@ -117,6 +127,19 @@ export async function loadCurrentImage(
 	try {
 		actions.setLoadingNext(true);
 		const imageRef = imageRefs[currentImageIndex];
+
+		// Check if image is already preloaded
+		const preloadedUrl = imagePreloader.getPreloadedImage(imageRef);
+		if (preloadedUrl) {
+			actions.setCurrentImageUrl(preloadedUrl);
+			// Start preloading adjacent images in background
+			imagePreloader
+				.preloadAdjacent(imageRefs, currentImageIndex)
+				.catch((err) => console.warn('Failed to preload adjacent images:', err));
+			return { success: true, url: preloadedUrl };
+		}
+
+		// Load image normally if not preloaded
 		const result = await getImageUrl(imageRef);
 
 		if (result.error) {
@@ -125,6 +148,12 @@ export async function loadCurrentImage(
 		}
 
 		actions.setCurrentImageUrl(result.url);
+
+		// Start preloading adjacent images in background
+		imagePreloader
+			.preloadAdjacent(imageRefs, currentImageIndex)
+			.catch((err) => console.warn('Failed to preload adjacent images:', err));
+
 		return { success: true, url: result.url };
 	} catch (err) {
 		console.error('Error loading current image:', err);
@@ -176,6 +205,14 @@ export async function handleNextImage(
 	const nextIndex = getNextImageIndex(state.currentImageIndex, state.imageRefs.length);
 	actions.setCurrentImageIndex(nextIndex);
 
+	// Preload the next image if not already cached
+	const nextImageRef = state.imageRefs[nextIndex];
+	if (!imagePreloader.isCached(nextImageRef)) {
+		imagePreloader
+			.preloadImage(nextImageRef)
+			.catch((err) => console.warn('Failed to preload next image:', err));
+	}
+
 	await loadCurrentImage(state.imageRefs, nextIndex, actions);
 }
 
@@ -190,6 +227,14 @@ export async function handlePreviousImage(
 
 	const prevIndex = getPreviousImageIndex(state.currentImageIndex, state.imageRefs.length);
 	actions.setCurrentImageIndex(prevIndex);
+
+	// Preload the previous image if not already cached
+	const prevImageRef = state.imageRefs[prevIndex];
+	if (!imagePreloader.isCached(prevImageRef)) {
+		imagePreloader
+			.preloadImage(prevImageRef)
+			.catch((err) => console.warn('Failed to preload previous image:', err));
+	}
 
 	await loadCurrentImage(state.imageRefs, prevIndex, actions);
 }
