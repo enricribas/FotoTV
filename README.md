@@ -13,6 +13,24 @@ A personal photo viewing app that lets you display your photos on your TV or lar
 
 ## Slideshow Configuration
 
+## Collection Management
+
+### Default Collections
+
+When a new user is created, they automatically get two default collections:
+
+- **Art** - Set as the primary collection for general photos
+- **Family** - For family-related photos
+
+### Creating Additional Collections
+
+Users can create additional collections beyond the default ones, but this feature requires a **Pro plan**. To enable this:
+
+1. In Firestore, add a `plan` field to the user's profile document with the value `"pro"`
+2. The "Add New Collection" option will then appear in the collection dropdown
+
+### Collection Timing
+
 You can customize the slideshow timing by adding a `time` field to your collection data in Firebase:
 
 - The `time` field should be set in **seconds** (not milliseconds)

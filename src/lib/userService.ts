@@ -37,6 +37,7 @@ export class UserService {
 					uid: data.uid,
 					email: data.email,
 					displayName: data.displayName || null,
+					plan: data.plan,
 					createdAt: data.createdAt,
 					updatedAt: data.updatedAt
 				} as UserProfile;
@@ -71,6 +72,19 @@ export class UserService {
 			await updateDoc(userDocRef, cleanUpdates as { [x: string]: FieldValue | Partial<unknown> });
 		} catch (error) {
 			console.error('Error updating user profile:', error);
+			throw error;
+		}
+	}
+
+	static async updateUserPlan(user: User, plan: string): Promise<void> {
+		try {
+			const userDocRef = doc(db, 'users', user.uid);
+			await updateDoc(userDocRef, {
+				plan: plan,
+				updatedAt: Timestamp.now()
+			});
+		} catch (error) {
+			console.error('Error updating user plan:', error);
 			throw error;
 		}
 	}

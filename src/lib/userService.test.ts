@@ -66,6 +66,7 @@ describe('UserService', () => {
 				uid: 'test-user-123',
 				email: 'test@example.com',
 				displayName: 'Test User',
+				plan: 'pro',
 				createdAt: { seconds: 1234567890 },
 				updatedAt: { seconds: 1234567890 }
 			};
@@ -100,13 +101,14 @@ describe('UserService', () => {
 			vi.mocked(doc).mockReturnValue(mockDocRef as ReturnType<typeof doc>);
 			vi.mocked(updateDoc).mockResolvedValue(undefined);
 
-			await UserService.updateProfile(mockUser, { displayName: 'Updated Name' });
+			await UserService.updateProfile(mockUser, { displayName: 'Updated Name', plan: 'pro' });
 
 			expect(doc).toHaveBeenCalledWith({}, 'users', 'test-user-123');
 			expect(updateDoc).toHaveBeenCalledWith(
 				mockDocRef,
 				expect.objectContaining({
-					displayName: 'Updated Name'
+					displayName: 'Updated Name',
+					plan: 'pro'
 				})
 			);
 		});

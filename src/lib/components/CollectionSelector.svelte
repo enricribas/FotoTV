@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { ImageCollection } from '$lib/types/collection.types';
+	import type { UserProfile } from '$lib/types/user.types';
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { CollectionService } from '$lib/collectionService';
+	import { UserService } from '$lib/userService';
 	import type { User } from 'firebase/auth';
 
 	export let selectedCollectionUuid: string;
@@ -17,6 +19,17 @@
 	let selectedCollection: ImageCollection | null = null;
 	let isCreating = false;
 	let newCollectionName = '';
+	let userProfile: UserProfile | null = null;
+
+	// Check if user has pro plan
+	$: hasProPlan = userProfile?.plan === 'pro';
+
+	// Load user profile to check plan
+	async function loadUserProfile() {
+		if (user) {
+			userProfile = await UserService.getUserProfile(user);
+		}
+	}
 
 	// Find the selected collection object
 	$: selectedCollection = collections.find((c) => c.uuid === selectedCollectionUuid) || null;
@@ -111,6 +124,9 @@
 		document.addEventListener('click', handleClickOutside);
 		document.addEventListener('keydown', handleKeydown);
 
+		// Load user profile when component mounts
+		loadUserProfile();
+
 		return () => {
 			document.removeEventListener('click', handleClickOutside);
 			document.removeEventListener('keydown', handleKeydown);
@@ -186,47 +202,49 @@
 						</li>
 					{/each}
 
-					<!-- Add New Collection Section -->
-					<li class="border-t border-gray-200">
-						<div class="px-4 py-2">
-							<div class="flex items-center space-x-2">
-								<input
-									type="text"
-									placeholder="New collection name"
-									bind:value={newCollectionName}
-									on:keydown={handleCreateKeydown}
-									class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
-									disabled={isCreating}
-								/>
-								<button
-									type="button"
-									on:click={createNewCollection}
-									disabled={isCreating || !newCollectionName.trim()}
-									class="rounded bg-orange-500 px-2 py-1 text-xs text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
-								>
-									{#if isCreating}
-										<svg class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
-											<circle
-												class="opacity-25"
-												cx="12"
-												cy="12"
-												r="10"
-												stroke="currentColor"
-												stroke-width="4"
-											></circle>
-											<path
-												class="opacity-75"
-												fill="currentColor"
-												d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-											></path>
-										</svg>
-									{:else}
-										Add
-									{/if}
-								</button>
+					<!-- Add New Collection Section (Pro users only) -->
+					{#if hasProPlan}
+						<li class="border-t border-gray-200">
+							<div class="px-4 py-2">
+								<div class="flex items-center space-x-2">
+									<input
+										type="text"
+										placeholder="New collection name"
+										bind:value={newCollectionName}
+										on:keydown={handleCreateKeydown}
+										class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
+										disabled={isCreating}
+									/>
+									<button
+										type="button"
+										on:click={createNewCollection}
+										disabled={isCreating || !newCollectionName.trim()}
+										class="rounded bg-orange-500 px-2 py-1 text-xs text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+									>
+										{#if isCreating}
+											<svg class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
+												<circle
+													class="opacity-25"
+													cx="12"
+													cy="12"
+													r="10"
+													stroke="currentColor"
+													stroke-width="4"
+												></circle>
+												<path
+													class="opacity-75"
+													fill="currentColor"
+													d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+												></path>
+											</svg>
+										{:else}
+											Add
+										{/if}
+									</button>
+								</div>
 							</div>
-						</div>
-					</li>
+						</li>
+					{/if}
 				</ul>
 			</div>
 		{/if}

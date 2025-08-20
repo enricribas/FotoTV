@@ -47,7 +47,10 @@ export class CollectionQuery {
 		const collections = await this.getUserCollections(user);
 
 		if (collections.length === 0) {
-			return await CollectionMutation.createCollection(user, user.email || 'My Photos');
+			// Create two default collections for new users
+			const artCollectionUuid = await CollectionMutation.createCollection(user, 'Art');
+			await CollectionMutation.createCollection(user, 'Family');
+			return artCollectionUuid;
 		}
 
 		return collections[0].uuid;
