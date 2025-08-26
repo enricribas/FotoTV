@@ -53,6 +53,6 @@
 		class="btn btn-sm mt-2 w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
 		on:click={onBackToLogin}
 	>
-		← Back to Login
+		← This is not a TV
 	</button>
 </div>

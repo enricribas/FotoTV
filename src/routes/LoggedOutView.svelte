@@ -33,7 +33,7 @@
 				<div class="flex-1 border-t border-gray-300"></div>
 			</div>
 
-			<button class="btn btn-outline w-full" on:click={handleTVMode}>Switch to TV Mode </button>
+			<button class="btn btn-outline w-full" on:click={handleTVMode}>I'm on a TV</button>
 		</div>
 	{/if}
 </div>
