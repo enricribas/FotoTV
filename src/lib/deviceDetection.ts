@@ -9,72 +9,6 @@ export interface DeviceInfo {
 }
 
 /**
- * Detects if the app is running on an Android TV or similar TV device
- */
-export function isAndroidTV(): boolean {
-	if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'android') {
-		return false;
-	}
-
-	// Check for Android TV specific features
-	const userAgent = navigator.userAgent.toLowerCase();
-
-	// Android TV user agents typically contain these identifiers
-	const tvIndicators = [
-		'android tv',
-		'googletv',
-		'smarttv',
-		'smart-tv',
-		'television',
-		'tv',
-		'settopbox'
-	];
-
-	return tvIndicators.some((indicator) => userAgent.includes(indicator));
-}
-
-/**
- * Detects if the device has a physical keyboard available
- */
-export function hasPhysicalKeyboard(): boolean {
-	// For web platform, check if touch is the primary input
-	if (Capacitor.getPlatform() === 'web') {
-		// If no touch support, likely has keyboard
-		if (!('ontouchstart' in window) && !navigator.maxTouchPoints) {
-			return true;
-		}
-
-		// Check for keyboard-specific media queries
-		if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
-			return true;
-		}
-
-		return false;
-	}
-
-	// For Android, check configuration and hardware features
-	if (Capacitor.getPlatform() === 'android') {
-		// TV devices typically don't have physical keyboards but may have bluetooth keyboards
-		// We'll check screen size and TV indicators as proxies
-		const screenWidth = window.screen.width;
-		const screenHeight = window.screen.height;
-		const largeScreen = Math.max(screenWidth, screenHeight) >= 1280;
-
-		// Large screens (TV/desktop-like) are more likely to have keyboards
-		if (largeScreen && isAndroidTV()) {
-			// TV might have bluetooth keyboard, assume false by default
-			return false;
-		}
-
-		// Mobile devices typically have virtual keyboards only
-		return false;
-	}
-
-	// Default to false for unknown platforms
-	return false;
-}
-
-/**
  * Detects if the device primarily uses touch input
  */
 export function isTouchDevice(): boolean {
@@ -82,12 +16,8 @@ export function isTouchDevice(): boolean {
 		return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 	}
 
-	// Android platform is a touch device
+	// Android platform is generally a touch device
 	if (Capacitor.getPlatform() === 'android') {
-		// Android TV might not have touch
-		if (isAndroidTV()) {
-			return false;
-		}
 		return true;
 	}
 
@@ -95,44 +25,53 @@ export function isTouchDevice(): boolean {
 }
 
 /**
- * Determines the screen/device type based on size and capabilities
+ * Determines the screen/device type based on size
+ * Simplified logic: anything not mobile is treated as TV-capable
  */
 export function getScreenType(): 'mobile' | 'tablet' | 'tv' | 'desktop' {
-	const screenWidth = window.screen.width;
-	const screenHeight = window.screen.height;
+	const screenWidth = window.innerWidth || window.screen.width;
+	const screenHeight = window.innerHeight || window.screen.height;
 	const maxDimension = Math.max(screenWidth, screenHeight);
+	const minDimension = Math.min(screenWidth, screenHeight);
 
-	// Check for TV first
-	if (isAndroidTV()) {
-		return 'tv';
+	// Mobile detection - narrow screens or small overall size
+	if (maxDimension < 768 || (maxDimension < 1024 && minDimension < 600)) {
+		return 'mobile';
 	}
 
-	// Desktop/web platform with large screen
-	if (Capacitor.getPlatform() === 'web' && maxDimension >= 1280) {
-		return 'desktop';
+	// For simplicity, treat everything else as TV
+	// This includes tablets, desktops, and actual TVs
+	return 'tv';
+}
+
+/**
+ * Simplified TV detection
+ * Assumes TV mode for any device that's not a phone and has a wide screen
+ */
+export function isTV(): boolean {
+	const screenType = getScreenType();
+
+	// Everything that's not mobile is considered TV
+	// This includes tablets, desktops, and actual TVs
+	return screenType !== 'mobile';
+}
+
+/**
+ * Detects if the device has a physical keyboard available
+ * Simplified: assume non-touch devices have keyboards
+ */
+export function hasPhysicalKeyboard(): boolean {
+	// If no touch support, likely has keyboard
+	if (!isTouchDevice()) {
+		return true;
 	}
 
-	// Mobile vs Tablet based on screen size
-	if (Capacitor.isNativePlatform()) {
-		// Use density-independent pixels (rough estimate)
-		const density = window.devicePixelRatio || 1;
-		const dpWidth = screenWidth / density;
-		const dpHeight = screenHeight / density;
-		const maxDp = Math.max(dpWidth, dpHeight);
-
-		if (maxDp >= 900) {
-			return 'tablet';
-		} else {
-			return 'mobile';
-		}
+	// Check for pointer precision as an indicator
+	if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
+		return true;
 	}
 
-	// Fallback for web based on viewport
-	if (maxDimension >= 1024 && Math.min(screenWidth, screenHeight) >= 768) {
-		return 'tablet';
-	}
-
-	return 'mobile';
+	return false;
 }
 
 /**
@@ -147,7 +86,7 @@ export function getInputMethods(): string[] {
 
 	if (hasPhysicalKeyboard()) {
 		methods.push('keyboard');
-	} else {
+	} else if (isTouchDevice()) {
 		methods.push('virtual-keyboard');
 	}
 
@@ -156,8 +95,8 @@ export function getInputMethods(): string[] {
 		methods.push('mouse');
 	}
 
-	// D-pad detection for TV
-	if (isAndroidTV()) {
+	// For TV mode, assume remote/dpad input
+	if (isTV()) {
 		methods.push('dpad');
 		methods.push('remote');
 	}
@@ -170,7 +109,7 @@ export function getInputMethods(): string[] {
  */
 export function getDeviceInfo(): DeviceInfo {
 	return {
-		isTV: isAndroidTV(),
+		isTV: isTV(),
 		hasPhysicalKeyboard: hasPhysicalKeyboard(),
 		isTouchDevice: isTouchDevice(),
 		screenType: getScreenType(),
@@ -180,26 +119,10 @@ export function getDeviceInfo(): DeviceInfo {
 
 /**
  * Checks if the app should use TV-optimized UI
+ * Simplified: use TV UI for anything that's not a mobile phone
  */
 export function shouldUseTVUI(): boolean {
-	const deviceInfo = getDeviceInfo();
-
-	// Use TV UI if:
-	// 1. Running on Android TV
-	// 2. Large screen with no touch input
-	// 3. Primary input is not touch
-
-	if (deviceInfo.isTV) {
-		return true;
-	}
-
-	if (deviceInfo.screenType === 'tv' || deviceInfo.screenType === 'desktop') {
-		if (!deviceInfo.isTouchDevice || deviceInfo.inputMethods.includes('dpad')) {
-			return true;
-		}
-	}
-
-	return false;
+	return isTV();
 }
 
 /**
@@ -241,3 +164,11 @@ export function createDeviceStore() {
 
 // Export a default device store instance
 export const deviceStore = createDeviceStore();
+
+/**
+ * Checks for Android TV platform (kept for backwards compatibility)
+ */
+export function isAndroidTV(): boolean {
+	// Simply use the new isTV logic
+	return isTV();
+}

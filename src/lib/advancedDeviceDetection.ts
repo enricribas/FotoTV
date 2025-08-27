@@ -76,56 +76,9 @@ export class AdvancedDeviceDetector {
 			return true;
 		}
 
-		if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'android') {
-			return false;
-		}
-
-		// Method 1: Check device info from Capacitor
-		if (this.deviceInfo) {
-			const model = this.deviceInfo.model?.toLowerCase() || '';
-			const manufacturer = this.deviceInfo.manufacturer?.toLowerCase() || '';
-
-			// Common Android TV manufacturers and models
-			const tvManufacturers = ['nvidia', 'sony', 'philips', 'tcl', 'hisense', 'xiaomi'];
-			const tvModels = ['shield', 'bravia', 'androidtv', 'googletv', 'chromecast'];
-
-			if (
-				tvManufacturers.some((m) => manufacturer.includes(m)) ||
-				tvModels.some((m) => model.includes(m))
-			) {
-				return true;
-			}
-		}
-
-		// Method 2: Check user agent
-		const userAgent = navigator.userAgent.toLowerCase();
-		const tvIndicators = [
-			'android tv',
-			'googletv',
-			'smarttv',
-			'smart-tv',
-			'television',
-			'settopbox',
-			'nexus player',
-			'adt-'
-		];
-
-		if (tvIndicators.some((indicator) => userAgent.includes(indicator))) {
-			return true;
-		}
-
-		// Method 3: Check screen characteristics
-		const screenWidth = window.screen.width;
-		const screenHeight = window.screen.height;
-		const diagonal = Math.sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
-		const density = window.devicePixelRatio || 1;
-
-		// Large screen with low density often indicates TV
-		if (diagonal > 2000 && density <= 2) {
-			return true;
-		}
-
-		return false;
+		// Simplified: use screen-based detection
+		const screenType = await this.getScreenType();
+		return screenType !== 'mobile';
 	}
 
 	/**
@@ -295,47 +248,20 @@ export class AdvancedDeviceDetector {
 	static async getScreenType(): Promise<'mobile' | 'tablet' | 'tv' | 'desktop'> {
 		await this.initialize();
 
-		// Check for TV first
-		if (await this.isAndroidTV()) {
-			return 'tv';
-		}
-
-		const screenWidth = window.screen.width;
-		const screenHeight = window.screen.height;
+		// Simplified logic based on screen size
+		const screenWidth = window.innerWidth || window.screen.width;
+		const screenHeight = window.innerHeight || window.screen.height;
 		const maxDimension = Math.max(screenWidth, screenHeight);
 		const minDimension = Math.min(screenWidth, screenHeight);
 
-		// Desktop/web platform
-		if (Capacitor.getPlatform() === 'web' && maxDimension >= 1280) {
-			return 'desktop';
+		// Mobile detection - narrow screens or small overall size
+		if (maxDimension < 768 || (maxDimension < 1024 && minDimension < 600)) {
+			return 'mobile';
 		}
 
-		// Use device info for better detection
-		if (this.deviceInfo && Capacitor.isNativePlatform()) {
-			const model = this.deviceInfo.model?.toLowerCase() || '';
-
-			// Tablet detection based on model names
-			if (model.includes('tablet')) {
-				return 'tablet';
-			}
-
-			// Use density-independent pixels
-			const density = window.devicePixelRatio || 1;
-			const dpWidth = screenWidth / density;
-			const dpHeight = screenHeight / density;
-			const maxDp = Math.max(dpWidth, dpHeight);
-
-			if (maxDp >= 900) {
-				return 'tablet';
-			}
-		}
-
-		// Fallback to screen size
-		if (maxDimension >= 1024 && minDimension >= 768) {
-			return 'tablet';
-		}
-
-		return 'mobile';
+		// For simplicity, treat everything else as TV
+		// This includes tablets, desktops, and actual TVs
+		return 'tv';
 	}
 
 	/**
@@ -388,13 +314,8 @@ export class AdvancedDeviceDetector {
 		const isLeanback = await this.isLeanback();
 
 		// Calculate shouldUseTVUI without circular dependency
-		const shouldUseTVUI =
-			isTV ||
-			isLeanback ||
-			((screenType === 'tv' || screenType === 'desktop') &&
-				(inputMethods.includes('dpad') ||
-					inputMethods.includes('remote') ||
-					(!isTouchDevice && inputMethods.includes('gamepad'))));
+		// Simplified: TV UI for anything that's not mobile
+		const shouldUseTVUI = screenType !== 'mobile';
 
 		const hasHardwareKeyboard = hasPhysicalKeyboard;
 		const supportsGamepad = this.supportsGamepad();
@@ -420,33 +341,9 @@ export class AdvancedDeviceDetector {
 	static async shouldUseTVUI(): Promise<boolean> {
 		await this.initialize();
 
-		const isTV = await this.isAndroidTV();
-		const isLeanback = await this.isLeanback();
-
-		// Use TV UI if:
-		// 1. Running on Android TV
-		// 2. In leanback mode
-		// 3. Large screen with remote/dpad input
-
-		if (isTV || isLeanback) {
-			return true;
-		}
-
+		// Simplified: use TV UI for anything that's not mobile
 		const screenType = await this.getScreenType();
-		const inputMethods = await this.getInputMethods();
-		const isTouchDevice = await this.isTouchDevice();
-
-		if (screenType === 'tv' || screenType === 'desktop') {
-			if (
-				inputMethods.includes('dpad') ||
-				inputMethods.includes('remote') ||
-				(!isTouchDevice && inputMethods.includes('gamepad'))
-			) {
-				return true;
-			}
-		}
-
-		return false;
+		return screenType !== 'mobile';
 	}
 }
 
