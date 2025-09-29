@@ -8,6 +8,7 @@
 	import HelperText from '$lib/components/HelperText.svelte';
 	import FileUploadButton from '$lib/components/FileUploadButton.svelte';
 	import TVApprovalModal from '$lib/components/TVApprovalModal.svelte';
+	import UploadLimitDisplay from '$lib/components/UploadLimitDisplay.svelte';
 	import { browser } from '$app/environment';
 	import { shouldUseTVUI } from '$lib/tvUtils';
 	import { goto } from '$app/navigation';
@@ -18,6 +19,8 @@
 	export let currentCollectionUuid: string;
 	export let collections: ImageCollection[] = [];
 	export let onLimitsUpdate: () => Promise<void>;
+	export let showUploadLimit: boolean = false;
+	export let isCompactLayout: boolean = false;
 
 	let showTVApproval = false;
 	let showHelperText = true;
@@ -99,53 +102,71 @@
 	}
 </script>
 
-<div class="flex flex-col items-center space-y-4">
-	<HelperText {showHelperText} {isTVMode} onClose={closeHelperText} />
+<div
+	class="flex flex-col items-center space-y-4 {isCompactLayout
+		? 'lg:flex-row lg:items-start lg:space-y-0 lg:space-x-8'
+		: ''}"
+>
+	<!-- Left column - Text content -->
+	<div class="w-full space-y-4 {isCompactLayout ? 'lg:w-1/2' : ''}">
+		<HelperText {showHelperText} {isTVMode} onClose={closeHelperText} />
 
-	<FileUploadButton
-		{user}
-		{uploadLimit}
-		{currentCollectionUuid}
-		{collections}
-		onUploadSuccess={handleUploadSuccess}
-		{onLimitsUpdate}
-	/>
-
-	<!-- Slideshow Button -->
-	<button
-		class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
-		on:click={() => {
-			// Ensure the current collection is set in the store before navigating
-			collectionStore.setSelectedCollection(currentCollectionUuid, user.uid);
-			goto('/slideshow');
-		}}
-	>
-		<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				stroke-width="2"
-				d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+		{#if showUploadLimit}
+			<UploadLimitDisplay
+				remaining={uploadLimit.remaining}
+				limit={uploadLimit.limit}
+				canUpload={uploadLimit.canUpload}
 			/>
-		</svg>
-		Slideshow
-	</button>
+		{/if}
+	</div>
 
-	<!-- TV Approval Button -->
-	<button
-		class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
-		on:click={toggleTVApproval}
-	>
-		<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				stroke-width="2"
-				d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
-			/>
-		</svg>
-		Connect TV
-	</button>
+	<!-- Right column - Buttons -->
+	<div class="flex w-full flex-col space-y-4 {isCompactLayout ? 'lg:w-1/2' : ''}">
+		<FileUploadButton
+			{user}
+			{uploadLimit}
+			{currentCollectionUuid}
+			{collections}
+			onUploadSuccess={handleUploadSuccess}
+			{onLimitsUpdate}
+		/>
+
+		<!-- Slideshow Button -->
+		<button
+			class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+			on:click={() => {
+				// Ensure the current collection is set in the store before navigating
+				collectionStore.setSelectedCollection(currentCollectionUuid, user.uid);
+				goto('/slideshow');
+			}}
+		>
+			<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+				/>
+			</svg>
+			Slideshow
+		</button>
+
+		<!-- TV Approval Button -->
+		<button
+			class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+			on:click={toggleTVApproval}
+		>
+			<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
+				/>
+			</svg>
+			Connect TV
+		</button>
+	</div>
 </div>
 
 <TVApprovalModal

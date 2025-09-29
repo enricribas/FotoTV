@@ -2,6 +2,7 @@
 	import type { User } from 'firebase/auth';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	import { browser } from '$app/environment';
 	import {
 		setupAuthStateListener,
 		handleLogout,
@@ -14,7 +15,7 @@
 	import { goto } from '$app/navigation';
 	import { CollectionService } from '$lib/collectionService';
 	import { UserService } from '$lib/userService';
-	import UploadLimitDisplay from '$lib/components/UploadLimitDisplay.svelte';
+
 	import CollectionSelector from '$lib/components/CollectionSelector.svelte';
 	import { collectionStore } from '$lib/stores/collectionStore';
 	import type { ImageCollection } from '$lib/types/collection.types';
@@ -31,15 +32,32 @@
 	let showUploadLimit = false;
 	let currentUser: User | null = null;
 	let userCollections: ImageCollection[] = [];
+	let isCompactLayout = false;
+
+	// Check if window size requires compact layout
+	function checkCompactLayout() {
+		if (browser) {
+			isCompactLayout = window.innerHeight < 800 || window.innerWidth < 1200;
+		}
+	}
 
 	onMount(() => {
 		let unsubscribe: (() => void) | undefined;
 
+		// Check initial layout
+		checkCompactLayout();
+
+		// Listen for window resize
+		window.addEventListener('resize', checkCompactLayout);
+
 		// Setup device detection
-		setupDeviceDetection().then((deviceInfo) => {
+		const checkDeviceDetection = async () => {
+			const deviceInfo = await setupDeviceDetection();
 			isTVDevice = deviceInfo.isTVDevice;
 			isTVModeForced = deviceInfo.isTVModeForced;
-		});
+		};
+
+		checkDeviceDetection();
 
 		// Setup auth listener
 		unsubscribe = setupAuthStateListener(
@@ -57,9 +75,19 @@
 
 		window.addEventListener('collectionsChanged', handleCollectionsChanged);
 
+		// Listen for storage changes to detect TV mode being disabled
+		const handleStorageChange = (e: StorageEvent) => {
+			if (e.key === 'tv_mode_disabled') {
+				checkDeviceDetection();
+			}
+		};
+		window.addEventListener('storage', handleStorageChange);
+
 		return () => {
 			unsubscribe?.();
 			window.removeEventListener('collectionsChanged', handleCollectionsChanged);
+			window.removeEventListener('resize', checkCompactLayout);
+			window.removeEventListener('storage', handleStorageChange);
 		};
 	});
 
@@ -71,8 +99,12 @@
 	}
 
 	// Handle going back to normal login from TV mode
-	function onBackToLogin() {
+	async function onBackToLogin() {
 		disableTVMode();
+		// Re-check device detection after disabling TV mode
+		const deviceInfo = await setupDeviceDetection();
+		isTVDevice = deviceInfo.isTVDevice;
+		isTVModeForced = deviceInfo.isTVModeForced;
 	}
 
 	function onTVLoginSuccess(tvUser: User) {
@@ -203,20 +235,34 @@
 	<div
 		class="{$user
 			? 'absolute top-[66px] left-4'
-			: 'absolute top-[66px] left-1/2 -translate-x-1/2 transform'} z-10"
+			: isTVDevice || isTVModeForced
+				? 'absolute top-[66px] left-4'
+				: 'absolute top-[66px] left-4 sm:left-1/2 sm:-translate-x-1/2 sm:transform'} z-10"
 	>
 		<div class="flex items-center space-x-3">
-			<img src="/FotoTV-logo2.png" alt="FotoTV Logo" class="{$user ? 'h-8' : 'h-16'} w-auto" />
+			<img
+				src="/FotoTV-logo2.png"
+				alt="FotoTV Logo"
+				class="{$user ? 'h-8' : isTVDevice || isTVModeForced ? 'h-8' : 'h-12 sm:h-16'} w-auto"
+			/>
 			<div class="flex items-center space-x-2">
-				<h1 class="{$user ? 'text-lg' : 'text-3xl'} font-bold text-gray-800">FotoTV</h1>
+				<h1
+					class="{$user
+						? 'text-lg'
+						: isTVDevice || isTVModeForced
+							? 'text-lg'
+							: 'text-2xl sm:text-3xl'} font-bold text-gray-800"
+				>
+					FotoTV
+				</h1>
 			</div>
 		</div>
 	</div>
 
-	<div class="w-full max-w-md">
+	<div class="w-full max-w-md {isCompactLayout ? 'lg:max-w-5xl' : ''}">
 		{#if $user}
 			<!-- Collection Selector - only show if user has multiple collections -->
-			<div class="mb-6">
+			<div class="mb-6 lg:mb-8">
 				<CollectionSelector
 					selectedCollectionUuid={currentCollectionUuid}
 					collections={userCollections}
@@ -232,21 +278,13 @@
 				{currentCollectionUuid}
 				collections={userCollections}
 				onLimitsUpdate={() => updateUploadLimits($user)}
+				{showUploadLimit}
+				{isCompactLayout}
 			/>
 		{:else if isTVDevice || isTVModeForced}
 			<TVLogin onLoginSuccess={onTVLoginSuccess} {onBackToLogin} />
 		{:else}
-			<LoggedOutView />
+			<LoggedOutView {isCompactLayout} />
 		{/if}
 	</div>
-
-	{#if $user && showUploadLimit}
-		<div class="fixed bottom-[66px] left-1/2 z-10 w-full max-w-xs -translate-x-1/2 transform px-4">
-			<UploadLimitDisplay
-				remaining={uploadLimit.remaining}
-				limit={uploadLimit.limit}
-				canUpload={uploadLimit.canUpload}
-			/>
-		</div>
-	{/if}
 </div>

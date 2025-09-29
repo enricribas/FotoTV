@@ -57,6 +57,11 @@ export class AdvancedDeviceDetector {
 	private static isTVModeForced(): boolean {
 		if (typeof window === 'undefined') return false;
 
+		// Check if TV mode has been explicitly disabled
+		if (localStorage.getItem('tv_mode_disabled') === 'true') {
+			return false;
+		}
+
 		// Check for TV mode in URL params (for local testing)
 		const urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.get('tv') === 'true') return true;
@@ -74,6 +79,11 @@ export class AdvancedDeviceDetector {
 		// Check for forced TV mode first (for local testing)
 		if (this.isTVModeForced()) {
 			return true;
+		}
+
+		// Check if TV mode has been explicitly disabled
+		if (typeof window !== 'undefined' && localStorage.getItem('tv_mode_disabled') === 'true') {
+			return false;
 		}
 
 		// Simplified: use screen-based detection
@@ -248,6 +258,11 @@ export class AdvancedDeviceDetector {
 	static async getScreenType(): Promise<'mobile' | 'tablet' | 'tv' | 'desktop'> {
 		await this.initialize();
 
+		// Check if TV mode has been explicitly disabled
+		if (typeof window !== 'undefined' && localStorage.getItem('tv_mode_disabled') === 'true') {
+			return 'desktop';
+		}
+
 		// Simplified logic based on screen size
 		const screenWidth = window.innerWidth || window.screen.width;
 		const screenHeight = window.innerHeight || window.screen.height;
@@ -341,6 +356,11 @@ export class AdvancedDeviceDetector {
 	static async shouldUseTVUI(): Promise<boolean> {
 		await this.initialize();
 
+		// Check if TV mode has been explicitly disabled
+		if (typeof window !== 'undefined' && localStorage.getItem('tv_mode_disabled') === 'true') {
+			return false;
+		}
+
 		// Simplified: use TV UI for anything that's not mobile
 		const screenType = await this.getScreenType();
 		return screenType !== 'mobile';
@@ -360,6 +380,7 @@ export const shouldUseTVUI = () => AdvancedDeviceDetector.shouldUseTVUI();
 export const enableTVMode = () => {
 	if (typeof window !== 'undefined') {
 		localStorage.setItem('tv_mode', 'true');
+		localStorage.removeItem('tv_mode_disabled');
 		window.location.reload();
 	}
 };
@@ -367,7 +388,11 @@ export const enableTVMode = () => {
 export const disableTVMode = () => {
 	if (typeof window !== 'undefined') {
 		localStorage.removeItem('tv_mode');
-		window.location.reload();
+		localStorage.setItem('tv_mode_disabled', 'true');
+		// Remove the tv parameter from URL without reloading
+		const url = new URL(window.location.href);
+		url.searchParams.delete('tv');
+		window.history.replaceState({}, '', url.toString());
 	}
 };
 

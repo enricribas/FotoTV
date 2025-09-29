@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { TVAuthService } from '$lib/tvAuth';
 	import type { User } from 'firebase/auth';
 
@@ -99,15 +98,7 @@
 	function handleBackToLogin() {
 		// Cancel any ongoing auth first
 		cancelAuth();
-		// Always try to disable TV mode directly as fallback
-		if (typeof window !== 'undefined') {
-			localStorage.removeItem('tv_mode');
-			// Use SvelteKit's goto for reactive navigation
-			const url = new URL(window.location.href);
-			url.searchParams.delete('tv');
-			goto(url.pathname + url.search, { replaceState: true });
-		}
-		// Also call the callback if available
+		// Call the callback which will handle disabling TV mode
 		if (onBackToLogin) {
 			onBackToLogin();
 		}
