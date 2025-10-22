@@ -51,13 +51,42 @@ service cloud.firestore {
              ) : true);
     }
 
+    // Shared Collections - public read, authenticated write
+    match /shares/{shareId} {
+      // Allow anyone to read share documents (for viewing shared collections)
+      allow read: if true;
 
+      // Allow authenticated users to query/list shares (needed for checking existing shares)
+      allow list: if request.auth != null;
 
-    // User Profiles - each user can manage their own profile
+      // Only authenticated users can create/update their own shares
+      allow create: if request.auth != null &&
+                    request.resource.data.owner == request.auth.uid &&
+                    validateShareData(request.resource.data);
+
+      // Only the owner can update/delete their shares
+      allow update, delete: if request.auth != null &&
+                            request.auth.uid == resource.data.owner;
+    }
+
+    // Helper function for share validation
+    function validateShareData(data) {
+      return data.keys().hasAll(['collectionId', 'owner', 'createdAt', 'collectionName', 'collection']) &&
+             data.collectionId is string &&
+             data.owner is string &&
+             data.createdAt is timestamp &&
+             data.collectionName is string &&
+             data.collection is map;
+    }
+
+    // User Profiles
     match /users/{userId} {
-      // Users can read, create, and update their own profile
-      allow read, write: if request.auth != null &&
-                         request.auth.uid == userId;
+      // Allow anyone to read displayName field for shared collections
+      allow read: if request.auth != null;
+
+      // Users can create and update their own profile
+      allow write: if request.auth != null &&
+                     request.auth.uid == userId;
     }
 
     // User Collections - each user can manage their own collections

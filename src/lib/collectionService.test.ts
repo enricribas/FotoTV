@@ -65,6 +65,7 @@ describe('CollectionService', () => {
 				name: 'Test Collection',
 				imageUploadLimit: 10,
 				currentImageCount: 0,
+				time: 30,
 				createdAt: { seconds: 1234567890, nanoseconds: 0 },
 				updatedAt: { seconds: 1234567890, nanoseconds: 0 }
 			});

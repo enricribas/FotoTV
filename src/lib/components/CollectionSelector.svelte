@@ -6,6 +6,9 @@
 	import { UserService } from '$lib/userService';
 	import type { User } from 'firebase/auth';
 	import CollectionSettingsModal from './CollectionSettingsModal.svelte';
+	import ShareCollectionModal from './ShareCollectionModal.svelte';
+	import { db } from '$lib/firebase';
+	import { doc, getDoc } from 'firebase/firestore';
 
 	export let selectedCollectionUuid: string;
 	export let collections: ImageCollection[] = [];
@@ -22,6 +25,8 @@
 	let newCollectionName = '';
 	let userProfile: UserProfile | null = null;
 	let showSettingsModal = false;
+	let showShareModal = false;
+	let collectionOwnerNames: Record<string, string> = {};
 
 	// Check if user has pro plan
 	$: hasProPlan = userProfile?.plan === 'pro';
@@ -31,6 +36,33 @@
 		if (user) {
 			userProfile = await UserService.getUserProfile(user);
 		}
+	}
+
+	// Load owner names for collections
+	async function loadOwnerNames() {
+		for (const collection of collections) {
+			// Check if collection has an owner field that's different from current user
+			if ((collection as any).owner && (collection as any).owner !== user.uid) {
+				try {
+					const userDoc = await getDoc(doc(db, 'users', (collection as any).owner));
+					if (userDoc.exists()) {
+						const userData = userDoc.data();
+						if (userData.displayName) {
+							collectionOwnerNames[collection.uuid] = userData.displayName;
+						}
+					}
+				} catch (err) {
+					console.error('Error loading owner name for collection:', collection.uuid, err);
+				}
+			}
+		}
+		// Trigger reactivity
+		collectionOwnerNames = collectionOwnerNames;
+	}
+
+	// Load owner names when collections change
+	$: if (collections.length > 0) {
+		loadOwnerNames();
 	}
 
 	// Find the selected collection object
@@ -156,6 +188,12 @@
 		}
 	}
 
+	function openShare() {
+		if (selectedCollection) {
+			showShareModal = true;
+		}
+	}
+
 	onMount(() => {
 		document.addEventListener('click', handleClickOutside);
 		document.addEventListener('keydown', handleKeydown);
@@ -182,7 +220,15 @@
 			>
 				<div class="flex min-w-0 flex-1 items-center">
 					<span class="block truncate text-sm font-medium text-gray-900">
-						{selectedCollection ? selectedCollection.name : 'Select Collection'}
+						{#if selectedCollection}
+							{#if collectionOwnerNames[selectedCollection.uuid]}
+								{collectionOwnerNames[selectedCollection.uuid]} - {selectedCollection.name}
+							{:else}
+								{selectedCollection.name}
+							{/if}
+						{:else}
+							Select Collection
+						{/if}
 					</span>
 				</div>
 				<svg
@@ -203,6 +249,22 @@
 			</button>
 
 			{#if selectedCollection}
+				<button
+					type="button"
+					on:click={openShare}
+					class="flex items-center justify-center rounded-lg border border-gray-300 bg-white p-2 shadow-sm hover:bg-gray-50 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+					aria-label="Share collection"
+				>
+					<svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.632 4.316C18.114 15.938 18 16.482 18 17c0 .482.114.938.316 1.342m0-2.684a3 3 0 110 2.684M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+				</button>
+
 				<button
 					type="button"
 					on:click={openSettings}
@@ -247,7 +309,11 @@
 								<div class="flex items-center justify-between">
 									<div class="min-w-0 flex-1">
 										<span class="block truncate font-medium">
-											{collection.name}
+											{#if collectionOwnerNames[collection.uuid]}
+												{collectionOwnerNames[collection.uuid]} - {collection.name}
+											{:else}
+												{collection.name}
+											{/if}
 										</span>
 										<span class="block truncate text-xs text-gray-500">
 											{collection.currentImageCount} / {collection.imageUploadLimit} images
@@ -325,4 +391,11 @@
 	collection={selectedCollection}
 	on:close={() => (showSettingsModal = false)}
 	on:save={handleSettingsSave}
+/>
+
+<ShareCollectionModal
+	isOpen={showShareModal}
+	imageCollection={selectedCollection}
+	{user}
+	on:close={() => (showShareModal = false)}
 />

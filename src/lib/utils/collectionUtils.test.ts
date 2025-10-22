@@ -104,7 +104,8 @@ describe('collectionUtils', () => {
 			expect(result).toEqual({
 				name: 'My Photos',
 				imageUploadLimit: 10,
-				currentImageCount: 0
+				currentImageCount: 0,
+				time: 30
 			});
 		});
 	});

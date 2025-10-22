@@ -3,9 +3,10 @@
 	import { writable } from 'svelte/store';
 
 	export let onShowPasswordReset: () => void;
+	export let onStageChange: ((stage: 1 | 2) => void) | undefined = undefined;
 
 	// Form state
-	const stage = writable<1 | 2>(1); // 1: email/password, 2: name/confirm password
+	export const stage = writable<1 | 2>(1); // 1: email/password, 2: name/confirm password
 	const isLoading = writable(false);
 
 	// Form data
@@ -77,6 +78,7 @@
 			// Any authentication failure means we should proceed to stage 2
 			// (could be wrong password, user doesn't exist, etc.)
 			stage.set(2);
+			onStageChange?.(2);
 			clearMessage();
 		} finally {
 			isLoading.set(false);
@@ -111,6 +113,7 @@
 				displayName.set('');
 				confirmPassword.set('');
 				stage.set(1);
+				onStageChange?.(1);
 			} else {
 				setMessage(authError.message || 'An error occurred during registration. Please try again.');
 			}
@@ -131,6 +134,7 @@
 
 	function goBackToStage1() {
 		stage.set(1);
+		onStageChange?.(1);
 		confirmPassword.set('');
 		displayName.set('');
 		clearMessage();
@@ -138,13 +142,35 @@
 </script>
 
 <div class="space-y-4">
-	<div class="text-center">
-		<h2 class="text-2xl font-bold text-gray-800">
-			{$stage === 1 ? '' : 'Complete Your Account'}
-		</h2>
-	</div>
-
 	<form on:submit|preventDefault={handleSubmit} class="space-y-4">
+		{#if $stage === 1}
+			<div>
+				<input
+					id="email"
+					type="email"
+					placeholder="Enter your email"
+					bind:value={$email}
+					class="input input-bordered w-full"
+					disabled={$isLoading}
+					on:input={clearMessage}
+					required
+				/>
+			</div>
+
+			<div>
+				<input
+					id="password"
+					type="password"
+					placeholder="Enter your password"
+					bind:value={$password}
+					class="input input-bordered w-full"
+					disabled={$isLoading}
+					on:input={clearMessage}
+					required
+				/>
+			</div>
+		{/if}
+
 		{#if $stage === 2}
 			<div>
 				<label for="display-name" class="mb-1 block text-sm font-medium text-gray-700">
@@ -161,35 +187,7 @@
 					required
 				/>
 			</div>
-		{/if}
 
-		<div>
-			<input
-				id="email"
-				type="email"
-				placeholder="Enter your email"
-				bind:value={$email}
-				class="input input-bordered w-full"
-				disabled={$isLoading || $stage === 2}
-				on:input={clearMessage}
-				required
-			/>
-		</div>
-
-		<div>
-			<input
-				id="password"
-				type="password"
-				placeholder="Enter your password"
-				bind:value={$password}
-				class="input input-bordered w-full"
-				disabled={$isLoading || $stage === 2}
-				on:input={clearMessage}
-				required
-			/>
-		</div>
-
-		{#if $stage === 2}
 			<div>
 				<label for="confirm-password" class="mb-1 block text-sm font-medium text-gray-700">
 					Confirm Password

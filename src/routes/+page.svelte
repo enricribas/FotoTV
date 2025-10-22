@@ -136,6 +136,23 @@
 			userCollections = await CollectionService.getUserCollections(user);
 			collectionStore.setCollections(userCollections, user.uid);
 
+			// If user has no collections, create the defaults
+			if (userCollections.length === 0) {
+				await CollectionService.getPrimaryCollection(user); // This creates default collections
+				// Reload collections after creation
+				userCollections = await CollectionService.getUserCollections(user);
+				collectionStore.setCollections(userCollections, user.uid);
+			}
+
+			// Check if there's a redirect URL stored from a share link
+			const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+			if (redirectUrl) {
+				sessionStorage.removeItem('redirectAfterLogin');
+				// Navigate to the share URL after user data is loaded
+				setTimeout(() => goto(redirectUrl), 100);
+				return;
+			}
+
 			// Try to restore stored selection first, otherwise use primary collection
 			let selectedUuid = collectionStore.getStoredSelection(user.uid);
 

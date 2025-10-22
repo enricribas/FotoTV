@@ -143,6 +143,30 @@
 				</p>
 			</div>
 
+			<!-- Shared With Section (only for owned collections) -->
+			{#if !collection.owner && collection.sharedWith && collection.sharedWith.length > 0}
+				<div class="mb-6 border-t border-gray-200 pt-6">
+					<h3 class="mb-3 text-sm font-medium text-gray-700">Shared With</h3>
+					<div class="space-y-2">
+						{#each collection.sharedWith as person}
+							<div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
+								<div class="flex items-center space-x-3">
+									<div
+										class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-sm font-medium text-orange-800"
+									>
+										{person.displayName.charAt(0).toUpperCase()}
+									</div>
+									<span class="text-sm text-gray-900">{person.displayName}</span>
+								</div>
+								<span class="text-xs text-gray-500">
+									{new Date(person.sharedAt).toLocaleDateString()}
+								</span>
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
+
 			<!-- Footer -->
 			<div class="flex justify-end space-x-3">
 				<button
