@@ -5,6 +5,7 @@
 	import { CollectionService } from '$lib/collectionService';
 	import { UserService } from '$lib/userService';
 	import type { User } from 'firebase/auth';
+	import CollectionSettingsModal from './CollectionSettingsModal.svelte';
 
 	export let selectedCollectionUuid: string;
 	export let collections: ImageCollection[] = [];
@@ -20,6 +21,7 @@
 	let isCreating = false;
 	let newCollectionName = '';
 	let userProfile: UserProfile | null = null;
+	let showSettingsModal = false;
 
 	// Check if user has pro plan
 	$: hasProPlan = userProfile?.plan === 'pro';
@@ -120,6 +122,40 @@
 		}
 	}
 
+	async function handleSettingsSave(event: CustomEvent<{ duration: number }>) {
+		if (!selectedCollection) return;
+
+		const collectionUuid = selectedCollection.uuid;
+
+		try {
+			await CollectionService.updateCollectionTime(user, collectionUuid, event.detail.duration);
+
+			// Update local collection data
+			const updatedCollections = collections.map((c) =>
+				c.uuid === collectionUuid ? { ...c, time: event.detail.duration } : c
+			);
+			collections = updatedCollections;
+
+			// Update the selected collection reference
+			selectedCollection = { ...selectedCollection, time: event.detail.duration };
+
+			// Notify parent that collections have been updated
+			dispatch('collectionsUpdated');
+
+			// Close modal after successful save
+			showSettingsModal = false;
+		} catch (error) {
+			console.error('Failed to update collection time:', error);
+			alert('Failed to update collection settings');
+		}
+	}
+
+	function openSettings() {
+		if (selectedCollection) {
+			showSettingsModal = true;
+		}
+	}
+
 	onMount(() => {
 		document.addEventListener('click', handleClickOutside);
 		document.addEventListener('keydown', handleKeydown);
@@ -136,27 +172,60 @@
 
 {#if collections.length > 1}
 	<div id="collection-selector" class="relative mx-auto w-full max-w-md">
-		<button
-			type="button"
-			class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2 text-left shadow-sm hover:bg-gray-50 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-			on:click={toggleDropdown}
-			aria-haspopup="listbox"
-			aria-expanded={isOpen}
-		>
-			<div class="flex min-w-0 flex-1 items-center">
-				<span class="block truncate text-sm font-medium text-gray-900">
-					{selectedCollection ? selectedCollection.name : 'Select Collection'}
-				</span>
-			</div>
-			<svg
-				class="h-5 w-5 text-gray-400 transition-transform duration-200 {isOpen ? 'rotate-180' : ''}"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
+		<div class="flex items-center gap-2">
+			<button
+				type="button"
+				class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2 text-left shadow-sm hover:bg-gray-50 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+				on:click={toggleDropdown}
+				aria-haspopup="listbox"
+				aria-expanded={isOpen}
 			>
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-			</svg>
-		</button>
+				<div class="flex min-w-0 flex-1 items-center">
+					<span class="block truncate text-sm font-medium text-gray-900">
+						{selectedCollection ? selectedCollection.name : 'Select Collection'}
+					</span>
+				</div>
+				<svg
+					class="h-5 w-5 text-gray-400 transition-transform duration-200 {isOpen
+						? 'rotate-180'
+						: ''}"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M19 9l-7 7-7-7"
+					/>
+				</svg>
+			</button>
+
+			{#if selectedCollection}
+				<button
+					type="button"
+					on:click={openSettings}
+					class="flex items-center justify-center rounded-lg border border-gray-300 bg-white p-2 shadow-sm hover:bg-gray-50 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+					aria-label="Collection settings"
+				>
+					<svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+						/>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+						/>
+					</svg>
+				</button>
+			{/if}
+		</div>
 
 		{#if isOpen}
 			<div
@@ -250,3 +319,10 @@
 		{/if}
 	</div>
 {/if}
+
+<CollectionSettingsModal
+	isOpen={showSettingsModal}
+	collection={selectedCollection}
+	on:close={() => (showSettingsModal = false)}
+	on:save={handleSettingsSave}
+/>

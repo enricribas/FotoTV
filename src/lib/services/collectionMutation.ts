@@ -88,6 +88,23 @@ export class CollectionMutation {
 		}
 	}
 
+	static async updateCollectionTime(
+		user: User,
+		collectionUuid: string,
+		time: number
+	): Promise<void> {
+		try {
+			const collectionDocRef = doc(db, `users/${user.uid}/collections`, collectionUuid);
+			await updateDoc(collectionDocRef, {
+				time: time,
+				updatedAt: Timestamp.now()
+			});
+		} catch (error) {
+			console.error('Error updating collection time:', error);
+			throw error;
+		}
+	}
+
 	static async syncImageCount(user: User, collectionUuid: string): Promise<void> {
 		try {
 			const { ImageService } = await import('../imageService');

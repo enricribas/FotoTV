@@ -55,4 +55,12 @@ export class CollectionService {
 	): Promise<void> {
 		return CollectionMutation.updateUploadLimit(user, collectionUuid, newLimit);
 	}
+
+	static async updateCollectionTime(
+		user: User,
+		collectionUuid: string,
+		time: number
+	): Promise<void> {
+		return CollectionMutation.updateCollectionTime(user, collectionUuid, time);
+	}
 }

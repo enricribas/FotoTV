@@ -23,7 +23,8 @@ export function generateCollectionDefaults(name: string) {
 	return {
 		name,
 		imageUploadLimit: 10,
-		currentImageCount: 0
+		currentImageCount: 0,
+		time: 30 // Default slide duration in seconds
 	};
 }
 
