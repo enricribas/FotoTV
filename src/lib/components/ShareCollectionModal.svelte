@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, createEventDispatcher } from 'svelte';
 	import type { ImageCollection } from '$lib/types/collection.types';
 	import type { User } from 'firebase/auth';
 	import { db } from '$lib/firebase';
@@ -17,6 +17,8 @@
 	export let isOpen: boolean;
 	export let imageCollection: ImageCollection | null;
 	export let user: User;
+
+	const dispatch = createEventDispatcher();
 
 	let shareUrl = '';
 	let copying = false;
@@ -120,6 +122,7 @@
 		isOpen = false;
 		shareUrl = '';
 		qrCodeDataUrl = '';
+		dispatch('close');
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
