@@ -9,6 +9,13 @@
 	import SharedSlideshow from '$lib/components/SharedSlideshow.svelte';
 	import { CollectionService } from '$lib/collectionService';
 
+	interface ShareData {
+		collection: ImageCollection;
+		owner: string;
+		ownerEmail?: string;
+		ownerDisplayName?: string;
+	}
+
 	let loading = true;
 	let error = '';
 	let collection: ImageCollection | null = null;
@@ -32,7 +39,7 @@
 				return;
 			}
 
-			const shareData = shareDoc.data();
+			const shareData = shareDoc.data() as ShareData;
 
 			// Get collection data from the share document
 			if (shareData.collection) {
@@ -74,7 +81,7 @@
 		}
 	}
 
-	async function copyCollectionToUser(shareData: any) {
+	async function copyCollectionToUser(shareData: ShareData) {
 		if (isCopying || !currentUser) return;
 
 		isCopying = true;
@@ -89,20 +96,19 @@
 				userCollections = await CollectionService.getUserCollections(currentUser);
 			}
 
-			const existingShared = userCollections.find((c: any) => c.uuid === shareData.collection.uuid);
+			const existingShared = userCollections.find((c) => c.uuid === shareData.collection.uuid);
 
 			if (!existingShared) {
 				// Create a new collection document for the user, preserving the original UUID
 				const originalUuid = shareData.collection.uuid;
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				const { uuid, ...collectionWithoutUuid } = shareData.collection;
 				const collectionData = {
-					...shareData.collection,
+					...collectionWithoutUuid,
 					owner: shareData.owner, // Original owner's ID
 					createdAt: serverTimestamp(),
 					updatedAt: serverTimestamp()
 				};
-
-				// Remove the uuid field as it will be the document ID
-				delete collectionData.uuid;
 
 				await setDoc(
 					doc(db, 'users', currentUser.uid, 'collections', originalUuid),
@@ -125,7 +131,7 @@
 		}
 	}
 
-	async function updateOriginalCollectionSharedWith(shareData: any) {
+	async function updateOriginalCollectionSharedWith(shareData: ShareData) {
 		if (!currentUser) return;
 
 		try {

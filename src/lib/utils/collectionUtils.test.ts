@@ -7,7 +7,7 @@ import {
 	generateCollectionDefaults,
 	sortCollectionsByDate
 } from './collectionUtils';
-import type { ImageCollection } from '$lib/types/collection.types';
+import type { ImageCollection } from '../types/collection.types';
 
 describe('collectionUtils', () => {
 	describe('calculateUploadStatus', () => {

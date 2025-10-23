@@ -42,9 +42,9 @@
 	async function loadOwnerNames() {
 		for (const collection of collections) {
 			// Check if collection has an owner field that's different from current user
-			if ((collection as any).owner && (collection as any).owner !== user.uid) {
+			if (collection.owner && collection.owner !== user.uid) {
 				try {
-					const userDoc = await getDoc(doc(db, 'users', (collection as any).owner));
+					const userDoc = await getDoc(doc(db, 'users', collection.owner));
 					if (userDoc.exists()) {
 						const userData = userDoc.data();
 						if (userData.displayName) {

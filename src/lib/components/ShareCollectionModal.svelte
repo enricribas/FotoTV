@@ -12,6 +12,7 @@
 		getDocs,
 		serverTimestamp
 	} from 'firebase/firestore';
+	import QRCode from 'qrcode';
 
 	export let isOpen: boolean;
 	export let imageCollection: ImageCollection | null;
@@ -20,6 +21,7 @@
 	let shareUrl = '';
 	let copying = false;
 	let loading = false;
+	let qrCodeDataUrl = '';
 
 	// Generate a UUID v4
 	function generateUUID(): string {
@@ -75,6 +77,20 @@
 			// Generate URL based on environment
 			const baseUrl = import.meta.env.DEV ? 'http://localhost:5173' : window.location.origin;
 			shareUrl = `${baseUrl}/share/${shareId}`;
+
+			// Generate QR code
+			try {
+				qrCodeDataUrl = await QRCode.toDataURL(shareUrl, {
+					width: 200,
+					margin: 2,
+					color: {
+						dark: '#000000',
+						light: '#FFFFFF'
+					}
+				});
+			} catch (qrError) {
+				console.error('Error generating QR code:', qrError);
+			}
 		} catch (error) {
 			console.error('Error generating share URL:', error);
 			alert('Failed to generate share URL');
@@ -103,6 +119,7 @@
 	function close() {
 		isOpen = false;
 		shareUrl = '';
+		qrCodeDataUrl = '';
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
@@ -248,6 +265,19 @@
 									{/if}
 								</button>
 							</div>
+
+							{#if qrCodeDataUrl}
+								<div class="mt-4 text-center">
+									<p class="mb-2 text-sm text-gray-600">Or scan this QR code:</p>
+									<div class="flex justify-center">
+										<img
+											src={qrCodeDataUrl}
+											alt="QR Code for sharing"
+											class="rounded border border-gray-300"
+										/>
+									</div>
+								</div>
+							{/if}
 						</div>
 					{/if}
 				</div>

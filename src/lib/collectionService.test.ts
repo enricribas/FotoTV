@@ -3,6 +3,7 @@ import { CollectionService } from './collectionService';
 import { CollectionQuery } from './services/collectionQuery';
 import { CollectionMutation } from './services/collectionMutation';
 import type { User } from 'firebase/auth';
+import type { QuerySnapshot } from 'firebase/firestore';
 
 // Mock Firebase modules
 vi.mock('firebase/firestore', () => ({
@@ -43,14 +44,31 @@ describe('CollectionService', () => {
 
 	describe('createCollection', () => {
 		it('should create a collection with default upload limit', async () => {
-			const mockDocRef = {};
+			const mockDocRef = {
+				converter: null,
+				type: 'document',
+				firestore: {},
+				id: 'test-id',
+				path: 'test-path',
+				parent: null,
+				withConverter: vi.fn(),
+				isEqual: vi.fn()
+			} as unknown as ReturnType<typeof doc>;
 			vi.mocked(doc).mockReturnValue(mockDocRef);
 			vi.mocked(setDoc).mockResolvedValue(undefined);
 
 			// Mock getDoc to return a document that exists
 			vi.mocked(getDoc).mockResolvedValue({
-				exists: () => true
-			});
+				exists: () => true,
+				data: () => ({}),
+				id: 'test-id',
+				ref: mockDocRef,
+				metadata: {
+					hasPendingWrites: false,
+					isEqual: vi.fn(),
+					fromCache: false
+				}
+			} as unknown as Awaited<ReturnType<typeof getDoc>>);
 
 			// Mock crypto.randomUUID
 			const mockUuid = 'test-uuid-123';
@@ -75,8 +93,20 @@ describe('CollectionService', () => {
 
 	describe('getUserCollections', () => {
 		it('should return collections with upload limit fields', async () => {
+			interface MockDoc {
+				id: string;
+				data: () => {
+					name: string;
+					imageUploadLimit: number;
+					currentImageCount: number;
+					createdAt: { seconds: number };
+					updatedAt: { seconds: number };
+					time?: number;
+				};
+			}
+
 			const mockSnapshot = {
-				forEach: vi.fn((callback) => {
+				forEach: vi.fn((callback: (doc: MockDoc) => void) => {
 					callback({
 						id: 'collection-1',
 						data: () => ({
@@ -87,11 +117,23 @@ describe('CollectionService', () => {
 							updatedAt: { seconds: 1234567890 }
 						})
 					});
-				})
-			};
+				}),
+				docs: [],
+				size: 1,
+				empty: false,
+				metadata: {
+					hasPendingWrites: false,
+					isEqual: vi.fn(),
+					fromCache: false
+				},
+				query: {} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+				docChanges: vi.fn(),
+				isEqual: vi.fn(),
+				toJSON: vi.fn()
+			} as unknown as QuerySnapshot;
+			vi.mocked(getDocs).mockResolvedValue(mockSnapshot);
 
 			vi.mocked(collection).mockReturnValue({} as ReturnType<typeof collection>);
-			vi.mocked(getDocs).mockResolvedValue(mockSnapshot as ReturnType<typeof getDocs>);
 
 			const result = await CollectionService.getUserCollections(mockUser);
 
@@ -132,11 +174,23 @@ describe('CollectionService', () => {
 							updatedAt: { seconds: 1234567891 }
 						})
 					});
-				})
-			};
+				}),
+				docs: [],
+				size: 2,
+				empty: false,
+				metadata: {
+					hasPendingWrites: false,
+					isEqual: vi.fn(),
+					fromCache: false
+				},
+				query: {} as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+				docChanges: vi.fn(),
+				isEqual: vi.fn(),
+				toJSON: vi.fn()
+			} as unknown as QuerySnapshot;
 
 			vi.mocked(collection).mockReturnValue({} as ReturnType<typeof collection>);
-			vi.mocked(getDocs).mockResolvedValue(mockSnapshot as ReturnType<typeof getDocs>);
+			vi.mocked(getDocs).mockResolvedValue(mockSnapshot);
 
 			const result = await CollectionService.getUserCollections(mockUser);
 

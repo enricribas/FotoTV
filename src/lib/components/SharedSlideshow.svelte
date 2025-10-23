@@ -124,7 +124,8 @@
 		{#if imageRefs.length > 1}
 			<div class="absolute bottom-4 left-1/2 -translate-x-1/2 transform">
 				<div class="flex items-center space-x-1">
-					{#each imageRefs as _, index}
+					<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+					{#each imageRefs as _, index (index)}
 						<div
 							class="h-1.5 w-1.5 rounded-full transition-colors duration-300 {index ===
 							currentImageIndex
