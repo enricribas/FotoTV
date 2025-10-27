@@ -89,6 +89,7 @@
 		aria-labelledby="profile-modal-title"
 		role="dialog"
 		aria-modal="true"
+		tabindex="-1"
 		on:keydown={handleKeydown}
 	>
 		<div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">

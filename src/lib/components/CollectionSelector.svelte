@@ -7,6 +7,7 @@
 	import type { User } from 'firebase/auth';
 	import { db } from '$lib/firebase';
 	import { doc, getDoc } from 'firebase/firestore';
+	import { formatCollectionDisplayName } from '$lib/utils/collectionUtils';
 
 	export let selectedCollectionUuid: string;
 	export let collections: ImageCollection[] = [];
@@ -180,11 +181,10 @@
 				<div class="flex min-w-0 flex-1 items-center">
 					<span class="block truncate text-sm font-medium text-gray-900">
 						{#if selectedCollection}
-							{#if collectionOwnerNames[selectedCollection.uuid]}
-								{collectionOwnerNames[selectedCollection.uuid]} - {selectedCollection.name}
-							{:else}
-								{selectedCollection.name}
-							{/if}
+							{formatCollectionDisplayName(
+								selectedCollection,
+								collectionOwnerNames[selectedCollection.uuid]
+							)}
 						{:else}
 							Select Collection
 						{/if}
@@ -229,11 +229,10 @@
 								<div class="flex items-center justify-between">
 									<div class="min-w-0 flex-1">
 										<span class="block truncate font-medium">
-											{#if collectionOwnerNames[collection.uuid]}
-												{collectionOwnerNames[collection.uuid]} - {collection.name}
-											{:else}
-												{collection.name}
-											{/if}
+											{formatCollectionDisplayName(
+												collection,
+												collectionOwnerNames[collection.uuid]
+											)}
 										</span>
 										<span class="block truncate text-xs text-gray-500">
 											{collection.currentImageCount} / {collection.imageUploadLimit} images

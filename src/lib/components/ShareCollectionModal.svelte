@@ -13,6 +13,7 @@
 		serverTimestamp
 	} from 'firebase/firestore';
 	import QRCode from 'qrcode';
+	import { formatCollectionDisplayName, getCollectionOwnerName } from '$lib/utils/collectionUtils';
 
 	export let isOpen: boolean;
 	export let imageCollection: ImageCollection | null;
@@ -24,6 +25,7 @@
 	let copying = false;
 	let loading = false;
 	let qrCodeDataUrl = '';
+	let collectionOwnerName: string | undefined;
 
 	// Generate a UUID v4
 	function generateUUID(): string {
@@ -140,6 +142,13 @@
 	// Generate share URL when modal opens
 	$: if (isOpen && imageCollection) {
 		generateShareUrl();
+		loadOwnerName();
+	}
+
+	async function loadOwnerName() {
+		if (imageCollection && user) {
+			collectionOwnerName = await getCollectionOwnerName(imageCollection, user.uid);
+		}
 	}
 
 	onMount(() => {
@@ -174,17 +183,9 @@
 						<div
 							class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-orange-100 sm:mx-0 sm:h-10 sm:w-10"
 						>
-							<svg
-								class="h-6 w-6 text-orange-600"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
+							<svg class="h-6 w-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
 								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.632 4.316C18.114 15.938 18 16.482 18 17c0 .482.114.938.316 1.342m0-2.684a3 3 0 110 2.684M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0a9 9 0 11-18 0 9 9 0 0118 0z"
+									d="M16 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7.928 9.24a4.02 4.02 0 0 1-.026 1.644l5.04 2.537a4 4 0 1 1-.867 1.803l-5.09-2.562a4 4 0 1 1 .083-5.228l5.036-2.522a4 4 0 1 1 .929 1.772L7.928 9.24zM4 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
 								/>
 							</svg>
 						</div>
@@ -195,7 +196,8 @@
 							<div class="mt-2">
 								<p class="text-sm text-gray-500">
 									{#if imageCollection}
-										Share "{imageCollection.name}" with others using the link below.
+										Share "{formatCollectionDisplayName(imageCollection, collectionOwnerName)}" with
+										others using the link below.
 									{/if}
 								</p>
 							</div>

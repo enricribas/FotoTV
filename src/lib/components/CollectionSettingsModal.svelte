@@ -2,6 +2,8 @@
 	import type { ImageCollection } from '$lib/types/collection.types';
 	import { createEventDispatcher } from 'svelte';
 	import { fade, scale } from 'svelte/transition';
+	import { formatCollectionDisplayName, getCollectionOwnerName } from '$lib/utils/collectionUtils';
+	import { auth } from '$lib/firebase';
 
 	export let isOpen: boolean = false;
 	export let collection: ImageCollection | null = null;
@@ -14,6 +16,7 @@
 	let duration = 30;
 	let collectionName = '';
 	let isSaving = false;
+	let collectionOwnerName: string | undefined;
 
 	// Initialize values from collection
 	$: if (collection) {
@@ -21,11 +24,19 @@
 		collectionName = collection.name || '';
 		// Reset saving state when collection changes
 		isSaving = false;
+		// Load owner name if needed
+		loadOwnerName();
 	}
 
 	// Reset saving state when modal opens/closes
 	$: if (isOpen) {
 		isSaving = false;
+	}
+
+	async function loadOwnerName() {
+		if (collection && auth.currentUser) {
+			collectionOwnerName = await getCollectionOwnerName(collection, auth.currentUser.uid);
+		}
 	}
 
 	// Handle duration input changes
@@ -121,7 +132,7 @@
 			<!-- Header -->
 			<div class="mb-4 flex items-center justify-between">
 				<h2 id="modal-title" class="text-xl font-semibold text-gray-900">
-					{collection.name} Settings
+					{formatCollectionDisplayName(collection, collectionOwnerName)} Settings
 				</h2>
 				<button
 					type="button"

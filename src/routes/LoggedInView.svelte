@@ -250,7 +250,7 @@
 
 <CollectionSettingsModal
 	isOpen={showSettingsModal}
-	collection={collections.find((c) => c.uuid === currentCollectionUuid)}
+	collection={collections.find((c) => c.uuid === currentCollectionUuid) || null}
 	on:close={() => (showSettingsModal = false)}
 	on:save={async (e) => {
 		if (currentCollectionUuid) {
@@ -271,7 +271,7 @@
 
 <ShareCollectionModal
 	isOpen={showShareModal}
-	imageCollection={collections.find((c) => c.uuid === currentCollectionUuid)}
+	imageCollection={collections.find((c) => c.uuid === currentCollectionUuid) || null}
 	{user}
 	on:close={() => (showShareModal = false)}
 />

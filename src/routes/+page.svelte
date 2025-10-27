@@ -16,7 +16,6 @@
 	import { CollectionService } from '$lib/collectionService';
 	import { UserService } from '$lib/userService';
 
-	import CollectionSelector from '$lib/components/CollectionSelector.svelte';
 	import { collectionStore } from '$lib/stores/collectionStore';
 	import type { ImageCollection } from '$lib/types/collection.types';
 
