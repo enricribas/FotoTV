@@ -5,8 +5,6 @@
 	import { CollectionService } from '$lib/collectionService';
 	import { UserService } from '$lib/userService';
 	import type { User } from 'firebase/auth';
-	import CollectionSettingsModal from './CollectionSettingsModal.svelte';
-	import ShareCollectionModal from './ShareCollectionModal.svelte';
 	import { db } from '$lib/firebase';
 	import { doc, getDoc } from 'firebase/firestore';
 
@@ -19,13 +17,14 @@
 		collectionsUpdated: void;
 	}>();
 
+	// Generate unique ID for this instance
+	const instanceId = `collection-selector-${Math.random().toString(36).substr(2, 9)}`;
+
 	let isOpen = false;
 	let selectedCollection: ImageCollection | null = null;
 	let isCreating = false;
 	let newCollectionName = '';
 	let userProfile: UserProfile | null = null;
-	let showSettingsModal = false;
-	let showShareModal = false;
 	let collectionOwnerNames: Record<string, string> = {};
 
 	// Check if user has pro plan
@@ -88,7 +87,7 @@
 
 	function handleClickOutside(event: Event) {
 		const target = event.target as HTMLElement;
-		const dropdown = document.getElementById('collection-selector');
+		const dropdown = document.querySelector(`[data-collection-selector="${instanceId}"]`);
 		if (dropdown && !dropdown.contains(target)) {
 			isOpen = false;
 		}
@@ -154,46 +153,6 @@
 		}
 	}
 
-	async function handleSettingsSave(event: CustomEvent<{ duration: number }>) {
-		if (!selectedCollection) return;
-
-		const collectionUuid = selectedCollection.uuid;
-
-		try {
-			await CollectionService.updateCollectionTime(user, collectionUuid, event.detail.duration);
-
-			// Update local collection data
-			const updatedCollections = collections.map((c) =>
-				c.uuid === collectionUuid ? { ...c, time: event.detail.duration } : c
-			);
-			collections = updatedCollections;
-
-			// Update the selected collection reference
-			selectedCollection = { ...selectedCollection, time: event.detail.duration };
-
-			// Notify parent that collections have been updated
-			dispatch('collectionsUpdated');
-
-			// Close modal after successful save
-			showSettingsModal = false;
-		} catch (error) {
-			console.error('Failed to update collection time:', error);
-			alert('Failed to update collection settings');
-		}
-	}
-
-	function openSettings() {
-		if (selectedCollection) {
-			showSettingsModal = true;
-		}
-	}
-
-	function openShare() {
-		if (selectedCollection) {
-			showShareModal = true;
-		}
-	}
-
 	onMount(() => {
 		document.addEventListener('click', handleClickOutside);
 		document.addEventListener('keydown', handleKeydown);
@@ -209,7 +168,7 @@
 </script>
 
 {#if collections.length > 1}
-	<div id="collection-selector" class="relative mx-auto w-full max-w-md">
+	<div data-collection-selector={instanceId} class="relative mx-auto w-full">
 		<div class="flex items-center gap-2">
 			<button
 				type="button"
@@ -247,50 +206,14 @@
 					/>
 				</svg>
 			</button>
-
-			{#if selectedCollection}
-				<button
-					type="button"
-					on:click={openShare}
-					class="flex items-center justify-center rounded-lg border border-gray-300 bg-white p-2 shadow-sm hover:bg-gray-50 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-					aria-label="Share collection"
-				>
-					<svg class="h-5 w-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-						<path
-							d="M16 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7.928 9.24a4.02 4.02 0 0 1-.026 1.644l5.04 2.537a4 4 0 1 1-.867 1.803l-5.09-2.562a4 4 0 1 1 .083-5.228l5.036-2.522a4 4 0 1 1 .929 1.772L7.928 9.24zM4 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
-						/>
-					</svg>
-				</button>
-
-				<button
-					type="button"
-					on:click={openSettings}
-					class="flex items-center justify-center rounded-lg border border-gray-300 bg-white p-2 shadow-sm hover:bg-gray-50 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-					aria-label="Collection settings"
-				>
-					<svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-						/>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-						/>
-					</svg>
-				</button>
-			{/if}
 		</div>
 
 		{#if isOpen}
 			<div
-				class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-300 bg-white shadow-lg"
+				class="absolute z-50 mt-1 max-h-60 w-full overflow-visible rounded-lg border border-gray-300 bg-white shadow-lg"
+				style="min-width: 100%;"
 			>
-				<ul class="py-1" role="listbox">
+				<ul class="max-h-60 overflow-auto py-1" role="listbox">
 					{#each collections as collection (collection.uuid)}
 						<li>
 							<button
@@ -382,17 +305,3 @@
 		{/if}
 	</div>
 {/if}
-
-<CollectionSettingsModal
-	isOpen={showSettingsModal}
-	collection={selectedCollection}
-	on:close={() => (showSettingsModal = false)}
-	on:save={handleSettingsSave}
-/>
-
-<ShareCollectionModal
-	isOpen={showShareModal}
-	imageCollection={selectedCollection}
-	{user}
-	on:close={() => (showShareModal = false)}
-/>

@@ -24,7 +24,7 @@
 		const target = event.target as HTMLInputElement;
 		const value = parseInt(target.value);
 		if (!isNaN(value)) {
-			duration = Math.max(5, value);
+			duration = value;
 		}
 	}
 
@@ -130,16 +130,14 @@
 						type="number"
 						bind:value={duration}
 						on:input={handleDurationChange}
-						min="5"
-						max="999999"
-						step="5"
+						step="1"
 						class="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
 						disabled={isSaving}
 					/>
 					<span class="text-sm text-gray-500">{formatDuration(duration)}</span>
 				</div>
 				<p class="mt-2 text-xs text-gray-500">
-					How long each image will be displayed in the slideshow (minimum 5 seconds)
+					How long each image will be displayed in the slideshow
 				</p>
 			</div>
 

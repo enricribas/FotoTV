@@ -38,28 +38,14 @@
 		{#if isCompactLayout}
 			<div class="lg:w-1/2 lg:pr-4" class:lg:pt-12={currentStage === 2}>
 				<div class="rounded-lg border border-gray-200 bg-gray-50 p-6">
-					<h2 class="mb-4 text-lg font-semibold text-gray-800">Welcome to FotoTV</h2>
 					<div class="space-y-3 text-sm text-gray-600">
-						<div class="flex items-start">
-							<span class="mr-3 text-lg">📱</span>
-							<div>
-								<p class="font-medium">Upload from your phone</p>
-								<p class="text-xs">Share photos instantly to your TV</p>
-							</div>
+						<div>
+							<span class="mr-3 text-lg font-semibold">Step 1: </span>
+							<p class="font-medium">Log into app from phone to upload photos</p>
 						</div>
-						<div class="flex items-start">
-							<span class="mr-3 text-lg">📺</span>
-							<div>
-								<p class="font-medium">View on your TV</p>
-								<p class="text-xs">Beautiful slideshows on the big screen</p>
-							</div>
-						</div>
-						<div class="flex items-start">
-							<span class="mr-3 text-lg">🔒</span>
-							<div>
-								<p class="font-medium">Secure & Private</p>
-								<p class="text-xs">Your photos are always protected</p>
-							</div>
+						<div>
+							<span class="mr-3 text-lg font-semibold">Step 2:</span>
+							<p class="font-medium">Log into app from TV to show slideshow</p>
 						</div>
 					</div>
 				</div>

@@ -23,6 +23,7 @@
 	import LoggedInView from './LoggedInView.svelte';
 	import LoggedOutView from './LoggedOutView.svelte';
 	import TVLogin from '$lib/components/TVLogin.svelte';
+	import UserProfileModal from '$lib/components/UserProfileModal.svelte';
 
 	const user = writable<User | null>(null);
 	let isTVDevice = false;
@@ -33,6 +34,7 @@
 	let currentUser: User | null = null;
 	let userCollections: ImageCollection[] = [];
 	let isCompactLayout = false;
+	let showProfileModal = false;
 
 	// Check if window size requires compact layout
 	function checkCompactLayout() {
@@ -96,6 +98,15 @@
 		if (!result.success && result.error) {
 			console.error('Logout error:', result.error);
 		}
+	}
+
+	function toggleProfileModal() {
+		showProfileModal = !showProfileModal;
+	}
+
+	function handleProfileLogout() {
+		showProfileModal = false;
+		logout();
 	}
 
 	// Handle going back to normal login from TV mode
@@ -170,7 +181,8 @@
 			collectionStore.setSelectedCollection(selectedUuid, user.uid);
 
 			await updateUploadLimits(user);
-			showUploadLimit = true;
+			// Only show upload limit when within 5 photos of the limit
+			showUploadLimit = uploadLimit.remaining <= 5;
 		} catch (error) {
 			console.error('Error initializing user data:', error);
 		} finally {
@@ -183,6 +195,8 @@
 		try {
 			if (currentCollectionUuid) {
 				uploadLimit = await CollectionService.canUploadImage(user, currentCollectionUuid);
+				// Update showUploadLimit based on remaining photos
+				showUploadLimit = uploadLimit.remaining <= 5;
 			}
 		} catch (error) {
 			console.error('Error checking upload limits:', error);
@@ -221,7 +235,10 @@
 	class="to-cyan-0 relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-t from-orange-100 p-4"
 >
 	{#if $user}
-		<div class="absolute top-[66px] right-4 z-10 flex items-center space-x-2">
+		<button
+			class="absolute top-[66px] right-4 z-10 flex cursor-pointer items-center space-x-2 rounded-lg px-3 py-2 transition-colors hover:bg-white/20"
+			on:click={toggleProfileModal}
+		>
 			{#if $user.photoURL}
 				<div class="avatar">
 					<div class="h-8 w-8 rounded-full ring ring-orange-500 ring-offset-1 ring-offset-white">
@@ -240,13 +257,7 @@
 			<div class="text-sm text-gray-800">
 				<span class="font-semibold">{getUserDisplayText($user)}</span>
 			</div>
-			<button
-				class="btn btn-sm ml-2 border-white bg-white text-gray-700 hover:bg-gray-100"
-				on:click={logout}
-			>
-				Logout
-			</button>
-		</div>
+		</button>
 	{/if}
 
 	<div
@@ -278,17 +289,6 @@
 
 	<div class="w-full max-w-md {isCompactLayout ? 'lg:max-w-5xl' : ''}">
 		{#if $user}
-			<!-- Collection Selector - only show if user has multiple collections -->
-			<div class="mb-6 lg:mb-8">
-				<CollectionSelector
-					selectedCollectionUuid={currentCollectionUuid}
-					collections={userCollections}
-					user={$user}
-					on:collectionChange={handleCollectionChange}
-					on:collectionsUpdated={handleCollectionsUpdated}
-				/>
-			</div>
-
 			<LoggedInView
 				user={$user}
 				{uploadLimit}
@@ -297,6 +297,8 @@
 				onLimitsUpdate={() => updateUploadLimits($user)}
 				{showUploadLimit}
 				{isCompactLayout}
+				on:collectionChange={handleCollectionChange}
+				on:collectionsUpdated={handleCollectionsUpdated}
 			/>
 		{:else if isTVDevice || isTVModeForced}
 			<TVLogin onLoginSuccess={onTVLoginSuccess} {onBackToLogin} />
@@ -305,3 +307,10 @@
 		{/if}
 	</div>
 </div>
+
+<UserProfileModal
+	isOpen={showProfileModal}
+	user={$user}
+	on:close={() => (showProfileModal = false)}
+	on:logout={handleProfileLogout}
+/>
