@@ -105,6 +105,23 @@ export class CollectionMutation {
 		}
 	}
 
+	static async updateCollectionName(
+		user: User,
+		collectionUuid: string,
+		name: string
+	): Promise<void> {
+		try {
+			const collectionDocRef = doc(db, `users/${user.uid}/collections`, collectionUuid);
+			await updateDoc(collectionDocRef, {
+				name: name,
+				updatedAt: Timestamp.now()
+			});
+		} catch (error) {
+			console.error('Error updating collection name:', error);
+			throw error;
+		}
+	}
+
 	static async syncImageCount(user: User, collectionUuid: string): Promise<void> {
 		try {
 			const { ImageService } = await import('../imageService');

@@ -8,15 +8,24 @@
 
 	const dispatch = createEventDispatcher<{
 		close: void;
-		save: { duration: number };
+		save: { duration: number; name?: string };
 	}>();
 
 	let duration = 30;
+	let collectionName = '';
 	let isSaving = false;
 
-	// Initialize duration from collection
+	// Initialize values from collection
 	$: if (collection) {
 		duration = collection.time || 30;
+		collectionName = collection.name || '';
+		// Reset saving state when collection changes
+		isSaving = false;
+	}
+
+	// Reset saving state when modal opens/closes
+	$: if (isOpen) {
+		isSaving = false;
 	}
 
 	// Handle duration input changes
@@ -29,12 +38,24 @@
 	}
 
 	function handleClose() {
+		isSaving = false;
 		dispatch('close');
 	}
 
 	async function handleSave() {
 		isSaving = true;
-		dispatch('save', { duration });
+		const saveData: { duration: number; name?: string } = { duration };
+
+		// Only include name if it has changed
+		if (collectionName.trim() && collectionName.trim() !== collection?.name) {
+			saveData.name = collectionName.trim();
+		}
+
+		dispatch('save', saveData);
+		// Reset isSaving after a short delay to show the saving state
+		setTimeout(() => {
+			isSaving = false;
+		}, 100);
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
@@ -117,6 +138,21 @@
 						/>
 					</svg>
 				</button>
+			</div>
+
+			<!-- Collection Name Setting -->
+			<div class="mb-6">
+				<label for="collection-name-input" class="mb-2 block text-sm font-medium text-gray-700">
+					Collection Name
+				</label>
+				<input
+					id="collection-name-input"
+					type="text"
+					bind:value={collectionName}
+					placeholder="Enter collection name"
+					class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+					disabled={isSaving}
+				/>
 			</div>
 
 			<!-- Duration Setting -->

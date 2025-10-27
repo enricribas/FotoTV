@@ -254,8 +254,16 @@
 	on:close={() => (showSettingsModal = false)}
 	on:save={async (e) => {
 		if (currentCollectionUuid) {
+			// Update collection time
 			await CollectionService.updateCollectionTime(user, currentCollectionUuid, e.detail.duration);
+
+			// Update collection name if provided
+			if (e.detail.name) {
+				await CollectionService.updateCollectionName(user, currentCollectionUuid, e.detail.name);
+			}
+
 			await initializeUserProfile();
+			dispatch('collectionsUpdated');
 		}
 		showSettingsModal = false;
 	}}

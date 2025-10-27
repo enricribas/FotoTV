@@ -63,4 +63,12 @@ export class CollectionService {
 	): Promise<void> {
 		return CollectionMutation.updateCollectionTime(user, collectionUuid, time);
 	}
+
+	static async updateCollectionName(
+		user: User,
+		collectionUuid: string,
+		name: string
+	): Promise<void> {
+		return CollectionMutation.updateCollectionName(user, collectionUuid, name);
+	}
 }

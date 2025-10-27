@@ -109,6 +109,11 @@
 		logout();
 	}
 
+	function handleNameUpdated() {
+		// Force re-render to update the displayed name
+		user.update((u) => u);
+	}
+
 	// Handle going back to normal login from TV mode
 	async function onBackToLogin() {
 		disableTVMode();
@@ -313,4 +318,5 @@
 	user={$user}
 	on:close={() => (showProfileModal = false)}
 	on:logout={handleProfileLogout}
+	on:nameUpdated={handleNameUpdated}
 />
