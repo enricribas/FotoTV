@@ -3,17 +3,20 @@
 	import type { User } from 'firebase/auth';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { CollectionService } from '$lib/collectionService';
+	import { formatCollectionDisplayName, getCollectionOwnerName } from '$lib/utils/collectionUtils';
 
 	let {
 		collections = [],
 		user,
 		isOpen = false,
-		selectedFile = null
+		selectedFile = null,
+		selectedFiles = []
 	}: {
 		collections?: ImageCollection[];
 		user: User;
 		isOpen?: boolean;
 		selectedFile?: File | null;
+		selectedFiles?: File[];
 	} = $props();
 
 	const dispatch = createEventDispatcher<{
@@ -26,6 +29,7 @@
 		Record<string, { canUpload: boolean; remaining: number; limit: number }>
 	>({});
 	let loadingLimits = $state(true);
+	let collectionOwnerNames = $state<Record<string, string>>({});
 
 	// Load upload limits for all collections
 	async function loadUploadLimits() {
@@ -39,11 +43,30 @@
 			}
 
 			uploadLimits = limits;
+
+			// Load owner names for collections
+			await loadOwnerNames();
 		} catch (error) {
 			console.error('Error loading upload limits:', error);
 		} finally {
 			loadingLimits = false;
 		}
+	}
+
+	// Load owner names for collections
+	async function loadOwnerNames() {
+		const ownerNames: Record<string, string> = {};
+
+		for (const collection of collections) {
+			if (collection.owner && collection.owner !== user.uid) {
+				const ownerName = await getCollectionOwnerName(collection, user.uid);
+				if (ownerName) {
+					ownerNames[collection.uuid] = ownerName;
+				}
+			}
+		}
+
+		collectionOwnerNames = ownerNames;
 	}
 
 	// Initialize with collections that can accept uploads
@@ -144,7 +167,14 @@
 				<h3 id="modal-title" class="text-lg font-semibold text-gray-900">
 					Select Collections to Upload To
 				</h3>
-				{#if selectedFile}
+				{#if selectedFiles && selectedFiles.length > 0}
+					<p class="mt-1 text-sm text-gray-600">
+						Uploading: {selectedFiles.length} file{selectedFiles.length === 1 ? '' : 's'}
+						{#if selectedFiles.length <= 3}
+							({selectedFiles.map((f) => f.name).join(', ')})
+						{/if}
+					</p>
+				{:else if selectedFile}
 					<p class="mt-1 text-sm text-gray-600">
 						Uploading: {selectedFile.name}
 					</p>
@@ -199,7 +229,10 @@
 								<div class="min-w-0 flex-1">
 									<div class="flex items-center justify-between">
 										<h4 class="text-sm font-medium {canUpload ? 'text-gray-900' : 'text-red-600'}">
-											{collection.name}
+											{formatCollectionDisplayName(
+												collection,
+												collectionOwnerNames[collection.uuid]
+											)}
 										</h4>
 										{#if !canUpload}
 											<span class="text-xs font-medium text-red-600"> Limit Reached </span>

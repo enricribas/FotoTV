@@ -76,6 +76,13 @@
 
 		window.addEventListener('collectionsChanged', handleCollectionsChanged);
 
+		// Listen for collection switch events from multi-collection uploads
+		const handleSwitchCollection = (e: Event) => {
+			const customEvent = e as CustomEvent<{ collectionUuid: string; collection: ImageCollection }>;
+			handleCollectionChange(customEvent);
+		};
+		window.addEventListener('switch-collection', handleSwitchCollection);
+
 		// Listen for storage changes to detect TV mode being disabled
 		const handleStorageChange = (e: StorageEvent) => {
 			if (e.key === 'tv_mode_disabled') {
@@ -87,6 +94,7 @@
 		return () => {
 			unsubscribe?.();
 			window.removeEventListener('collectionsChanged', handleCollectionsChanged);
+			window.removeEventListener('switch-collection', handleSwitchCollection);
 			window.removeEventListener('resize', checkCompactLayout);
 			window.removeEventListener('storage', handleStorageChange);
 		};

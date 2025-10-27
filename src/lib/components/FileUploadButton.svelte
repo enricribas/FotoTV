@@ -6,18 +6,20 @@
 	import { CollectionService } from '$lib/collectionService';
 	import type { ImageCollection } from '$lib/types/collection.types';
 	import MultiCollectionUploadSelector from './MultiCollectionUploadSelector.svelte';
+	import { formatCollectionDisplayName, getCollectionOwnerName } from '$lib/utils/collectionUtils';
 
 	export let user: User;
 	export let uploadLimit: { canUpload: boolean; remaining: number; limit: number };
 	export let currentCollectionUuid: string;
 	export let collections: ImageCollection[] = [];
-	export let onUploadSuccess: (downloadURL: string) => void;
+	export let onUploadSuccess: (downloadURL: string, collectionUuid?: string) => void;
 	export let onLimitsUpdate: () => Promise<void>;
 
 	const uploading = writable<boolean>(false);
 	let fileInput: HTMLInputElement;
 	let showMultiCollectionSelector = false;
 	let selectedFile: File | null = null;
+	let selectedFiles: File[] = [];
 
 	function triggerFileUpload() {
 		if (!uploadLimit.canUpload) {
@@ -35,32 +37,49 @@
 
 		if (!files || files.length === 0 || !user) return;
 
-		const file = files[0];
+		// Convert FileList to array
+		const fileArray = Array.from(files);
 
-		// Validate file type
-		if (!file.type.startsWith('image/')) {
-			alert('Please select an image file');
+		// Validate all files are images
+		const invalidFiles = fileArray.filter((file) => !file.type.startsWith('image/'));
+		if (invalidFiles.length > 0) {
+			alert(
+				`Please select only image files. ${invalidFiles.length} non-image file(s) were detected.`
+			);
 			target.value = '';
 			return;
 		}
 
 		// Check if user has multiple collections
 		if (collections.length > 1) {
-			// Show multi-collection selector
-			selectedFile = file;
+			// Show multi-collection selector for multiple files
+			selectedFiles = fileArray;
+			selectedFile = fileArray[0]; // For backwards compatibility
 			showMultiCollectionSelector = true;
 		} else {
-			// Single collection flow - use existing logic
-			await uploadToSingleCollection(file, target);
+			// Single collection flow - upload all files
+			await uploadMultipleToSingleCollection(fileArray, target);
 		}
 	}
 
-	async function uploadToSingleCollection(file: File, target: HTMLInputElement) {
+	async function uploadMultipleToSingleCollection(files: File[], target: HTMLInputElement) {
 		// Check upload limits before proceeding
 		await onLimitsUpdate();
+
+		// Check if we can upload all files
+		if (files.length > uploadLimit.remaining) {
+			alert(
+				`You can only upload ${uploadLimit.remaining} more image(s) to this collection. ` +
+					`You have selected ${files.length} file(s). ` +
+					`Please select fewer files or remove some existing images.`
+			);
+			target.value = '';
+			return;
+		}
+
 		if (!uploadLimit.canUpload) {
 			alert(
-				`Upload limit reached for this collection! You can upload up to ${uploadLimit.limit} images per collection. You have ${uploadLimit.remaining} uploads remaining.`
+				`Upload limit reached for this collection! You can upload up to ${uploadLimit.limit} images per collection.`
 			);
 			target.value = '';
 			return;
@@ -73,13 +92,60 @@
 			const collectionUuid =
 				currentCollectionUuid || (await CollectionService.getPrimaryCollection(user));
 
-			await uploadFileToCollection(file, collectionUuid);
+			let successCount = 0;
+			let failedCount = 0;
+			const errors: string[] = [];
 
-			// Notify parent component of successful upload
-			onUploadSuccess('uploaded');
+			// Upload files sequentially to avoid overwhelming the system
+			for (const file of files) {
+				try {
+					await uploadFileToCollection(file, collectionUuid);
+					successCount++;
 
-			// Update upload limits after successful upload
-			await onLimitsUpdate();
+					// Update limits after each successful upload
+					await onLimitsUpdate();
+
+					// Check if we've hit the limit
+					if (!uploadLimit.canUpload && successCount < files.length) {
+						alert(
+							`Upload limit reached! Successfully uploaded ${successCount} of ${files.length} files. ` +
+								`The remaining ${files.length - successCount} file(s) were not uploaded.`
+						);
+						break;
+					}
+				} catch (error) {
+					failedCount++;
+					console.error(`Upload failed for file ${file.name}:`, error);
+					errors.push(`${file.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+				}
+			}
+
+			// Notify parent component of successful uploads
+			if (successCount > 0) {
+				onUploadSuccess('uploaded', collectionUuid);
+			}
+
+			// Show summary
+			if (failedCount === 0 && successCount === files.length) {
+				// All successful
+				if (files.length === 1) {
+					// Single file uploaded successfully - no alert needed
+				} else {
+					alert(`Successfully uploaded all ${files.length} images!`);
+				}
+			} else if (failedCount > 0) {
+				// Some failed
+				let message = `Upload completed with errors:\n`;
+				message += `✓ ${successCount} file(s) uploaded successfully\n`;
+				message += `✗ ${failedCount} file(s) failed\n`;
+				if (errors.length > 0) {
+					message += `\nErrors:\n${errors.slice(0, 3).join('\n')}`;
+					if (errors.length > 3) {
+						message += `\n... and ${errors.length - 3} more error(s)`;
+					}
+				}
+				alert(message);
+			}
 		} catch (error) {
 			console.error('Upload failed with error:', error);
 			handleUploadError(error);
@@ -96,32 +162,107 @@
 		const { selectedCollections } = event.detail;
 		showMultiCollectionSelector = false;
 
-		if (!selectedFile) return;
+		// Use selectedFiles if available (multiple files), otherwise fall back to selectedFile
+		const filesToUpload =
+			selectedFiles.length > 0 ? selectedFiles : selectedFile ? [selectedFile] : [];
+
+		if (filesToUpload.length === 0) return;
 
 		uploading.set(true);
 
-		try {
-			const uploadPromises = selectedCollections.map((collection) =>
-				uploadFileToCollection(selectedFile!, collection.uuid)
-			);
+		// Load owner names for collections with different owners
+		const collectionDisplayNames: Record<string, string> = {};
+		for (const collection of selectedCollections) {
+			const ownerName =
+				collection.owner && collection.owner !== user.uid
+					? await getCollectionOwnerName(collection, user.uid)
+					: undefined;
+			collectionDisplayNames[collection.uuid] = formatCollectionDisplayName(collection, ownerName);
+		}
 
-			await Promise.all(uploadPromises);
+		try {
+			let totalSuccess = 0;
+			let totalFailed = 0;
+			const errors: string[] = [];
+
+			// Upload each file to each selected collection
+			for (const file of filesToUpload) {
+				for (const collection of selectedCollections) {
+					try {
+						await uploadFileToCollection(file, collection.uuid);
+						totalSuccess++;
+					} catch (error) {
+						totalFailed++;
+						errors.push(
+							`${file.name} → ${collectionDisplayNames[collection.uuid]}: ${error instanceof Error ? error.message : 'Unknown error'}`
+						);
+					}
+				}
+			}
 
 			// Notify parent component of successful upload
-			onUploadSuccess('uploaded');
+			if (totalSuccess > 0) {
+				// For multi-collection uploads, notify with each collection that was updated
+				for (const collection of selectedCollections) {
+					onUploadSuccess('uploaded', collection.uuid);
+				}
+			}
 
 			// Update upload limits after successful upload
 			await onLimitsUpdate();
 
-			alert(
-				`Successfully uploaded to ${selectedCollections.length} collection${selectedCollections.length === 1 ? '' : 's'}!`
-			);
+			// Show results
+			if (totalFailed === 0) {
+				if (filesToUpload.length === 1 && selectedCollections.length === 1) {
+					// Single file to single collection - no alert needed
+				} else {
+					const collectionNames = selectedCollections
+						.map((c) => collectionDisplayNames[c.uuid])
+						.join(', ');
+					const message =
+						`Successfully uploaded ${filesToUpload.length} file${filesToUpload.length === 1 ? '' : 's'} ` +
+						`to ${selectedCollections.length} collection${selectedCollections.length === 1 ? '' : 's'}!\n\n` +
+						`Collections: ${collectionNames}\n` +
+						`Total uploads: ${totalSuccess}`;
+
+					if (confirm(message + '\n\nWould you like to view one of these collections now?')) {
+						// If current collection is not in the uploaded collections, switch to the first one
+						const currentIsInUploaded = selectedCollections.some(
+							(c) => c.uuid === currentCollectionUuid
+						);
+						if (!currentIsInUploaded && selectedCollections.length > 0) {
+							// Dispatch event to change collection
+							window.dispatchEvent(
+								new CustomEvent('switch-collection', {
+									detail: {
+										collectionUuid: selectedCollections[0].uuid,
+										collection: selectedCollections[0]
+									}
+								})
+							);
+						}
+					}
+				}
+			} else {
+				// Some failed
+				let message = `Upload completed with errors:\n`;
+				message += `✓ ${totalSuccess} upload(s) successful\n`;
+				message += `✗ ${totalFailed} upload(s) failed\n`;
+				if (errors.length > 0) {
+					message += `\nErrors:\n${errors.slice(0, 5).join('\n')}`;
+					if (errors.length > 5) {
+						message += `\n... and ${errors.length - 5} more error(s)`;
+					}
+				}
+				alert(message);
+			}
 		} catch (error) {
 			console.error('Multi-collection upload failed:', error);
 			handleUploadError(error);
 		} finally {
 			uploading.set(false);
 			selectedFile = null;
+			selectedFiles = [];
 			// Reset file input
 			const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
 			if (fileInput) fileInput.value = '';
@@ -131,6 +272,7 @@
 	function handleMultiCollectionCancel() {
 		showMultiCollectionSelector = false;
 		selectedFile = null;
+		selectedFiles = [];
 		// Reset file input
 		const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
 		if (fileInput) fileInput.value = '';
@@ -286,6 +428,7 @@
 	bind:this={fileInput}
 	type="file"
 	accept="image/*"
+	multiple
 	onchange={handleFileUpload}
 	class="hidden"
 />
@@ -318,7 +461,7 @@
 				d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
 			/>
 		</svg>
-		Upload Photo
+		Upload Photos
 	{/if}
 </button>
 
@@ -328,6 +471,7 @@
 	{user}
 	isOpen={showMultiCollectionSelector}
 	{selectedFile}
+	{selectedFiles}
 	on:confirm={handleMultiCollectionUpload}
 	on:cancel={handleMultiCollectionCancel}
 />

@@ -38,6 +38,10 @@
 	// Create event dispatcher
 	const dispatch = createEventDispatcher();
 
+	// Reactive variables for current collection state
+	$: currentCollection = collections.find((c) => c.uuid === currentCollectionUuid);
+	$: isSharedWithMe = currentCollection?.owner && currentCollection.owner !== user.uid;
+
 	// Initialize user profile and load images
 	async function initializeUserProfile() {
 		try {
@@ -59,16 +63,22 @@
 		}
 	}
 
-	async function handleUploadSuccess(downloadURL: string) {
-		// Immediately add the new image to the list
-		uploadedImagesStore.set([...$uploadedImagesStore, downloadURL]);
+	async function handleUploadSuccess(downloadURL: string, collectionUuid?: string) {
+		// Use the collection UUID where the image was actually uploaded, or fall back to current
+		const targetCollectionUuid = collectionUuid || currentCollectionUuid;
 
-		// Retry loading with backoff to ensure Firebase has updated
-		const refreshedImages = await ImageService.loadCollectionImagesWithRetry(
-			currentCollectionUuid,
-			$uploadedImagesStore.length - 1
-		);
-		uploadedImagesStore.set(refreshedImages);
+		// Only refresh if it's the currently viewed collection
+		if (targetCollectionUuid === currentCollectionUuid) {
+			// Immediately add the new image to the list
+			uploadedImagesStore.set([...$uploadedImagesStore, downloadURL]);
+
+			// Retry loading with backoff to ensure Firebase has updated
+			const refreshedImages = await ImageService.loadCollectionImagesWithRetry(
+				targetCollectionUuid,
+				$uploadedImagesStore.length - 1
+			);
+			uploadedImagesStore.set(refreshedImages);
+		}
 	}
 
 	function toggleTVApproval() {
@@ -112,7 +122,7 @@
 </script>
 
 <div class="space-y-6">
-	<!-- Collection Selector for mobile/small screens - show above content -->
+	<!-- Collection Selector (Mobile - Above image on small screens) -->
 	{#if collections.length > 1}
 		<div class="w-full lg:hidden">
 			<CollectionSelector
@@ -131,7 +141,7 @@
 	>
 		<!-- Left column - Collection selector (wide screens) and text content -->
 		<div class="w-full space-y-4 lg:w-1/2">
-			<!-- Collection Selector for large screens - show in left column -->
+			<!-- Collection Selector (Desktop - Beside image) -->
 			{#if collections.length > 1}
 				<div class="hidden lg:block">
 					<CollectionSelector
@@ -204,9 +214,14 @@
 
 			<!-- Share Collection Button -->
 			<button
-				class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+				class="btn w-full border-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50 {isSharedWithMe
+					? 'border-gray-400 bg-gray-400 hover:bg-gray-400'
+					: 'bg-orange-500'}"
 				on:click={() => (showShareModal = true)}
-				disabled={!currentCollectionUuid}
+				disabled={!currentCollectionUuid || isSharedWithMe}
+				title={isSharedWithMe
+					? 'Cannot share collections owned by others'
+					: 'Share this collection'}
 			>
 				<svg class="mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
 					<path
