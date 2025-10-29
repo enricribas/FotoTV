@@ -145,8 +145,11 @@
 
 <div class="min-h-screen bg-black">
 	<!-- Header with close button -->
-	<div class="fixed top-0 right-0 left-0 z-50 bg-black/80 backdrop-blur-sm">
-		<div class="flex items-center justify-between px-4 py-3 sm:px-6">
+	<div class="fixed top-0 right-0 left-0 z-50 bg-black/80 pt-8 backdrop-blur-sm">
+		<div
+			class="flex items-center justify-between px-4 py-3 sm:px-6"
+			style="padding-top: calc(0.75rem + env(safe-area-inset-top, 0))"
+		>
 			<h1 class="text-lg font-semibold text-white sm:text-xl">
 				{currentCollection?.name || 'Review Photos'}
 				{#if imageRefs.length > 0}
@@ -166,7 +169,7 @@
 	</div>
 
 	<!-- Main content area -->
-	<div class="pt-16 pb-4" class:pb-24={showActionMenu}>
+	<div class="pt-32 pb-4" class:pb-24={showActionMenu}>
 		{#if loading}
 			<div class="flex min-h-[calc(100vh-4rem)] items-center justify-center">
 				<div class="text-center">
