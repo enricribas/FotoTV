@@ -40,7 +40,7 @@
 
 	// Reactive variables for current collection state
 	$: currentCollection = collections.find((c) => c.uuid === currentCollectionUuid);
-	$: isSharedWithMe = currentCollection?.owner && currentCollection.owner !== user.uid;
+	$: isSharedWithMe = !!(currentCollection?.owner && currentCollection.owner !== user.uid);
 
 	// Initialize user profile and load images
 	async function initializeUserProfile() {
@@ -194,6 +194,26 @@
 					/>
 				</svg>
 				Slideshow
+			</button>
+
+			<!-- Review Photos Button -->
+			<button
+				class="btn w-full border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+				on:click={() => {
+					// Ensure the current collection is set in the store before navigating
+					collectionStore.setSelectedCollection(currentCollectionUuid, user.uid);
+					goto('/review');
+				}}
+			>
+				<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+					/>
+				</svg>
+				Review Photos
 			</button>
 
 			<!-- TV Approval Button -->

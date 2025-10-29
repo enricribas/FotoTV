@@ -145,7 +145,23 @@
 		const result = await loadImageList(state.user, actions, uuid);
 		if (result.success && result.imageRefs) {
 			await updateSlideshowInterval(uuid);
-			await loadCurrentImage(result.imageRefs, 0, actions);
+
+			// Check for starting index from sessionStorage (e.g., from Review Photos)
+			let startIndex = 0;
+			if (typeof window !== 'undefined') {
+				const storedIndex = sessionStorage.getItem('slideshowStartIndex');
+				if (storedIndex) {
+					startIndex = parseInt(storedIndex, 10);
+					// Ensure index is valid
+					if (startIndex >= result.imageRefs.length || startIndex < 0) {
+						startIndex = 0;
+					}
+					// Clear the stored index
+					sessionStorage.removeItem('slideshowStartIndex');
+				}
+			}
+
+			await loadCurrentImage(result.imageRefs, startIndex, actions);
 			startSlideshow();
 		}
 	}
