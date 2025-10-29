@@ -15,8 +15,11 @@
 	let currentCollectionUuid = '';
 	let currentCollection: ImageCollection | null = null;
 	let unsubscribeAuth: (() => void) | undefined;
-	let collectionStoreState: any;
+	let collectionStoreState: { selectedCollectionUuid?: string };
 	let unsubscribeStore: (() => void) | undefined;
+	let fullscreenImage: string | null = null;
+	let selectedImages: string[] = [];
+	let showActionMenu = false;
 
 	onMount(() => {
 		// Subscribe to collection store
@@ -85,12 +88,58 @@
 		goto('/');
 	}
 
-	function handleImageClick(imageUrl: string, index: number) {
-		// Store the image index in session storage for the slideshow to pick up
-		if (typeof window !== 'undefined') {
-			sessionStorage.setItem('slideshowStartIndex', index.toString());
+	function handleImageClick(imageUrl: string) {
+		// Open fullscreen on image click
+		fullscreenImage = imageUrl;
+	}
+
+	function handleCheckboxClick(event: Event, imageUrl: string) {
+		event.stopPropagation(); // Prevent opening fullscreen
+
+		// Toggle selection
+		const index = selectedImages.indexOf(imageUrl);
+		if (index > -1) {
+			selectedImages.splice(index, 1);
+		} else {
+			selectedImages.push(imageUrl);
 		}
-		goto('/slideshow');
+		selectedImages = selectedImages; // Trigger reactivity
+
+		// Show/hide action menu based on selection
+		showActionMenu = selectedImages.length > 0;
+	}
+
+	function closeFullscreen() {
+		fullscreenImage = null;
+	}
+
+	async function deleteSelectedImages() {
+		if (!user || selectedImages.length === 0) return;
+
+		const confirmDelete = confirm(
+			`Delete ${selectedImages.length} image${selectedImages.length > 1 ? 's' : ''}?`
+		);
+		if (!confirmDelete) return;
+
+		try {
+			loading = true;
+			for (const imageUrl of selectedImages) {
+				await ImageService.deleteImage(imageUrl);
+			}
+			selectedImages = [];
+			showActionMenu = false;
+			await loadImages(); // Reload the images
+		} catch (err) {
+			console.error('Error deleting images:', err);
+			alert('Failed to delete some images');
+		} finally {
+			loading = false;
+		}
+	}
+
+	function unselectAll() {
+		selectedImages = [];
+		showActionMenu = false;
 	}
 </script>
 
@@ -117,7 +166,7 @@
 	</div>
 
 	<!-- Main content area -->
-	<div class="pt-16 pb-4">
+	<div class="pt-16 pb-4" class:pb-24={showActionMenu}>
 		{#if loading}
 			<div class="flex min-h-[calc(100vh-4rem)] items-center justify-center">
 				<div class="text-center">
@@ -141,15 +190,19 @@
 			</div>
 		{:else if imageRefs.length > 0}
 			<!-- Photo grid -->
-			<div class="container mx-auto px-4 sm:px-6">
+			<div class="container mx-auto px-4 sm:px-6 {showActionMenu ? 'pb-20' : ''}">
 				<div
 					class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8"
 				>
-					{#each imageRefs as imageUrl, index}
+					{#each imageRefs as imageUrl, index (imageUrl)}
 						<button
-							on:click={() => handleImageClick(imageUrl, index)}
-							class="group relative aspect-square overflow-hidden rounded-lg bg-gray-900 transition-all hover:ring-2 hover:ring-white/50 focus:ring-2 focus:ring-white focus:outline-none"
-							aria-label="View photo {index + 1} of {imageRefs.length} in slideshow"
+							on:click={() => handleImageClick(imageUrl)}
+							class="group relative aspect-square overflow-hidden rounded-lg bg-gray-900 transition-all hover:ring-2 hover:ring-white/50 focus:ring-2 focus:ring-white focus:outline-none {selectedImages.includes(
+								imageUrl
+							)
+								? 'ring-4 ring-blue-500'
+								: ''}"
+							aria-label="Photo {index + 1} of {imageRefs.length}. Click to view"
 						>
 							<img
 								src={imageUrl}
@@ -166,12 +219,109 @@
 							>
 								{index + 1}
 							</div>
+							<!-- Checkbox for selection -->
+							<div
+								class="absolute right-2 bottom-2 z-10"
+								on:click={(e) => handleCheckboxClick(e, imageUrl)}
+								on:keydown={(e) => e.key === 'Enter' && handleCheckboxClick(e, imageUrl)}
+								role="button"
+								tabindex="0"
+								aria-label={selectedImages.includes(imageUrl) ? 'Deselect image' : 'Select image'}
+							>
+								<div
+									class="flex h-6 w-6 items-center justify-center rounded border-2 {selectedImages.includes(
+										imageUrl
+									)
+										? 'border-blue-500 bg-blue-500'
+										: 'border-white bg-black/50'} transition-colors hover:bg-black/70"
+								>
+									{#if selectedImages.includes(imageUrl)}
+										<svg
+											class="h-4 w-4 text-white"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M5 13l4 4L19 7"
+											/>
+										</svg>
+									{/if}
+								</div>
+							</div>
 						</button>
 					{/each}
 				</div>
 			</div>
 		{/if}
+
+		<!-- Action menu for selected images -->
+		{#if showActionMenu}
+			<div
+				class="fixed right-0 bottom-0 left-0 z-40 border-t border-white/20 bg-black/90 backdrop-blur-sm"
+			>
+				<div class="container mx-auto px-4 py-4">
+					<div class="flex items-center justify-between">
+						<div class="text-white">
+							{selectedImages.length} image{selectedImages.length !== 1 ? 's' : ''} selected
+						</div>
+						<div class="flex gap-2">
+							<button
+								on:click={unselectAll}
+								class="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20"
+							>
+								Unselect All
+							</button>
+							<button
+								on:click={deleteSelectedImages}
+								class="rounded-lg bg-red-500/80 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-500"
+							>
+								Delete
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
 	</div>
+
+	<!-- Fullscreen image viewer -->
+	{#if fullscreenImage}
+		<div
+			class="fixed inset-0 z-50 bg-black"
+			on:click={closeFullscreen}
+			on:keydown={(e) => e.key === 'Escape' && closeFullscreen()}
+			tabindex="-1"
+			role="button"
+			aria-label="Close fullscreen view"
+		>
+			<!-- Close button -->
+			<button
+				on:click|stopPropagation={closeFullscreen}
+				class="absolute top-4 right-4 z-10 rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20 focus:ring-2 focus:ring-white/50 focus:outline-none"
+				aria-label="Close fullscreen view"
+			>
+				Close
+			</button>
+
+			<!-- Fullscreen image -->
+			<div
+				class="flex h-full w-full items-center justify-center p-4"
+				on:click|stopPropagation={() => {}}
+				on:keydown|stopPropagation={() => {}}
+				role="presentation"
+			>
+				<img
+					src={fullscreenImage}
+					alt="Fullscreen view"
+					class="max-h-full max-w-full object-contain"
+				/>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>

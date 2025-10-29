@@ -1,4 +1,4 @@
-import { ref, listAll, getDownloadURL } from 'firebase/storage';
+import { ref, listAll, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from '$lib/firebase';
 import type { User } from 'firebase/auth';
 import { CollectionService } from './collectionService';
@@ -124,5 +124,29 @@ export class ImageService {
 		}
 
 		return imageUrls;
+	}
+
+	/**
+	 * Delete an image from Firebase Storage by its URL
+	 * @param imageUrl - The download URL of the image to delete
+	 * @returns Success status
+	 */
+	static async deleteImage(imageUrl: string): Promise<void> {
+		try {
+			// Extract the path from the download URL
+			// Firebase Storage URLs contain the path in the 'o' parameter
+			const url = new URL(imageUrl);
+			const encodedPath = url.pathname.split('/o/')[1].split('?')[0];
+			const decodedPath = decodeURIComponent(encodedPath);
+
+			// Create a reference to the file to delete
+			const imageRef = ref(storage, decodedPath);
+
+			// Delete the file
+			await deleteObject(imageRef);
+		} catch (error) {
+			console.error('Error deleting image:', error);
+			throw new Error('Failed to delete image');
+		}
 	}
 }
