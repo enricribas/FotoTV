@@ -29,6 +29,7 @@
 
 	// Configuration
 	let slideshowIntervalMs = 30000; // Default 30 seconds
+	let slideshowTheme: 'light' | 'dark' = 'light';
 
 	let state = createInitialSlideshowState();
 	let frameElement: HTMLElement | undefined;
@@ -132,6 +133,9 @@
 
 			collectionStore.setSelectedCollection(selectedUuid, user.uid);
 
+			// Load theme first to avoid flash
+			await updateSlideshowTheme(selectedUuid);
+
 			// Load images for the selected collection
 			await loadImages(selectedUuid);
 		} catch (error) {
@@ -171,6 +175,7 @@
 		await refreshImageList(state.imageRefs, currentUuid, actions);
 		// Also check if collection time setting has changed
 		await updateSlideshowInterval(currentUuid);
+		await updateSlideshowTheme(currentUuid);
 	}
 
 	async function updateSlideshowInterval(collectionUuid: string) {
@@ -188,6 +193,23 @@
 		} catch (error) {
 			console.error('Error getting collection time setting:', error);
 			slideshowIntervalMs = 30000; // Fallback to default
+		}
+	}
+
+	async function updateSlideshowTheme(collectionUuid: string) {
+		if (!state.user) return;
+
+		try {
+			const collection = await CollectionService.getCollectionInfo(state.user, collectionUuid);
+			if (collection?.theme) {
+				slideshowTheme = collection.theme;
+			} else {
+				// Use default light theme
+				slideshowTheme = 'light';
+			}
+		} catch (error) {
+			console.error('Error getting collection theme setting:', error);
+			slideshowTheme = 'light'; // Fallback to default
 		}
 	}
 
@@ -253,7 +275,7 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div
-	class="fixed inset-0 flex flex-col bg-black"
+	class="fixed inset-0 flex flex-col {slideshowTheme === 'dark' ? 'bg-black' : 'bg-[#f0f0f0]'}"
 	onclick={onScreenClick}
 	onkeydown={onScreenKeydown}
 	role="button"
@@ -281,6 +303,7 @@
 		error={state.error}
 		imageRefs={state.imageRefs}
 		currentImageUrl={state.currentImageUrl}
+		theme={slideshowTheme}
 		onGoBack={goBack}
 	/>
 </div>

@@ -122,6 +122,23 @@ export class CollectionMutation {
 		}
 	}
 
+	static async updateCollectionTheme(
+		user: User,
+		collectionUuid: string,
+		theme: 'light' | 'dark'
+	): Promise<void> {
+		try {
+			const collectionDocRef = doc(db, `users/${user.uid}/collections`, collectionUuid);
+			await updateDoc(collectionDocRef, {
+				theme: theme,
+				updatedAt: Timestamp.now()
+			});
+		} catch (error) {
+			console.error('Error updating collection theme:', error);
+			throw error;
+		}
+	}
+
 	static async syncImageCount(user: User, collectionUuid: string): Promise<void> {
 		try {
 			const { ImageService } = await import('../imageService');

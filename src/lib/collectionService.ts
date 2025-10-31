@@ -71,4 +71,12 @@ export class CollectionService {
 	): Promise<void> {
 		return CollectionMutation.updateCollectionName(user, collectionUuid, name);
 	}
+
+	static async updateCollectionTheme(
+		user: User,
+		collectionUuid: string,
+		theme: 'light' | 'dark'
+	): Promise<void> {
+		return CollectionMutation.updateCollectionTheme(user, collectionUuid, theme);
+	}
 }

@@ -8,6 +8,7 @@ export interface ImageCollection {
 	currentImageCount: number;
 	updatedAt: Timestamp;
 	time?: number; // Transition time in seconds
+	theme?: 'light' | 'dark'; // Slideshow background theme
 	owner?: string; // UID of the collection owner (for shared collections)
 	sharedWith?: Array<{
 		uid: string;

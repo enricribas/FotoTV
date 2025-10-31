@@ -7,6 +7,7 @@
 
 	export let collectionUuid: string;
 	export let interval: number = 10;
+	export let theme: 'light' | 'dark' = 'light';
 
 	let imageRefs: StorageReference[] = [];
 	let currentImageIndex = 0;
@@ -118,7 +119,7 @@
 		</div>
 	{:else if currentImageUrl}
 		<div class="absolute inset-0 flex items-center justify-center p-8">
-			<PictureFrame imageUrl={currentImageUrl} isLoading={false} />
+			<PictureFrame imageUrl={currentImageUrl} isLoading={false} theme={theme} />
 		</div>
 
 		{#if imageRefs.length > 1}

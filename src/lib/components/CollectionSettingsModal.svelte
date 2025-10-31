@@ -10,11 +10,12 @@
 
 	const dispatch = createEventDispatcher<{
 		close: void;
-		save: { duration: number; name?: string };
+		save: { duration: number; name?: string; theme?: 'light' | 'dark' };
 	}>();
 
 	let duration = 30;
 	let collectionName = '';
+	let theme: 'light' | 'dark' = 'light';
 	let isSaving = false;
 	let collectionOwnerName: string | undefined;
 
@@ -22,6 +23,7 @@
 	$: if (collection) {
 		duration = collection.time || 30;
 		collectionName = collection.name || '';
+		theme = collection.theme || 'light';
 		// Reset saving state when collection changes
 		isSaving = false;
 		// Load owner name if needed
@@ -55,11 +57,16 @@
 
 	async function handleSave() {
 		isSaving = true;
-		const saveData: { duration: number; name?: string } = { duration };
+		const saveData: { duration: number; name?: string; theme?: 'light' | 'dark' } = { duration };
 
 		// Only include name if it has changed
 		if (collectionName.trim() && collectionName.trim() !== collection?.name) {
 			saveData.name = collectionName.trim();
+		}
+
+		// Only include theme if it has changed
+		if (theme !== (collection?.theme || 'light')) {
+			saveData.theme = theme;
 		}
 
 		dispatch('save', saveData);
@@ -185,6 +192,25 @@
 				</div>
 				<p class="mt-2 text-xs text-gray-500">
 					How long each image will be displayed in the slideshow
+				</p>
+			</div>
+
+			<!-- Theme Setting -->
+			<div class="mb-6">
+				<label for="theme-select" class="mb-2 block text-sm font-medium text-gray-700">
+					Slideshow Theme
+				</label>
+				<select
+					id="theme-select"
+					bind:value={theme}
+					class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+					disabled={isSaving}
+				>
+					<option value="light">Light Mode</option>
+					<option value="dark">Dark Mode</option>
+				</select>
+				<p class="mt-2 text-xs text-gray-500">
+					Background color around photos in the slideshow
 				</p>
 			</div>
 

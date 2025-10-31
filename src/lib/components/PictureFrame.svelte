@@ -3,19 +3,31 @@
 		imageUrl: string | null;
 		isLoading: boolean;
 		transitionDuration?: number;
+		theme?: 'light' | 'dark';
 	}
 
-	let { imageUrl, isLoading, transitionDuration = 500 }: Props = $props();
+	let { imageUrl, isLoading, transitionDuration = 500, theme = 'light' }: Props = $props();
 
 	let primaryImageUrl = $state<string | null>(null);
 	let secondaryImageUrl = $state<string | null>(null);
 	let showPrimary = $state(true);
 	let isTransitioning = $state(false);
+	let isFirstRender = $state(true);
 
 	// Track when imageUrl changes to trigger transitions
 	$effect(() => {
 		if (imageUrl && imageUrl !== (showPrimary ? primaryImageUrl : secondaryImageUrl)) {
 			handleImageChange(imageUrl);
+		}
+	});
+
+	// Mark as first image loaded
+	$effect(() => {
+		if (primaryImageUrl) {
+			// Use setTimeout to delay enabling transitions until after first render
+			setTimeout(() => {
+				isFirstRender = false;
+			}, 100);
 		}
 	});
 
@@ -56,10 +68,10 @@
 	}
 </script>
 
-{#if isLoading && !primaryImageUrl && !secondaryImageUrl}
+	{#if isLoading && !primaryImageUrl && !secondaryImageUrl}
 	<div class="loading loading-spinner loading-lg"></div>
 {:else}
-	<div class="picture-frame">
+	<div class="picture-frame" class:dark-theme={theme === 'dark'} class:no-transition={isFirstRender}>
 		<div class="image-container">
 			<!-- Primary image -->
 			{#if primaryImageUrl}
@@ -94,14 +106,13 @@
 	:root {
 		--frame-border-width: 50px;
 		--inside-frame-border-width: 2px;
-		--frame-color: #f0f0f0;
 	}
 
 	.picture-frame {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: var(--frame-color);
+		background-color: #f0f0f0;
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -110,6 +121,14 @@
 		width: 100vw;
 		height: 100vh;
 		box-sizing: border-box;
+	}
+
+	.picture-frame:not(.no-transition) {
+		transition: background-color 0.3s ease-in-out;
+	}
+
+	.picture-frame.dark-theme {
+		background-color: #2a2a2a;
 	}
 
 	.image-container {
@@ -130,6 +149,14 @@
 		left: 0;
 		opacity: 0;
 		transition: opacity ease-in-out;
+	}
+
+	.picture-frame:not(.no-transition) .main-image {
+		transition: opacity ease-in-out, border-color 0.3s ease-in-out;
+	}
+
+	.picture-frame.dark-theme .main-image {
+		border-color: #1a1a1a;
 	}
 
 	.main-image.active {

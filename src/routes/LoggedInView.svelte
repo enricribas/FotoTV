@@ -297,6 +297,11 @@
 				await CollectionService.updateCollectionName(user, currentCollectionUuid, e.detail.name);
 			}
 
+			// Update collection theme if provided
+			if (e.detail.theme) {
+				await CollectionService.updateCollectionTheme(user, currentCollectionUuid, e.detail.theme);
+			}
+
 			await initializeUserProfile();
 			dispatch('collectionsUpdated');
 		}

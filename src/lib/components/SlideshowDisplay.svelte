@@ -7,10 +7,11 @@
 		error: string | null;
 		imageRefs: StorageReference[];
 		currentImageUrl: string | null;
+		theme?: 'light' | 'dark';
 		onGoBack: () => void;
 	}
 
-	let { loading, error, imageRefs, currentImageUrl, onGoBack }: Props = $props();
+	let { loading, error, imageRefs, currentImageUrl, theme = 'light', onGoBack }: Props = $props();
 </script>
 
 <div class="absolute inset-0 flex items-center justify-center">
@@ -20,7 +21,7 @@
 		<button class="btn btn-primary" onclick={onGoBack}>Upload Images through phone app</button>
 	{:else if imageRefs.length > 0}
 		<div class="absolute inset-0 flex items-center justify-center p-8">
-			<PictureFrame imageUrl={currentImageUrl} isLoading={false} />
+			<PictureFrame imageUrl={currentImageUrl} isLoading={false} theme={theme} />
 		</div>
 	{/if}
 </div>
