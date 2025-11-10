@@ -21,7 +21,7 @@
 		<button class="btn btn-primary" onclick={onGoBack}>Upload Images through phone app</button>
 	{:else if imageRefs.length > 0}
 		<div class="absolute inset-0 flex items-center justify-center p-8">
-			<PictureFrame imageUrl={currentImageUrl} isLoading={false} theme={theme} />
+			<PictureFrame imageUrl={currentImageUrl} isLoading={false} {theme} />
 		</div>
 	{/if}
 </div>

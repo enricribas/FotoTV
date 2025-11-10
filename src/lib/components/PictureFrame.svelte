@@ -68,10 +68,14 @@
 	}
 </script>
 
-	{#if isLoading && !primaryImageUrl && !secondaryImageUrl}
+{#if isLoading && !primaryImageUrl && !secondaryImageUrl}
 	<div class="loading loading-spinner loading-lg"></div>
 {:else}
-	<div class="picture-frame" class:dark-theme={theme === 'dark'} class:no-transition={isFirstRender}>
+	<div
+		class="picture-frame"
+		class:dark-theme={theme === 'dark'}
+		class:no-transition={isFirstRender}
+	>
 		<div class="image-container">
 			<!-- Primary image -->
 			{#if primaryImageUrl}
@@ -152,7 +156,9 @@
 	}
 
 	.picture-frame:not(.no-transition) .main-image {
-		transition: opacity ease-in-out, border-color 0.3s ease-in-out;
+		transition:
+			opacity ease-in-out,
+			border-color 0.3s ease-in-out;
 	}
 
 	.picture-frame.dark-theme .main-image {

@@ -311,7 +311,11 @@
 
 			<!-- Slideshow Display -->
 			{#if collection.currentImageCount > 0}
-				<SharedSlideshow collectionUuid={collection.uuid} interval={collection.time || 10} theme={collection.theme || 'light'} />
+				<SharedSlideshow
+					collectionUuid={collection.uuid}
+					interval={collection.time || 10}
+					theme={collection.theme || 'light'}
+				/>
 			{:else}
 				<div class="flex h-full items-center justify-center">
 					<div class="text-center">

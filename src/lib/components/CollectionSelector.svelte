@@ -210,10 +210,10 @@
 
 		{#if isOpen}
 			<div
-				class="absolute z-50 mt-1 max-h-60 w-full overflow-visible rounded-lg border border-gray-300 bg-white shadow-lg"
-				style="min-width: 100%;"
+				class="absolute z-50 mt-1 w-full rounded-lg border border-gray-300 bg-white shadow-lg"
+				style="min-width: 100%; max-height: 320px; overflow: hidden;"
 			>
-				<ul class="max-h-60 overflow-auto py-1" role="listbox">
+				<ul class="overflow-y-auto" style="max-height: calc(100% - 60px);" role="listbox">
 					{#each collections as collection (collection.uuid)}
 						<li>
 							<button
@@ -255,51 +255,48 @@
 							</button>
 						</li>
 					{/each}
-
-					<!-- Add New Collection Section (Pro users only) -->
-					{#if hasProPlan}
-						<li class="border-t border-gray-200">
-							<div class="px-4 py-2">
-								<div class="flex items-center space-x-2">
-									<input
-										type="text"
-										placeholder="New collection name"
-										bind:value={newCollectionName}
-										on:keydown={handleCreateKeydown}
-										class="flex-1 rounded border border-gray-300 px-2 py-1 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
-										disabled={isCreating}
-									/>
-									<button
-										type="button"
-										on:click={createNewCollection}
-										disabled={isCreating || !newCollectionName.trim()}
-										class="rounded bg-orange-500 px-2 py-1 text-xs text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
-									>
-										{#if isCreating}
-											<svg class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
-												<circle
-													class="opacity-25"
-													cx="12"
-													cy="12"
-													r="10"
-													stroke="currentColor"
-													stroke-width="4"
-												></circle>
-												<path
-													class="opacity-75"
-													fill="currentColor"
-													d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-												></path>
-											</svg>
-										{:else}
-											Add
-										{/if}
-									</button>
-								</div>
-							</div>
-						</li>
-					{/if}
 				</ul>
+				<!-- Add New Collection Section (Pro users only) -->
+				{#if hasProPlan}
+					<div class="sticky bottom-0 border-t border-gray-200 bg-gray-50 px-4 py-3">
+						<div class="flex items-center space-x-2">
+							<input
+								type="text"
+								placeholder="New collection name"
+								bind:value={newCollectionName}
+								on:keydown={handleCreateKeydown}
+								class="flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
+								disabled={isCreating}
+							/>
+							<button
+								type="button"
+								on:click={createNewCollection}
+								disabled={isCreating || !newCollectionName.trim()}
+								class="rounded bg-orange-500 px-2 py-1 text-xs text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+							>
+								{#if isCreating}
+									<svg class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
+										<circle
+											class="opacity-25"
+											cx="12"
+											cy="12"
+											r="10"
+											stroke="currentColor"
+											stroke-width="4"
+										></circle>
+										<path
+											class="opacity-75"
+											fill="currentColor"
+											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+										></path>
+									</svg>
+								{:else}
+									Add
+								{/if}
+							</button>
+						</div>
+					</div>
+				{/if}
 			</div>
 		{/if}
 	</div>

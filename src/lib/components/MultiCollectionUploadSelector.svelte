@@ -30,6 +30,10 @@
 	>({});
 	let loadingLimits = $state(true);
 	let collectionOwnerNames = $state<Record<string, string>>({});
+	let usingSavedSelections = $state(false);
+
+	// LocalStorage key for saving selected collections
+	const STORAGE_KEY = 'phototv_last_selected_collections';
 
 	// Load upload limits for all collections
 	async function loadUploadLimits() {
@@ -69,11 +73,62 @@
 		collectionOwnerNames = ownerNames;
 	}
 
+	// Load saved selections from localStorage
+	function loadSavedSelections(): string[] | null {
+		try {
+			const saved = localStorage.getItem(STORAGE_KEY);
+			if (saved) {
+				const parsed = JSON.parse(saved);
+				// Validate that it's an array of strings
+				if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
+					return parsed;
+				}
+			}
+		} catch (error) {
+			console.error('Error loading saved selections:', error);
+		}
+		return null;
+	}
+
+	// Save selections to localStorage
+	function saveSelections(selections: string[]) {
+		try {
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(selections));
+		} catch (error) {
+			console.error('Error saving selections:', error);
+		}
+	}
+
 	// Initialize with collections that can accept uploads
 	function initializeSelection() {
-		selectedCollectionUuids = collections
-			.filter((collection) => uploadLimits[collection.uuid]?.canUpload)
-			.map((collection) => collection.uuid);
+		// First, try to load saved selections
+		const savedSelections = loadSavedSelections();
+
+		if (savedSelections && savedSelections.length > 0) {
+			// Filter saved selections to only include collections that:
+			// 1. Still exist in the current collections list
+			// 2. Can accept uploads
+			selectedCollectionUuids = savedSelections.filter((uuid) =>
+				collections.some((c) => c.uuid === uuid && uploadLimits[c.uuid]?.canUpload)
+			);
+
+			// If we successfully restored at least one saved selection
+			if (selectedCollectionUuids.length > 0) {
+				usingSavedSelections = true;
+			} else {
+				// If no saved collections are valid, fall back to selecting all that can upload
+				selectedCollectionUuids = collections
+					.filter((collection) => uploadLimits[collection.uuid]?.canUpload)
+					.map((collection) => collection.uuid);
+				usingSavedSelections = false;
+			}
+		} else {
+			// No saved selections, default to all collections that can accept uploads
+			selectedCollectionUuids = collections
+				.filter((collection) => uploadLimits[collection.uuid]?.canUpload)
+				.map((collection) => collection.uuid);
+			usingSavedSelections = false;
+		}
 	}
 
 	function toggleCollection(collectionUuid: string) {
@@ -105,6 +160,9 @@
 			);
 			return;
 		}
+
+		// Save the selected collections for next time
+		saveSelections(selectedCollectionUuids);
 
 		dispatch('confirm', { selectedCollections });
 	}
@@ -255,6 +313,21 @@
 							</label>
 						{/each}
 					</div>
+
+					{#if usingSavedSelections}
+						<div class="mt-3 rounded-lg bg-blue-50 p-3">
+							<p class="text-xs text-blue-700">
+								<svg class="mr-1 inline-block h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+									<path
+										fill-rule="evenodd"
+										d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+										clip-rule="evenodd"
+									/>
+								</svg>
+								Using your previous selection
+							</p>
+						</div>
+					{/if}
 
 					{#if collections.filter((c) => uploadLimits[c.uuid]?.canUpload).length === 0}
 						<div class="mt-4 rounded-lg bg-red-50 p-4">

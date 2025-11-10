@@ -119,7 +119,7 @@
 		</div>
 	{:else if currentImageUrl}
 		<div class="absolute inset-0 flex items-center justify-center p-8">
-			<PictureFrame imageUrl={currentImageUrl} isLoading={false} theme={theme} />
+			<PictureFrame imageUrl={currentImageUrl} isLoading={false} {theme} />
 		</div>
 
 		{#if imageRefs.length > 1}

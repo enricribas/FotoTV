@@ -209,9 +209,7 @@
 					<option value="light">Light Mode</option>
 					<option value="dark">Dark Mode</option>
 				</select>
-				<p class="mt-2 text-xs text-gray-500">
-					Background color around photos in the slideshow
-				</p>
+				<p class="mt-2 text-xs text-gray-500">Background color around photos in the slideshow</p>
 			</div>
 
 			<!-- Shared With Section (only for owned collections) -->
