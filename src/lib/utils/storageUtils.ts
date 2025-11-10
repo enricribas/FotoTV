@@ -6,7 +6,7 @@ import {
 	type StorageReference
 } from 'firebase/storage';
 import { storage } from '$lib/firebase';
-import { sortImagesByName } from './slideshowUtils';
+import { shuffleImages } from './slideshowUtils';
 
 export interface ImageListResult {
 	imageRefs: StorageReference[];
@@ -25,10 +25,10 @@ export async function loadCollectionImageRefs(collectionUuid: string): Promise<I
 	try {
 		const collectionRef = ref(storage, `images/${collectionUuid}`);
 		const result = await listAll(collectionRef);
-		const sortedRefs = sortImagesByName(result.items);
+		const shuffledRefs = shuffleImages(result.items);
 
 		return {
-			imageRefs: sortedRefs
+			imageRefs: shuffledRefs
 		};
 	} catch (error) {
 		console.error('Error loading image references:', error);

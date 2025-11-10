@@ -41,6 +41,20 @@ export function sortImagesByName(imageRefs: StorageReference[]): StorageReferenc
 }
 
 /**
+ * Shuffles an array of storage references using Fisher-Yates algorithm
+ * @param imageRefs Array of image references to shuffle
+ * @returns New shuffled array without modifying the original
+ */
+export function shuffleImages(imageRefs: StorageReference[]): StorageReference[] {
+	const shuffled = [...imageRefs];
+	for (let i = shuffled.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+	}
+	return shuffled;
+}
+
+/**
  * Calculate optimal padding for image display based on aspect ratios
  */
 export function calculateOptimalPadding(

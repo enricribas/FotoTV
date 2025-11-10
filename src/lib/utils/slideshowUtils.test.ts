@@ -7,7 +7,8 @@ import {
 	hasImageListChanged,
 	adjustIndexAfterDeletion,
 	createSlideshowInterval,
-	getImageDimensions
+	getImageDimensions,
+	shuffleImages
 } from './slideshowUtils';
 import type { StorageReference } from 'firebase/storage';
 
@@ -310,6 +311,78 @@ describe('slideshowUtils', () => {
 			mockImage.onerror();
 
 			await expect(promise).rejects.toThrow('Failed to load image');
+		});
+	});
+
+	describe('shuffleImages', () => {
+		it('returns a new array without modifying the original', () => {
+			const original = [
+				{ name: 'image1.jpg' },
+				{ name: 'image2.jpg' },
+				{ name: 'image3.jpg' }
+			] as StorageReference[];
+
+			const originalCopy = [...original];
+			const shuffled = shuffleImages(original);
+
+			// Original array should not be modified
+			expect(original).toEqual(originalCopy);
+			// Shuffled should be a different array instance
+			expect(shuffled).not.toBe(original);
+		});
+
+		it('contains all the same elements', () => {
+			const original = [
+				{ name: 'image1.jpg' },
+				{ name: 'image2.jpg' },
+				{ name: 'image3.jpg' },
+				{ name: 'image4.jpg' }
+			] as StorageReference[];
+
+			const shuffled = shuffleImages(original);
+
+			// Should have same length
+			expect(shuffled.length).toBe(original.length);
+
+			// Should contain all the same elements
+			original.forEach((item) => {
+				expect(shuffled).toContainEqual(item);
+			});
+		});
+
+		it('handles empty array', () => {
+			const empty: StorageReference[] = [];
+			const shuffled = shuffleImages(empty);
+
+			expect(shuffled).toEqual([]);
+			expect(shuffled).not.toBe(empty);
+		});
+
+		it('handles single element array', () => {
+			const single = [{ name: 'image1.jpg' }] as StorageReference[];
+			const shuffled = shuffleImages(single);
+
+			expect(shuffled).toEqual(single);
+			expect(shuffled).not.toBe(single);
+		});
+
+		it('actually shuffles the array (statistical test)', () => {
+			// Create a larger array to test shuffling
+			const original = Array.from({ length: 10 }, (_, i) => ({
+				name: `image${i}.jpg`
+			})) as StorageReference[];
+
+			// Run shuffle multiple times and check that we get different orders
+			const results = new Set<string>();
+
+			for (let i = 0; i < 20; i++) {
+				const shuffled = shuffleImages(original);
+				results.add(shuffled.map((item) => item.name).join(','));
+			}
+
+			// With 10 elements and 20 shuffles, we should get at least 2 different orders
+			// (probability of getting the same order 20 times is essentially 0)
+			expect(results.size).toBeGreaterThan(1);
 		});
 	});
 });
