@@ -4,6 +4,7 @@
 	import { ref, listAll, getDownloadURL } from 'firebase/storage';
 	import type { StorageReference } from 'firebase/storage';
 	import PictureFrame from './PictureFrame.svelte';
+	import { shuffleImages } from '$lib/utils/slideshowUtils';
 
 	export let collectionUuid: string;
 	export let interval: number = 10;
@@ -22,7 +23,7 @@
 			const collectionRef = ref(storage, `images/${collectionUuid}`);
 			const result = await listAll(collectionRef);
 
-			imageRefs = result.items.filter((item) => {
+			const filteredRefs = result.items.filter((item) => {
 				const name = item.name.toLowerCase();
 				return (
 					name.endsWith('.jpg') ||
@@ -32,6 +33,9 @@
 					name.endsWith('.webp')
 				);
 			});
+
+			// Shuffle the images for random order
+			imageRefs = shuffleImages(filteredRefs);
 
 			if (imageRefs.length > 0) {
 				await loadCurrentImage();

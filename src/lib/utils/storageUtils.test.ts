@@ -21,11 +21,11 @@ vi.mock('$lib/firebase', () => ({
 }));
 
 vi.mock('./slideshowUtils', () => ({
-	sortImagesByName: vi.fn((refs) => refs)
+	shuffleImages: vi.fn((refs) => refs)
 }));
 
 import { ref, listAll, getDownloadURL, deleteObject } from 'firebase/storage';
-import { sortImagesByName } from './slideshowUtils';
+import { shuffleImages } from './slideshowUtils';
 
 describe('storageUtils', () => {
 	beforeEach(() => {
@@ -33,22 +33,22 @@ describe('storageUtils', () => {
 	});
 
 	describe('loadCollectionImageRefs', () => {
-		it('successfully loads and sorts image references', async () => {
+		it('successfully loads and shuffles image references', async () => {
 			const mockRefs = [{ name: 'image2.jpg' }, { name: 'image1.jpg' }] as StorageReference[];
 
-			const sortedRefs = [{ name: 'image1.jpg' }, { name: 'image2.jpg' }] as StorageReference[];
+			const shuffledRefs = [{ name: 'image1.jpg' }, { name: 'image2.jpg' }] as StorageReference[];
 
 			vi.mocked(ref).mockReturnValue({} as StorageReference);
 			vi.mocked(listAll).mockResolvedValue({ items: mockRefs } as ListResult);
-			vi.mocked(sortImagesByName).mockReturnValue(sortedRefs);
+			vi.mocked(shuffleImages).mockReturnValue(shuffledRefs);
 
 			const result = await loadCollectionImageRefs('test-collection');
 
 			expect(result).toEqual({
-				imageRefs: sortedRefs
+				imageRefs: shuffledRefs
 			});
 			expect(ref).toHaveBeenCalledWith({}, 'images/test-collection');
-			expect(sortImagesByName).toHaveBeenCalledWith(mockRefs);
+			expect(shuffleImages).toHaveBeenCalledWith(mockRefs);
 		});
 
 		it('handles errors gracefully', async () => {
@@ -169,7 +169,7 @@ describe('storageUtils', () => {
 
 			vi.mocked(ref).mockReturnValue({} as StorageReference);
 			vi.mocked(listAll).mockResolvedValue({ items: newRefs } as ListResult);
-			vi.mocked(sortImagesByName).mockReturnValue(newRefs);
+			vi.mocked(shuffleImages).mockReturnValue(newRefs);
 
 			const result = await checkForImageUpdates(currentRefs, 'test-collection');
 
@@ -186,7 +186,7 @@ describe('storageUtils', () => {
 
 			vi.mocked(ref).mockReturnValue({} as StorageReference);
 			vi.mocked(listAll).mockResolvedValue({ items: newRefs } as ListResult);
-			vi.mocked(sortImagesByName).mockReturnValue(newRefs);
+			vi.mocked(shuffleImages).mockReturnValue(newRefs);
 
 			const result = await checkForImageUpdates(currentRefs, 'test-collection');
 
@@ -203,7 +203,7 @@ describe('storageUtils', () => {
 
 			vi.mocked(ref).mockReturnValue({} as StorageReference);
 			vi.mocked(listAll).mockResolvedValue({ items: newRefs } as ListResult);
-			vi.mocked(sortImagesByName).mockReturnValue(newRefs);
+			vi.mocked(shuffleImages).mockReturnValue(newRefs);
 
 			const result = await checkForImageUpdates(currentRefs, 'test-collection');
 
