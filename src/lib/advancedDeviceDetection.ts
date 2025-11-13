@@ -263,20 +263,89 @@ export class AdvancedDeviceDetector {
 			return 'desktop';
 		}
 
-		// Simplified logic based on screen size
-		const screenWidth = window.innerWidth || window.screen.width;
-		const screenHeight = window.innerHeight || window.screen.height;
-		const maxDimension = Math.max(screenWidth, screenHeight);
-		const minDimension = Math.min(screenWidth, screenHeight);
-
-		// Mobile detection - narrow screens or small overall size
-		if (maxDimension < 768 || (maxDimension < 1024 && minDimension < 600)) {
-			return 'mobile';
+		// Check for forced TV mode
+		if (this.isTVModeForced()) {
+			return 'tv';
 		}
 
-		// For simplicity, treat everything else as TV
-		// This includes tablets, desktops, and actual TVs
-		return 'tv';
+		// Get screen dimensions and pixel ratio
+		const screenWidth = window.innerWidth || window.screen.width;
+		const screenHeight = window.innerHeight || window.screen.height;
+		const pixelRatio = window.devicePixelRatio || 1;
+
+		// Calculate physical dimensions (approximate)
+		const physicalWidth = screenWidth / pixelRatio;
+		const physicalHeight = screenHeight / pixelRatio;
+		const maxDimension = Math.max(physicalWidth, physicalHeight);
+		const minDimension = Math.min(physicalWidth, physicalHeight);
+
+		// Check platform
+		const platform = Capacitor.getPlatform();
+
+		// Mobile detection
+		if (platform === 'android' || platform === 'ios') {
+			// Check if it's actually Android TV
+			if (platform === 'android' && this.deviceInfo) {
+				const model = (this.deviceInfo.model || '').toLowerCase();
+				const manufacturer = (this.deviceInfo.manufacturer || '').toLowerCase();
+
+				// Known TV manufacturers/models
+				if (
+					model.includes('tv') ||
+					model.includes('aftm') || // Amazon Fire TV
+					model.includes('shield') || // NVIDIA Shield
+					manufacturer.includes('amazon') ||
+					manufacturer.includes('nvidia')
+				) {
+					return 'tv';
+				}
+			}
+
+			// Phone vs tablet detection based on physical size
+			if (minDimension < 600) {
+				return 'mobile';
+			} else {
+				return 'tablet';
+			}
+		}
+
+		// Web platform detection
+		if (platform === 'web') {
+			// Check user agent for TV indicators
+			const userAgent = navigator.userAgent.toLowerCase();
+			if (
+				userAgent.includes('smart-tv') ||
+				userAgent.includes('smarttv') ||
+				userAgent.includes('googletv') ||
+				userAgent.includes('appletv') ||
+				userAgent.includes('hbbtv') ||
+				userAgent.includes('pov_tv') ||
+				userAgent.includes('netcast')
+			) {
+				return 'tv';
+			}
+
+			// Touch capability check
+			const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+			// Mobile detection for web
+			if (hasTouch && maxDimension < 768) {
+				return 'mobile';
+			}
+
+			// Tablet detection for web
+			if (hasTouch && maxDimension < 1366) {
+				return 'tablet';
+			}
+
+			// Large screens without touch are likely desktop or TV
+			if (maxDimension > 1920 && !hasTouch) {
+				return 'tv';
+			}
+		}
+
+		// Default to desktop for everything else
+		return 'desktop';
 	}
 
 	/**
@@ -329,8 +398,8 @@ export class AdvancedDeviceDetector {
 		const isLeanback = await this.isLeanback();
 
 		// Calculate shouldUseTVUI without circular dependency
-		// Simplified: TV UI for anything that's not mobile
-		const shouldUseTVUI = screenType !== 'mobile';
+		// TV UI only for actual TV devices
+		const shouldUseTVUI = screenType === 'tv';
 
 		const hasHardwareKeyboard = hasPhysicalKeyboard;
 		const supportsGamepad = this.supportsGamepad();
@@ -361,9 +430,14 @@ export class AdvancedDeviceDetector {
 			return false;
 		}
 
-		// Simplified: use TV UI for anything that's not mobile
+		// Check for forced TV mode
+		if (this.isTVModeForced()) {
+			return true;
+		}
+
+		// Only use TV UI for actual TV devices
 		const screenType = await this.getScreenType();
-		return screenType !== 'mobile';
+		return screenType === 'tv';
 	}
 }
 

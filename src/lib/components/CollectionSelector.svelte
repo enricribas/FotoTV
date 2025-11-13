@@ -27,6 +27,9 @@
 	let newCollectionName = '';
 	let userProfile: UserProfile | null = null;
 	let collectionOwnerNames: Record<string, string> = {};
+	let focusedIndex = -1;
+	let dropdownElement: HTMLDivElement;
+	let listElement: HTMLUListElement;
 
 	// Check if user has pro plan
 	$: hasProPlan = userProfile?.plan === 'pro';
@@ -70,6 +73,20 @@
 
 	function toggleDropdown() {
 		isOpen = !isOpen;
+		if (isOpen) {
+			// Set focus to current selected item or first item
+			const currentIndex = collections.findIndex((c) => c.uuid === selectedCollectionUuid);
+			focusedIndex = currentIndex >= 0 ? currentIndex : 0;
+			// Wait for DOM update then focus the listbox for keyboard navigation
+			setTimeout(() => {
+				if (listElement) {
+					listElement.focus();
+					focusListItem(focusedIndex);
+				}
+			}, 0);
+		} else {
+			focusedIndex = -1;
+		}
 	}
 
 	function selectCollection(collection: ImageCollection) {
@@ -78,11 +95,76 @@
 			collection: collection
 		});
 		isOpen = false;
+		focusedIndex = -1;
+	}
+
+	function focusListItem(index: number) {
+		if (!listElement) return;
+		const items = listElement.querySelectorAll('button[role="option"]');
+		if (items[index]) {
+			const item = items[index] as HTMLElement;
+			item.focus();
+			// Ensure the item is visible in the scrollable container
+			item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+		}
+	}
+
+	function handleDropdownKeydown(event: KeyboardEvent) {
+		if (!isOpen) return;
+
+		switch (event.key) {
+			case 'ArrowDown':
+				event.preventDefault();
+				if (focusedIndex < collections.length - 1) {
+					focusedIndex++;
+					focusListItem(focusedIndex);
+				}
+				break;
+			case 'ArrowUp':
+				event.preventDefault();
+				if (focusedIndex > 0) {
+					focusedIndex--;
+					focusListItem(focusedIndex);
+				}
+				break;
+			case 'Enter':
+			case ' ':
+			case 'OK': // TV remote OK button
+				event.preventDefault();
+				if (focusedIndex >= 0 && focusedIndex < collections.length) {
+					selectCollection(collections[focusedIndex]);
+				}
+				break;
+			case 'Home':
+				event.preventDefault();
+				focusedIndex = 0;
+				focusListItem(focusedIndex);
+				break;
+			case 'End':
+				event.preventDefault();
+				focusedIndex = collections.length - 1;
+				focusListItem(focusedIndex);
+				break;
+			case 'Escape': {
+				event.preventDefault();
+				isOpen = false;
+				focusedIndex = -1;
+				// Return focus to dropdown button
+				const button = document.querySelector(
+					`[data-collection-selector="${instanceId}"] > div > button`
+				);
+				if (button) {
+					(button as HTMLElement).focus();
+				}
+				break;
+			}
+		}
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
+		if (event.key === 'Escape' && isOpen) {
 			isOpen = false;
+			focusedIndex = -1;
 		}
 	}
 
@@ -175,8 +257,20 @@
 				type="button"
 				class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2 text-left shadow-sm hover:bg-gray-50 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
 				on:click={toggleDropdown}
+				on:keydown={(e) => {
+					if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+						e.preventDefault();
+						if (!isOpen) {
+							toggleDropdown();
+						}
+					} else if ((e.key === 'Enter' || e.key === ' ' || e.key === 'OK') && !isOpen) {
+						e.preventDefault();
+						toggleDropdown();
+					}
+				}}
 				aria-haspopup="listbox"
 				aria-expanded={isOpen}
+				aria-controls="{instanceId}-listbox"
 			>
 				<div class="flex min-w-0 flex-1 items-center">
 					<span class="block truncate text-sm font-medium text-gray-900">
@@ -210,11 +304,21 @@
 
 		{#if isOpen}
 			<div
+				bind:this={dropdownElement}
 				class="absolute z-50 mt-1 w-full rounded-lg border border-gray-300 bg-white shadow-lg"
 				style="min-width: 100%; max-height: 320px; overflow: hidden;"
 			>
-				<ul class="overflow-y-auto" style="max-height: calc(100% - 60px);" role="listbox">
-					{#each collections as collection (collection.uuid)}
+				<ul
+					bind:this={listElement}
+					class="overflow-y-auto"
+					style="max-height: calc(100% - 60px);"
+					role="listbox"
+					id="{instanceId}-listbox"
+					aria-label="Select a collection"
+					on:keydown={handleDropdownKeydown}
+					tabindex="-1"
+				>
+					{#each collections as collection, index (collection.uuid)}
 						<li>
 							<button
 								type="button"
@@ -223,8 +327,11 @@
 									? 'bg-orange-100 text-orange-900'
 									: 'text-gray-900'}"
 								on:click={() => selectCollection(collection)}
+								on:focus={() => (focusedIndex = index)}
+								on:mouseenter={() => (focusedIndex = index)}
 								role="option"
 								aria-selected={selectedCollectionUuid === collection.uuid}
+								tabindex={focusedIndex === index ? 0 : -1}
 							>
 								<div class="flex items-center justify-between">
 									<div class="min-w-0 flex-1">
