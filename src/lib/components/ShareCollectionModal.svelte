@@ -78,9 +78,9 @@
 				});
 			}
 
-			// Generate URL based on environment
-			const baseUrl = import.meta.env.DEV ? 'http://localhost:5173' : window.location.origin;
-			shareUrl = `${baseUrl}/share/${shareId}`;
+			// Hardcode production URL to ensure it works in Android WebView
+			// Using Firebase hosting URL based on project ID
+			shareUrl = `https://fototv-90cf0.web.app/share/${shareId}`;
 
 			// Generate QR code
 			try {
