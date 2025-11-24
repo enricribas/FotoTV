@@ -24,7 +24,6 @@
 	export let collections: ImageCollection[] = [];
 	export let onLimitsUpdate: () => Promise<void>;
 	export let showUploadLimit: boolean = false;
-	export let isCompactLayout: boolean = false;
 
 	let showTVApproval = false;
 	let showHelperText = true;

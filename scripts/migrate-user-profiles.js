@@ -43,9 +43,23 @@ async function migrateUserProfilesAndCollections() {
 					updatedAt: admin.firestore.Timestamp.now()
 				};
 
+				// Check for any existing data that might have been partially written
+				// This helps preserve fields like 'plan' if they were set before
 				try {
-					await userDocRef.set(userProfile);
-					console.log(`  - Created user profile`);
+					const existingDoc = await userDocRef.get();
+					if (existingDoc.exists) {
+						const existingData = existingDoc.data();
+						if (existingData.plan) {
+							userProfile.plan = existingData.plan;
+						}
+					}
+				} catch (error) {
+					// Ignore errors, proceed without plan field
+				}
+
+				try {
+					await userDocRef.set(userProfile, { merge: true });
+					console.log(`  - Created user profile (merged with existing data)`);
 				} catch (error) {
 					console.error(`  - Failed to create user profile:`, error.message);
 				}

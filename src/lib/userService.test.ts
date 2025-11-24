@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UserService } from './userService';
 import type { User } from 'firebase/auth';
+import type { DocumentSnapshot } from 'firebase/firestore';
 
 // Mock Firebase modules
 vi.mock('firebase/firestore', () => ({
@@ -42,6 +43,16 @@ describe('UserService', () => {
 			const mockDocRef = {};
 			vi.mocked(doc).mockReturnValue(mockDocRef as ReturnType<typeof doc>);
 			vi.mocked(setDoc).mockResolvedValue(undefined);
+			vi.mocked(getDoc).mockResolvedValue({
+				exists: () => true,
+				data: () => ({
+					uid: 'test-user-123',
+					email: 'test@example.com',
+					displayName: 'Test User',
+					createdAt: {},
+					updatedAt: {}
+				})
+			} as unknown as DocumentSnapshot);
 
 			const result = await UserService.createUserProfile(mockUser);
 
@@ -52,10 +63,42 @@ describe('UserService', () => {
 					uid: 'test-user-123',
 					email: 'test@example.com',
 					displayName: 'Test User'
-				})
+				}),
+				{ merge: true }
 			);
 			expect(result.uid).toBe('test-user-123');
 			expect(result.email).toBe('test@example.com');
+		});
+
+		it('should preserve existing plan field when creating user profile', async () => {
+			const mockDocRef = {};
+			vi.mocked(doc).mockReturnValue(mockDocRef as ReturnType<typeof doc>);
+			vi.mocked(setDoc).mockResolvedValue(undefined);
+			vi.mocked(getDoc).mockResolvedValue({
+				exists: () => true,
+				data: () => ({
+					uid: 'test-user-123',
+					email: 'test@example.com',
+					displayName: 'Test User',
+					plan: 'pro',
+					createdAt: {},
+					updatedAt: {}
+				})
+			} as unknown as DocumentSnapshot);
+
+			const result = await UserService.createUserProfile(mockUser);
+
+			expect(doc).toHaveBeenCalledWith({}, 'users', 'test-user-123');
+			expect(setDoc).toHaveBeenCalledWith(
+				mockDocRef,
+				expect.objectContaining({
+					uid: 'test-user-123',
+					email: 'test@example.com',
+					displayName: 'Test User'
+				}),
+				{ merge: true }
+			);
+			expect(result.plan).toBe('pro');
 		});
 	});
 

@@ -169,7 +169,7 @@
 	</div>
 
 	<!-- Main content area -->
-	<div class="pt-32 pb-4" class:pb-24={showActionMenu}>
+	<div class="pt-32 pb-4" class:pb-36={showActionMenu}>
 		{#if loading}
 			<div class="flex min-h-[calc(100vh-4rem)] items-center justify-center">
 				<div class="text-center">
@@ -193,7 +193,7 @@
 			</div>
 		{:else if imageRefs.length > 0}
 			<!-- Photo grid -->
-			<div class="container mx-auto px-4 sm:px-6 {showActionMenu ? 'pb-20' : ''}">
+			<div class="container mx-auto px-4 sm:px-6 {showActionMenu ? 'pb-32' : ''}">
 				<div
 					class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8"
 				>
@@ -265,6 +265,7 @@
 		{#if showActionMenu}
 			<div
 				class="fixed right-0 bottom-0 left-0 z-40 border-t border-white/20 bg-black/90 backdrop-blur-sm"
+				style="padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); margin-bottom: env(safe-area-inset-bottom, 0px)"
 			>
 				<div class="container mx-auto px-4 py-4">
 					<div class="flex items-center justify-between">

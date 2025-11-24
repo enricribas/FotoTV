@@ -11,7 +11,6 @@
 		handleTVLoginSuccess,
 		setupDeviceDetection
 	} from '$lib/utils/authUtils';
-	import { APP_VERSION } from '$lib/version';
 	import { disableTVMode } from '$lib/advancedDeviceDetection';
 	import { goto } from '$app/navigation';
 	import { CollectionService } from '$lib/collectionService';
@@ -269,7 +268,10 @@
 			{/if}
 			<div class="text-sm text-gray-800">
 				<span class="font-semibold">{getUserDisplayText($user)}</span>
-				<div class="text-xs text-gray-500">v{APP_VERSION}</div>
+				<div class="text-xs text-gray-500">
+					<!-- eslint-disable-next-line no-undef -->
+					v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '4.17.0'}
+				</div>
 			</div>
 		</button>
 	{/if}
@@ -310,7 +312,6 @@
 				collections={userCollections}
 				onLimitsUpdate={() => updateUploadLimits($user)}
 				{showUploadLimit}
-				{isCompactLayout}
 				on:collectionChange={handleCollectionChange}
 				on:collectionsUpdated={handleCollectionsUpdated}
 			/>

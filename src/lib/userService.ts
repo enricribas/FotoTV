@@ -18,7 +18,22 @@ export class UserService {
 
 		try {
 			const userDocRef = doc(db, 'users', user.uid);
-			await setDoc(userDocRef, userProfile);
+			await setDoc(userDocRef, userProfile, { merge: true });
+
+			// Fetch the complete profile to include any existing fields like 'plan'
+			const updatedDoc = await getDoc(userDocRef);
+			if (updatedDoc.exists()) {
+				const data = updatedDoc.data();
+				return {
+					uid: data.uid,
+					email: data.email,
+					displayName: data.displayName || null,
+					plan: data.plan,
+					createdAt: data.createdAt,
+					updatedAt: data.updatedAt
+				} as UserProfile;
+			}
+
 			return userProfile as UserProfile;
 		} catch (error) {
 			console.error('Error creating user profile:', error);
