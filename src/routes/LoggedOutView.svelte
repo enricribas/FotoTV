@@ -7,7 +7,6 @@
 	export let isCompactLayout: boolean = false;
 
 	const showForgotPassword = writable(false);
-	let currentStage: 1 | 2 = 1;
 
 	function showForgotPasswordForm() {
 		showForgotPassword.set(true);
@@ -20,10 +19,6 @@
 	function handleTVMode() {
 		enableTVMode();
 	}
-
-	function handleStageChange(stage: 1 | 2) {
-		currentStage = stage;
-	}
 </script>
 
 <div
@@ -34,27 +29,9 @@
 	{#if $showForgotPassword}
 		<PasswordResetForm onBack={hideForgotPasswordForm} />
 	{:else}
-		<!-- Left column - Instructions/info (when in compact layout) -->
-		{#if isCompactLayout}
-			<div class="lg:w-1/2 lg:pr-4" class:lg:pt-12={currentStage === 2}>
-				<div class="rounded-lg border border-gray-200 bg-gray-50 p-6">
-					<div class="space-y-3 text-sm text-gray-600">
-						<div>
-							<span class="mr-3 text-lg font-semibold">Step 1: </span>
-							<p class="font-medium">Log into app from phone to upload photos</p>
-						</div>
-						<div>
-							<span class="mr-3 text-lg font-semibold">Step 2:</span>
-							<p class="font-medium">Log into app from TV to show slideshow</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		{/if}
-
-		<!-- Right column - Auth form (when in compact layout) -->
+		<!-- Auth form -->
 		<div class={isCompactLayout ? 'lg:w-1/2' : 'w-full'}>
-			<AuthForm onShowPasswordReset={showForgotPasswordForm} onStageChange={handleStageChange} />
+			<AuthForm onShowPasswordReset={showForgotPasswordForm} />
 
 			<!-- TV Mode Button -->
 			<div class="mt-6 text-center">

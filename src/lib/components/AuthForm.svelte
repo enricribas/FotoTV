@@ -172,6 +172,9 @@
 		{/if}
 
 		{#if $stage === 2}
+			<div class="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+				No account with that email and password. Fill in these fields to create an account.
+			</div>
 			<div>
 				<label for="display-name" class="mb-1 block text-sm font-medium text-gray-700">
 					Display Name
@@ -206,18 +209,47 @@
 			</div>
 		{/if}
 
-		<button
-			type="submit"
-			class="btn w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
-			disabled={$isLoading}
-		>
-			{#if $isLoading}
-				<span class="loading loading-spinner loading-sm mr-2"></span>
-				{$stage === 1 ? 'Checking your account...' : 'Creating Account...'}
-			{:else}
-				{$stage === 1 ? 'Sign-in / Sign-up' : 'Create Account'}
-			{/if}
-		</button>
+		{#if $stage === 1}
+			<div class="flex gap-2">
+				<button
+					type="submit"
+					class="btn flex-1 border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+					disabled={$isLoading}
+				>
+					{#if $isLoading}
+						<span class="loading loading-spinner loading-sm mr-2"></span>
+						Creating...
+					{:else}
+						Create Account
+					{/if}
+				</button>
+				<button
+					type="submit"
+					class="btn flex-1 border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+					disabled={$isLoading}
+				>
+					{#if $isLoading}
+						<span class="loading loading-spinner loading-sm mr-2"></span>
+						Signing in...
+					{:else}
+						Sign In
+					{/if}
+				</button>
+			</div>
+		{:else}
+			<button
+				type="submit"
+				class="btn w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+				disabled={$isLoading}
+			>
+				{#if $isLoading}
+					<span class="loading loading-spinner loading-sm mr-2"></span>
+					Creating Account...
+				{:else}
+					Create Account
+				{/if}
+			</button>
+		{/if}
 	</form>
 
 	<!-- Stage 2 back button -->

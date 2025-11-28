@@ -85,11 +85,45 @@ async function updateAndroidBuildGradle() {
 	}
 }
 
+async function updatePageSvelte() {
+	const pageSveltePath = path.join(projectRoot, 'src', 'routes', '+page.svelte');
+
+	if (!fs.existsSync(pageSveltePath)) {
+		console.log('⚠️  +page.svelte not found, skipping UI version update');
+		return;
+	}
+
+	try {
+		let pageSvelteContent = fs.readFileSync(pageSveltePath, 'utf8');
+
+		// Find and update the fallback version in the version display
+		const versionRegex = /v\{typeof __APP_VERSION__ !== 'undefined' \? __APP_VERSION__ : '(\d+\.\d+\.\d+)'\}/;
+		const match = pageSvelteContent.match(versionRegex);
+
+		if (match) {
+			const oldVersion = match[1];
+			pageSvelteContent = pageSvelteContent.replace(
+				versionRegex,
+				`v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '${newVersion}'}`
+			);
+			console.log(`✅ Updated +page.svelte fallback version: ${oldVersion} → ${newVersion}`);
+		} else {
+			console.log('⚠️  Could not find version pattern in +page.svelte');
+		}
+
+		fs.writeFileSync(pageSveltePath, pageSvelteContent);
+	} catch (error) {
+		console.error('❌ Failed to update +page.svelte:', error.message);
+		process.exit(1);
+	}
+}
+
 async function main() {
 	console.log(`🚀 Updating version to ${newVersion}...\n`);
 
 	await updatePackageJson();
 	await updateAndroidBuildGradle();
+	await updatePageSvelte();
 
 	console.log('\n✨ Version update completed successfully!');
 	console.log('\nNext steps:');
