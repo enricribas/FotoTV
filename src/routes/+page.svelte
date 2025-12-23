@@ -270,7 +270,7 @@
 				<span class="font-semibold">{getUserDisplayText($user)}</span>
 				<div class="text-xs text-gray-500">
 					<!-- eslint-disable-next-line no-undef -->
-					v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '4.18.0'}
+					v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '4.19.1'}
 				</div>
 			</div>
 		</button>
@@ -303,7 +303,11 @@
 		</div>
 	</div>
 
-	<div class="w-full max-w-md {isCompactLayout ? 'lg:max-w-5xl' : ''}">
+	<div
+		class="w-full max-w-md md:max-w-4xl lg:max-w-6xl xl:max-w-7xl {isCompactLayout
+			? 'lg:max-w-5xl'
+			: ''}"
+	>
 		{#if $user}
 			<LoggedInView
 				user={$user}
