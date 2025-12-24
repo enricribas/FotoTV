@@ -270,7 +270,7 @@
 				<span class="font-semibold">{getUserDisplayText($user)}</span>
 				<div class="text-xs text-gray-500">
 					<!-- eslint-disable-next-line no-undef -->
-					v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '4.19.1'}
+					v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '4.19.5'}
 				</div>
 			</div>
 		</button>
