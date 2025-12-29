@@ -328,9 +328,9 @@
 			{#if isOpen}
 				<div
 					class="absolute z-50 mt-1 w-full rounded-lg border border-gray-300 bg-white shadow-lg"
-					style="min-width: 100%; max-height: 320px; overflow: hidden;"
+					style="min-width: 100%; max-height: 320px;"
 				>
-					<ul class="overflow-y-auto" style="max-height: calc(100% - 60px);" role="listbox">
+					<ul class="overflow-y-auto" style="max-height: 260px;" role="listbox">
 						{#each collections as collection (collection.uuid)}
 							<li>
 								<button
