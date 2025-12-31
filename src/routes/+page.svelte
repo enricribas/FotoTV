@@ -270,7 +270,7 @@
 				<span class="font-semibold">{getUserDisplayText($user)}</span>
 				<div class="text-xs text-gray-500">
 					<!-- eslint-disable-next-line no-undef -->
-					v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '4.19.6'} | {userCollections.length}
+					v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '4.19.7'} | {userCollections.length}
 					collections
 				</div>
 			</div>
@@ -307,7 +307,7 @@
 	<div
 		class="w-full max-w-md md:max-w-4xl lg:max-w-6xl xl:max-w-7xl {isCompactLayout
 			? 'lg:max-w-5xl'
-			: ''}"
+			: ''} {$user ? 'main-content-with-header' : ''}"
 	>
 		{#if $user}
 			<LoggedInView

@@ -3,3 +3,43 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/aspect-ratio';
 @plugin 'daisyui';
+
+/* Custom styles for responsive header spacing */
+.main-content-with-header {
+	margin-top: 5rem; /* Default top margin (80px) */
+}
+
+/* Increase top margin when screen height is less than 600px */
+@media (max-height: 600px) {
+	.main-content-with-header {
+		margin-top: 6rem; /* 96px - more space to avoid overlap */
+	}
+}
+
+/* Additional spacing for very small heights */
+@media (max-height: 500px) {
+	.main-content-with-header {
+		margin-top: 7rem; /* 112px - even more space */
+	}
+}
+
+/* Dropdown-specific responsive positioning */
+.dropdown-responsive {
+	/* Ensure dropdown doesn't overlap with header on small heights */
+	position: absolute;
+}
+
+@media (max-height: 600px) {
+	.dropdown-responsive {
+		/* Add extra spacing from top when opened */
+		margin-top: 0.5rem;
+		max-height: 200px !important;
+	}
+}
+
+@media (max-height: 500px) {
+	.dropdown-responsive {
+		margin-top: 0.75rem;
+		max-height: 150px !important;
+	}
+}

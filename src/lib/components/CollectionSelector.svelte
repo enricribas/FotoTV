@@ -327,7 +327,7 @@
 
 			{#if isOpen}
 				<div
-					class="absolute z-50 mt-1 w-full rounded-lg border border-gray-300 bg-white shadow-lg"
+					class="dropdown-responsive absolute z-50 mt-1 w-full rounded-lg border border-gray-300 bg-white shadow-lg"
 					style="min-width: 100%; max-height: 320px;"
 				>
 					<ul class="overflow-y-auto" style="max-height: 260px;" role="listbox">
