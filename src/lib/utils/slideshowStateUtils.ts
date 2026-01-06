@@ -342,6 +342,95 @@ export function handleScreenClick(
 }
 
 /**
+ * Touch event tracking state
+ */
+interface TouchState {
+	startX: number;
+	startY: number;
+	startTime: number;
+	moved: boolean;
+}
+
+let touchState: TouchState | null = null;
+
+/**
+ * Handles touch start events
+ */
+export function handleTouchStart(event: TouchEvent): void {
+	if (event.touches.length !== 1) return;
+
+	const touch = event.touches[0];
+	touchState = {
+		startX: touch.clientX,
+		startY: touch.clientY,
+		startTime: Date.now(),
+		moved: false
+	};
+}
+
+/**
+ * Handles touch move events
+ */
+export function handleTouchMove(event: TouchEvent): void {
+	if (!touchState || event.touches.length !== 1) return;
+
+	const touch = event.touches[0];
+	const deltaX = Math.abs(touch.clientX - touchState.startX);
+	const deltaY = Math.abs(touch.clientY - touchState.startY);
+
+	// If moved more than 10px, consider it a move gesture
+	if (deltaX > 10 || deltaY > 10) {
+		touchState.moved = true;
+	}
+}
+
+/**
+ * Handles touch end events with swipe detection
+ */
+export function handleTouchEnd(
+	event: TouchEvent,
+	currentShowControls: boolean,
+	actions: SlideshowActions,
+	onNext?: () => void,
+	onPrevious?: () => void
+): void {
+	if (!touchState || event.changedTouches.length !== 1) {
+		touchState = null;
+		return;
+	}
+
+	const touch = event.changedTouches[0];
+	const deltaX = touch.clientX - touchState.startX;
+	const deltaY = touch.clientY - touchState.startY;
+	const deltaTime = Date.now() - touchState.startTime;
+	const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+	// Don't handle if touch target is a button
+	if ((event.target as HTMLElement).closest('button')) {
+		touchState = null;
+		return;
+	}
+
+	// Swipe detection: minimum 50px distance, maximum 500ms time, primarily horizontal
+	const isSwipe = distance > 50 && deltaTime < 500 && Math.abs(deltaX) > Math.abs(deltaY) * 2;
+
+	if (isSwipe) {
+		if (deltaX > 0 && onPrevious) {
+			// Swipe right = previous image
+			onPrevious();
+		} else if (deltaX < 0 && onNext) {
+			// Swipe left = next image
+			onNext();
+		}
+	} else if (!touchState.moved && deltaTime < 300) {
+		// Quick tap without movement = toggle controls
+		toggleControls(currentShowControls, actions);
+	}
+
+	touchState = null;
+}
+
+/**
  * Handles screen keyboard interactions
  */
 export function handleScreenKeydown(

@@ -13,11 +13,11 @@
 {#if showControls}
 	<!-- Back Button -->
 	<button
-		class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-[66px] left-4 z-20 bg-gray-200 text-gray-700 hover:bg-gray-300"
+		class="fixed top-[50px] left-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/90 text-gray-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-gray-300/90 active:scale-95"
 		onclick={onGoBack}
 		aria-label="Go back to main menu"
 	>
-		<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 			<path
 				stroke-linecap="round"
 				stroke-linejoin="round"
@@ -28,23 +28,23 @@
 	</button>
 
 	<!-- Navigation Controls -->
-	<div class="fixed top-[66px] right-4 z-20 flex space-x-2">
+	<div class="fixed top-[50px] right-4 z-20 flex space-x-3">
 		<button
-			class="btn btn-circle btn-ghost hover:bg-opacity-20 bg-gray-200 text-gray-700 hover:bg-gray-300"
+			class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/90 text-gray-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-gray-300/90 active:scale-95"
 			onclick={onPrevious}
 			aria-label="Previous image"
 		>
-			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
 			</svg>
 		</button>
 
 		<button
-			class="btn btn-circle btn-ghost hover:bg-opacity-20 bg-gray-200 text-gray-700 hover:bg-gray-300"
+			class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/90 text-gray-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-gray-300/90 active:scale-95"
 			onclick={onNext}
 			aria-label="Next image"
 		>
-			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 			</svg>
 		</button>
@@ -52,11 +52,11 @@
 
 	<!-- Delete Button -->
 	<button
-		class="btn btn-circle btn-ghost hover:bg-opacity-20 fixed top-[66px] left-1/2 z-20 -translate-x-1/2 transform bg-gray-200 text-gray-700 hover:bg-gray-300"
+		class="fixed top-[50px] left-1/2 z-20 flex h-14 w-14 -translate-x-1/2 transform items-center justify-center rounded-full bg-red-200/90 text-red-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-red-300/90 active:scale-95"
 		onclick={onDelete}
 		aria-label="Delete current image"
 	>
-		<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 			<path
 				stroke-linecap="round"
 				stroke-linejoin="round"
@@ -65,4 +65,14 @@
 			/>
 		</svg>
 	</button>
+
+	<!-- Touch instruction overlay (shows briefly on first touch) -->
+	<div class="pointer-events-none fixed inset-0 z-10 flex items-center justify-center">
+		<div
+			class="rounded-lg bg-black/50 px-6 py-3 text-white opacity-0 backdrop-blur-sm transition-opacity duration-300"
+			id="touch-hint"
+		>
+			<p class="text-center text-sm">Tap to show/hide controls • Swipe left/right to navigate</p>
+		</div>
+	</div>
 {/if}

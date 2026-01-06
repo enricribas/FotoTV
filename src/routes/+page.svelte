@@ -11,6 +11,7 @@
 		handleTVLoginSuccess,
 		setupDeviceDetection
 	} from '$lib/utils/authUtils';
+	import { isEchoShow } from '$lib/advancedDeviceDetection';
 	import { disableTVMode } from '$lib/advancedDeviceDetection';
 	import { goto } from '$app/navigation';
 	import { CollectionService } from '$lib/collectionService';
@@ -27,6 +28,7 @@
 	const user = writable<User | null>(null);
 	let isTVDevice = false;
 	let isTVModeForced = false;
+	let isEchoShowDevice = false;
 	let uploadLimit = { canUpload: true, remaining: 10, limit: 10 };
 	let currentCollectionUuid = '';
 	let showUploadLimit = false;
@@ -56,6 +58,7 @@
 			const deviceInfo = await setupDeviceDetection();
 			isTVDevice = deviceInfo.isTVDevice;
 			isTVModeForced = deviceInfo.isTVModeForced;
+			isEchoShowDevice = await isEchoShow();
 		};
 
 		checkDeviceDetection();
@@ -128,6 +131,7 @@
 		const deviceInfo = await setupDeviceDetection();
 		isTVDevice = deviceInfo.isTVDevice;
 		isTVModeForced = deviceInfo.isTVModeForced;
+		isEchoShowDevice = await isEchoShow();
 	}
 
 	function onTVLoginSuccess(tvUser: User) {
@@ -245,6 +249,9 @@
 
 <div
 	class="to-cyan-0 relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-t from-orange-100 p-4"
+	style={isEchoShowDevice
+		? 'touch-action: manipulation; -webkit-touch-callout: none; -webkit-user-select: none;'
+		: ''}
 >
 	{#if $user}
 		<button
@@ -270,7 +277,7 @@
 				<span class="font-semibold">{getUserDisplayText($user)}</span>
 				<div class="text-xs text-gray-500">
 					<!-- eslint-disable-next-line no-undef -->
-					v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '4.19.7'} | {userCollections.length}
+					v{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '4.20.0'} | {userCollections.length}
 					collections
 				</div>
 			</div>
@@ -321,7 +328,7 @@
 				on:collectionsUpdated={handleCollectionsUpdated}
 			/>
 		{:else if isTVDevice || isTVModeForced}
-			<TVLogin onLoginSuccess={onTVLoginSuccess} {onBackToLogin} />
+			<TVLogin onLoginSuccess={onTVLoginSuccess} {onBackToLogin} {isEchoShowDevice} />
 		{:else}
 			<LoggedOutView {isCompactLayout} />
 		{/if}

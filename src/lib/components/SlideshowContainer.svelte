@@ -4,6 +4,7 @@
 	import { auth } from '$lib/firebase';
 	import { onAuthStateChanged, type User } from 'firebase/auth';
 	import { handleSlideshowKeydown } from '$lib/utils/slideshowUtils';
+	import { isEchoShow } from '$lib/advancedDeviceDetection';
 	import {
 		createInitialSlideshowState,
 		loadImageList,
@@ -17,6 +18,9 @@
 		hideDeleteDialog,
 		handleScreenClick,
 		handleScreenKeydown,
+		handleTouchStart,
+		handleTouchMove,
+		handleTouchEnd,
 		type SlideshowActions
 	} from '$lib/utils/slideshowStateUtils';
 	import { createFrameManager, ReactiveFrameUpdater } from '$lib/utils/frameUtils';
@@ -26,6 +30,7 @@
 	import SlideshowControls from './SlideshowControls.svelte';
 	import DeleteConfirmDialog from './DeleteConfirmDialog.svelte';
 	import SlideshowDisplay from './SlideshowDisplay.svelte';
+	import TouchDebug from './TouchDebug.svelte';
 
 	// Configuration
 	let slideshowIntervalMs = 30000; // Default 30 seconds
@@ -36,6 +41,10 @@
 	let slideshowManager = createSlideshowManager();
 	let frameManager = createFrameManager();
 	let frameUpdater = new ReactiveFrameUpdater();
+	let isEchoShowDevice = false;
+	let showTouchHint = false;
+	let hasShownTouchHint = false;
+	let showTouchDebug = false;
 
 	const actions: SlideshowActions = {
 		setUser: (user) => {
@@ -76,8 +85,16 @@
 	// Initialize auth listener and frame manager
 	let unsubscribeAuth: (() => void) | undefined;
 
-	onMount(() => {
+	onMount(async () => {
 		frameManager.startListening();
+
+		// Detect if this is an Echo Show device
+		isEchoShowDevice = await isEchoShow();
+
+		// Check if we should show touch hints
+		if (isEchoShowDevice && typeof localStorage !== 'undefined') {
+			hasShownTouchHint = localStorage.getItem('touchHintShown') === 'true';
+		}
 
 		unsubscribeAuth = onAuthStateChanged(auth, async (u) => {
 			actions.setUser(u);
@@ -270,6 +287,36 @@
 	function onScreenKeydown(event: KeyboardEvent) {
 		handleScreenKeydown(event, state.showControls, actions);
 	}
+
+	function onTouchStart(event: TouchEvent) {
+		handleTouchStart(event);
+	}
+
+	function onTouchMove(event: TouchEvent) {
+		handleTouchMove(event);
+	}
+
+	function onTouchEnd(event: TouchEvent) {
+		handleTouchEnd(event, state.showControls, actions, nextImage, previousImage);
+
+		// Show touch hint for Echo Show users on first touch
+		if (isEchoShowDevice && !hasShownTouchHint && !state.showControls) {
+			showTouchHint = true;
+			hasShownTouchHint = true;
+			if (typeof localStorage !== 'undefined') {
+				localStorage.setItem('touchHintShown', 'true');
+			}
+
+			// Hide hint after 3 seconds
+			setTimeout(() => {
+				showTouchHint = false;
+			}, 3000);
+		}
+	}
+
+	function toggleTouchDebug() {
+		showTouchDebug = !showTouchDebug;
+	}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -278,8 +325,12 @@
 	class="fixed inset-0 flex flex-col {slideshowTheme === 'dark' ? 'bg-black' : 'bg-[#f0f0f0]'}"
 	onclick={onScreenClick}
 	onkeydown={onScreenKeydown}
+	ontouchstart={onTouchStart}
+	ontouchmove={onTouchMove}
+	ontouchend={onTouchEnd}
 	role="button"
 	tabindex="0"
+	style="touch-action: manipulation; -webkit-touch-callout: none; -webkit-user-select: none;"
 >
 	{#if state.imageRefs.length > 0}
 		<SlideshowControls
@@ -306,4 +357,34 @@
 		theme={slideshowTheme}
 		onGoBack={goBack}
 	/>
+
+	<!-- Touch hints for Echo Show devices -->
+	{#if isEchoShowDevice && showTouchHint}
+		<div class="pointer-events-none fixed inset-0 z-30 flex items-center justify-center">
+			<div
+				class="rounded-lg bg-black/70 px-6 py-4 text-white backdrop-blur-sm transition-opacity duration-300"
+				class:opacity-100={showTouchHint}
+			>
+				<p class="text-center text-lg font-medium">Touch Navigation Enabled</p>
+				<p class="mt-1 text-center text-sm opacity-80">
+					• Tap anywhere to show/hide controls<br />
+					• Swipe left for next image<br />
+					• Swipe right for previous image
+				</p>
+			</div>
+		</div>
+	{/if}
+
+	<!-- Touch Debug Component (only show on Echo Show) -->
+	{#if isEchoShowDevice}
+		<TouchDebug visible={showTouchDebug} />
+
+		<!-- Debug toggle button -->
+		<button
+			class="fixed bottom-4 left-4 z-40 rounded-full bg-blue-600 px-3 py-2 text-xs text-white shadow-lg hover:bg-blue-700"
+			onclick={toggleTouchDebug}
+		>
+			{showTouchDebug ? 'Hide' : 'Show'} Debug
+		</button>
+	{/if}
 </div>

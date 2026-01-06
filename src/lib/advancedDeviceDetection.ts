@@ -86,9 +86,44 @@ export class AdvancedDeviceDetector {
 			return false;
 		}
 
+		// Check for Echo Show devices specifically
+		if (await this.isEchoShow()) {
+			return true;
+		}
+
 		// Simplified: use screen-based detection
 		const screenType = await this.getScreenType();
 		return screenType !== 'mobile';
+	}
+
+	/**
+	 * Detects if the device is an Amazon Echo Show
+	 */
+	static async isEchoShow(): Promise<boolean> {
+		if (typeof window === 'undefined') return false;
+
+		const userAgent = navigator.userAgent.toLowerCase();
+
+		// Check for Echo Show specific identifiers
+		if (
+			userAgent.includes('echo show') ||
+			(userAgent.includes('amazon') && userAgent.includes('webview')) ||
+			(userAgent.includes('silk') && userAgent.includes('tv'))
+		) {
+			return true;
+		}
+
+		// Check device info if available
+		if (this.deviceInfo) {
+			const model = this.deviceInfo.model?.toLowerCase() || '';
+			const manufacturer = this.deviceInfo.manufacturer?.toLowerCase() || '';
+
+			if (manufacturer.includes('amazon') || model.includes('echo')) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -225,7 +260,12 @@ export class AdvancedDeviceDetector {
 
 		// Android devices
 		if (Capacitor.getPlatform() === 'android') {
-			// Android TV typically doesn't have touch
+			// Echo Show devices have touch despite being TV devices
+			if (await this.isEchoShow()) {
+				return true;
+			}
+
+			// Other Android TV typically doesn't have touch
 			if (await this.isAndroidTV()) {
 				return false;
 			}
@@ -261,6 +301,11 @@ export class AdvancedDeviceDetector {
 		// Check if TV mode has been explicitly disabled
 		if (typeof window !== 'undefined' && localStorage.getItem('tv_mode_disabled') === 'true') {
 			return 'desktop';
+		}
+
+		// Echo Show devices should be treated as TV regardless of size
+		if (await this.isEchoShow()) {
+			return 'tv';
 		}
 
 		// Simplified logic based on screen size
@@ -327,6 +372,7 @@ export class AdvancedDeviceDetector {
 		const inputMethods = await this.getInputMethods();
 		const uiMode = await this.getUIMode();
 		const isLeanback = await this.isLeanback();
+		const isEchoShow = await this.isEchoShow();
 
 		// Calculate shouldUseTVUI without circular dependency
 		// Simplified: TV UI for anything that's not mobile
@@ -341,7 +387,7 @@ export class AdvancedDeviceDetector {
 			isTouchDevice,
 			screenType,
 			inputMethods,
-			deviceInfo: this.deviceInfo || undefined,
+			deviceInfo: this.deviceInfo ? { ...this.deviceInfo, isEchoShow } : { isEchoShow },
 			uiMode,
 			isLeanback,
 			hasHardwareKeyboard,
@@ -369,6 +415,7 @@ export class AdvancedDeviceDetector {
 
 // Convenience functions for easier usage
 export const isAndroidTV = () => AdvancedDeviceDetector.isAndroidTV();
+export const isEchoShow = () => AdvancedDeviceDetector.isEchoShow();
 export const hasPhysicalKeyboard = () => AdvancedDeviceDetector.hasPhysicalKeyboard();
 export const isTouchDevice = () => AdvancedDeviceDetector.isTouchDevice();
 export const getScreenType = () => AdvancedDeviceDetector.getScreenType();

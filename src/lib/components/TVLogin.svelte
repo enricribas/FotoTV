@@ -10,6 +10,7 @@
 
 	export let onLoginSuccess: (user: User) => void = () => {};
 	export let onBackToLogin: (() => void) | undefined = undefined;
+	export let isEchoShowDevice: boolean = false;
 
 	let authCode = '';
 	let authStatus: 'idle' | 'waiting' | 'approved' | 'denied' | 'expired' = 'idle';
@@ -105,9 +106,15 @@
 	}
 </script>
 
-<div class="flex min-h-screen flex-col items-center justify-center p-8">
+<div
+	class="flex min-h-screen flex-col items-center justify-center p-8"
+	style={isEchoShowDevice
+		? 'touch-action: manipulation; -webkit-touch-callout: none; -webkit-user-select: none;'
+		: ''}
+>
 	<div
 		class="bg-opacity-10 w-full max-w-md rounded-2xl bg-white p-8 text-center text-white shadow-xl backdrop-blur-lg"
+		class:max-w-lg={isEchoShowDevice}
 	>
 		{#if loading && authStatus === 'idle' && !error}
 			<TVLoadingState onBackToLogin={handleBackToLogin} />
