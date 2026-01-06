@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 
 	export let onSuccess: (() => void) | undefined = undefined;
+	export let isTVDevice: boolean = false;
 
 	let code = '';
 	let loading = false;
@@ -83,7 +84,9 @@
 				bind:this={codeInput}
 				id="tv-code-input"
 				type="text"
-				class="input input-bordered w-full text-center font-mono text-2xl tracking-widest uppercase"
+				class="input input-bordered w-full text-center font-mono text-2xl tracking-widest uppercase {isTVDevice
+					? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+					: ''}"
 				placeholder="ABCD"
 				maxlength="4"
 				bind:value={code}
@@ -99,7 +102,9 @@
 		<!-- Action Buttons -->
 		<div class="space-y-2">
 			<button
-				class="btn w-full border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
+				class="btn w-full border-blue-500 bg-blue-500 text-white hover:bg-blue-600 {isTVDevice
+					? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+					: ''}"
 				class:loading
 				disabled={code.length !== 4 || loading}
 				on:click={approveCode}

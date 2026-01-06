@@ -4,6 +4,8 @@
 	import { fade, scale } from 'svelte/transition';
 	import { formatCollectionDisplayName, getCollectionOwnerName } from '$lib/utils/collectionUtils';
 	import { auth } from '$lib/firebase';
+	import { setupKeyboardNavigation, shouldUseTVUI } from '$lib/tvUtils';
+	import { onMount, onDestroy } from 'svelte';
 
 	export let isOpen: boolean = false;
 	export let collection: ImageCollection | null = null;
@@ -18,6 +20,9 @@
 	let theme: 'light' | 'dark' = 'light';
 	let isSaving = false;
 	let collectionOwnerName: string | undefined;
+	let modalElement: HTMLElement;
+	let keyboardNavCleanup: (() => void) | null = null;
+	let isTVDevice = false;
 
 	// Initialize values from collection
 	$: if (collection) {
@@ -33,6 +38,40 @@
 	// Reset saving state when modal opens/closes
 	$: if (isOpen) {
 		isSaving = false;
+		setupTVNavigation();
+	} else {
+		cleanupTVNavigation();
+	}
+
+	onMount(async () => {
+		isTVDevice = await shouldUseTVUI();
+	});
+
+	onDestroy(() => {
+		cleanupTVNavigation();
+	});
+
+	function setupTVNavigation() {
+		if (modalElement && isTVDevice) {
+			// Small delay to ensure modal is fully rendered
+			setTimeout(() => {
+				keyboardNavCleanup = setupKeyboardNavigation(modalElement);
+				// Focus the first focusable element
+				const firstFocusable = modalElement.querySelector(
+					'input, select, button:not([disabled])'
+				) as HTMLElement;
+				if (firstFocusable) {
+					firstFocusable.focus();
+				}
+			}, 100);
+		}
+	}
+
+	function cleanupTVNavigation() {
+		if (keyboardNavCleanup) {
+			keyboardNavCleanup();
+			keyboardNavCleanup = null;
+		}
 	}
 
 	async function loadOwnerName() {
@@ -80,6 +119,8 @@
 		if (event.key === 'Escape') {
 			handleClose();
 		}
+		// Don't handle other keys here if TV navigation is active
+		// Let setupKeyboardNavigation handle arrow keys
 	}
 
 	function handleBackdropClick(event: MouseEvent) {
@@ -130,6 +171,7 @@
 	>
 		<!-- Modal -->
 		<div
+			bind:this={modalElement}
 			class="fixed top-1/2 left-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-xl"
 			transition:scale={{ duration: 200, start: 0.95 }}
 			on:click|stopPropagation
@@ -144,7 +186,9 @@
 				<button
 					type="button"
 					on:click={handleClose}
-					class="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+					class="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:ring-2 focus:ring-orange-500 focus:outline-none {isTVDevice
+						? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+						: ''}"
 					aria-label="Close modal"
 				>
 					<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,7 +212,9 @@
 					type="text"
 					bind:value={collectionName}
 					placeholder="Enter collection name"
-					class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+					class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none {isTVDevice
+						? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+						: ''}"
 					disabled={isSaving}
 				/>
 			</div>
@@ -185,7 +231,9 @@
 						bind:value={duration}
 						on:input={handleDurationChange}
 						step="1"
-						class="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+						class="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none {isTVDevice
+							? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+							: ''}"
 						disabled={isSaving}
 					/>
 					<span class="text-sm text-gray-500">{formatDuration(duration)}</span>
@@ -203,7 +251,9 @@
 				<select
 					id="theme-select"
 					bind:value={theme}
-					class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+					class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none {isTVDevice
+						? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+						: ''}"
 					disabled={isSaving}
 				>
 					<option value="light">Light Mode</option>
@@ -241,7 +291,9 @@
 				<button
 					type="button"
 					on:click={handleClose}
-					class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none"
+					class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none {isTVDevice
+						? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+						: ''}"
 					disabled={isSaving}
 				>
 					Cancel
@@ -249,7 +301,9 @@
 				<button
 					type="button"
 					on:click={handleSave}
-					class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+					class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 {isTVDevice
+						? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+						: ''}"
 					disabled={isSaving}
 				>
 					{#if isSaving}

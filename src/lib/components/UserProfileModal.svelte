@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount, onDestroy } from 'svelte';
 	import type { User } from 'firebase/auth';
 	import { updateProfile } from 'firebase/auth';
+	import { setupKeyboardNavigation, shouldUseTVUI } from '$lib/tvUtils';
 
 	export let isOpen: boolean;
 	export let user: User | null;
@@ -11,14 +12,19 @@
 	let displayName = '';
 	let isSaving = false;
 	let saveSuccess = false;
+	let modalElement: HTMLElement;
+	let keyboardNavCleanup: (() => void) | null = null;
+	let isTVDevice = false;
 
 	// Initialize display name when modal opens
 	$: if (isOpen && user) {
 		displayName = user.displayName || '';
 		saveSuccess = false;
+		setupTVNavigation();
 	}
 
 	function close() {
+		cleanupTVNavigation();
 		isOpen = false;
 		dispatch('close');
 	}
@@ -53,6 +59,8 @@
 		if (event.key === 'Escape') {
 			close();
 		}
+		// Don't handle other keys here if TV navigation is active
+		// Let setupKeyboardNavigation handle arrow keys
 	}
 
 	function handleBackdropClick(event: MouseEvent) {
@@ -81,6 +89,37 @@
 		if (!user) return '';
 		return user.displayName || user.email || 'User';
 	}
+
+	function setupTVNavigation() {
+		if (modalElement && isTVDevice && isOpen) {
+			// Small delay to ensure modal is fully rendered
+			setTimeout(() => {
+				keyboardNavCleanup = setupKeyboardNavigation(modalElement);
+				// Focus the first focusable element
+				const firstFocusable = modalElement.querySelector(
+					'input, button:not([disabled])'
+				) as HTMLElement;
+				if (firstFocusable) {
+					firstFocusable.focus();
+				}
+			}, 100);
+		}
+	}
+
+	function cleanupTVNavigation() {
+		if (keyboardNavCleanup) {
+			keyboardNavCleanup();
+			keyboardNavCleanup = null;
+		}
+	}
+
+	onMount(async () => {
+		isTVDevice = await shouldUseTVUI();
+	});
+
+	onDestroy(() => {
+		cleanupTVNavigation();
+	});
 </script>
 
 {#if isOpen && user}
@@ -102,6 +141,7 @@
 
 			<!-- Modal panel -->
 			<div
+				bind:this={modalElement}
 				class="relative inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:align-middle"
 			>
 				<div class="bg-white px-4 pt-5 pb-4 sm:p-6">
@@ -148,7 +188,9 @@
 										id="display-name"
 										type="text"
 										bind:value={displayName}
-										class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+										class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none {isTVDevice
+											? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+											: ''}"
 										placeholder="Enter your display name"
 										disabled={isSaving}
 									/>
@@ -156,7 +198,9 @@
 										type="button"
 										on:click={handleSave}
 										disabled={isSaving || !displayName.trim()}
-										class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+										class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 {isTVDevice
+											? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+											: ''}"
 									>
 										{#if isSaving}
 											<svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -192,7 +236,9 @@
 								<button
 									type="button"
 									on:click={handleLogout}
-									class="flex w-full items-center justify-center rounded-lg border border-red-500 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
+									class="flex w-full items-center justify-center rounded-lg border border-red-500 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none {isTVDevice
+										? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+										: ''}"
 								>
 									<svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path
@@ -208,7 +254,9 @@
 								<button
 									type="button"
 									on:click={close}
-									class="flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none"
+									class="flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none {isTVDevice
+										? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+										: ''}"
 								>
 									Cancel
 								</button>

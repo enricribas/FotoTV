@@ -1,9 +1,10 @@
 <script lang="ts">
 	import type { ImageCollection } from '$lib/types/collection.types';
 	import type { User } from 'firebase/auth';
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { createEventDispatcher, onMount, onDestroy } from 'svelte';
 	import { CollectionService } from '$lib/collectionService';
 	import { formatCollectionDisplayName, getCollectionOwnerName } from '$lib/utils/collectionUtils';
+	import { setupKeyboardNavigation, shouldUseTVUI } from '$lib/tvUtils';
 
 	let {
 		collections = [],
@@ -31,6 +32,9 @@
 	let loadingLimits = $state(true);
 	let collectionOwnerNames = $state<Record<string, string>>({});
 	let usingSavedSelections = $state(false);
+	let modalElement = $state<HTMLElement>();
+	let keyboardNavCleanup = $state<(() => void) | null>(null);
+	let isTVDevice = $state(false);
 
 	// LocalStorage key for saving selected collections
 	const STORAGE_KEY = 'phototv_last_selected_collections';
@@ -175,6 +179,8 @@
 		if (event.key === 'Escape') {
 			handleCancel();
 		}
+		// Don't handle other keys here if TV navigation is active
+		// Let setupKeyboardNavigation handle arrow keys
 	}
 
 	function handleBackdropClick(event: MouseEvent) {
@@ -183,20 +189,64 @@
 		}
 	}
 
+	function setupTVNavigation() {
+		if (modalElement && isTVDevice && isOpen) {
+			// Small delay to ensure modal is fully rendered
+			setTimeout(() => {
+				if (modalElement) {
+					keyboardNavCleanup = setupKeyboardNavigation(modalElement);
+					// Focus the first focusable element
+					const firstFocusable = modalElement.querySelector(
+						'input:not([disabled]), button:not([disabled])'
+					) as HTMLElement;
+					if (firstFocusable) {
+						firstFocusable.focus();
+					}
+				}
+			}, 100);
+		}
+	}
+
+	function cleanupTVNavigation() {
+		if (keyboardNavCleanup) {
+			keyboardNavCleanup();
+			keyboardNavCleanup = null;
+		}
+	}
+
 	// Initialize when component mounts or when collections change
 	$effect(() => {
 		if (isOpen && collections.length > 0) {
 			loadUploadLimits().then(() => {
 				initializeSelection();
+				setupTVNavigation();
 			});
 		}
 	});
 
+	// Setup TV navigation when modal opens/closes
+	$effect(() => {
+		if (isOpen) {
+			setupTVNavigation();
+		} else {
+			cleanupTVNavigation();
+		}
+	});
+
 	onMount(() => {
+		// Load TV device status
+		shouldUseTVUI().then((result) => {
+			isTVDevice = result;
+		});
+
 		document.addEventListener('keydown', handleKeydown);
 		return () => {
 			document.removeEventListener('keydown', handleKeydown);
 		};
+	});
+
+	onDestroy(() => {
+		cleanupTVNavigation();
 	});
 </script>
 
@@ -212,6 +262,7 @@
 	>
 		<!-- Modal Content -->
 		<div
+			bind:this={modalElement}
 			class="w-full max-w-md rounded-lg bg-white shadow-xl"
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={handleKeydown}
@@ -278,7 +329,9 @@
 							>
 								<input
 									type="checkbox"
-									class="mt-1 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 disabled:cursor-not-allowed"
+									class="mt-1 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 disabled:cursor-not-allowed {isTVDevice
+										? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+										: ''}"
 									checked={isSelected}
 									disabled={!canUpload}
 									onchange={() => toggleCollection(collection.uuid)}
@@ -365,14 +418,18 @@
 
 					<div class="flex space-x-3">
 						<button
-							class="btn btn-sm border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+							class="btn btn-sm border-gray-300 bg-white text-gray-700 hover:bg-gray-50 {isTVDevice
+								? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+								: ''}"
 							onclick={handleCancel}
 						>
 							Cancel
 						</button>
 
 						<button
-							class="btn btn-sm border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+							class="btn btn-sm border-orange-500 bg-orange-500 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50 {isTVDevice
+								? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+								: ''}"
 							onclick={handleConfirm}
 							disabled={loadingLimits ||
 								selectedCollectionUuids.length === 0 ||

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
 	import type { ImageCollection } from '$lib/types/collection.types';
 	import type { User } from 'firebase/auth';
 	import { db } from '$lib/firebase';
@@ -14,6 +14,7 @@
 	} from 'firebase/firestore';
 	import QRCode from 'qrcode';
 	import { formatCollectionDisplayName, getCollectionOwnerName } from '$lib/utils/collectionUtils';
+	import { setupKeyboardNavigation, shouldUseTVUI } from '$lib/tvUtils';
 
 	export let isOpen: boolean;
 	export let imageCollection: ImageCollection | null;
@@ -26,6 +27,9 @@
 	let loading = false;
 	let qrCodeDataUrl = '';
 	let collectionOwnerName: string | undefined;
+	let modalElement: HTMLElement;
+	let keyboardNavCleanup: (() => void) | null = null;
+	let isTVDevice = false;
 
 	// Generate a UUID v4
 	function generateUUID(): string {
@@ -121,6 +125,7 @@
 	}
 
 	function close() {
+		cleanupTVNavigation();
 		isOpen = false;
 		shareUrl = '';
 		qrCodeDataUrl = '';
@@ -131,6 +136,8 @@
 		if (event.key === 'Escape') {
 			close();
 		}
+		// Don't handle other keys here if TV navigation is active
+		// Let setupKeyboardNavigation handle arrow keys
 	}
 
 	function handleBackdropClick(event: MouseEvent) {
@@ -143,6 +150,30 @@
 	$: if (isOpen && imageCollection) {
 		generateShareUrl();
 		loadOwnerName();
+		setupTVNavigation();
+	}
+
+	function setupTVNavigation() {
+		if (modalElement && isTVDevice && isOpen) {
+			// Small delay to ensure modal is fully rendered
+			setTimeout(() => {
+				keyboardNavCleanup = setupKeyboardNavigation(modalElement);
+				// Focus the first focusable element
+				const firstFocusable = modalElement.querySelector(
+					'input, button:not([disabled])'
+				) as HTMLElement;
+				if (firstFocusable) {
+					firstFocusable.focus();
+				}
+			}, 100);
+		}
+	}
+
+	function cleanupTVNavigation() {
+		if (keyboardNavCleanup) {
+			keyboardNavCleanup();
+			keyboardNavCleanup = null;
+		}
 	}
 
 	async function loadOwnerName() {
@@ -152,10 +183,19 @@
 	}
 
 	onMount(() => {
+		// Load TV device status
+		shouldUseTVUI().then((result) => {
+			isTVDevice = result;
+		});
+
 		document.addEventListener('keydown', handleKeydown);
 		return () => {
 			document.removeEventListener('keydown', handleKeydown);
 		};
+	});
+
+	onDestroy(() => {
+		cleanupTVNavigation();
 	});
 </script>
 
@@ -176,6 +216,7 @@
 
 			<!-- Modal panel -->
 			<div
+				bind:this={modalElement}
 				class="relative inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle"
 			>
 				<div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -233,14 +274,18 @@
 								<input
 									type="text"
 									id="share-url"
-									class="flex-1 rounded-l-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500"
+									class="flex-1 rounded-l-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500 {isTVDevice
+										? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+										: ''}"
 									value={shareUrl}
 									readonly
 								/>
 								<button
 									type="button"
 									on:click={copyToClipboard}
-									class="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
+									class="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none {isTVDevice
+										? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+										: ''}"
 								>
 									{#if copying}
 										<svg
@@ -291,7 +336,9 @@
 					<button
 						type="button"
 						on:click={close}
-						class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+						class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm {isTVDevice
+							? 'focus:ring-4 focus:ring-blue-500 focus:ring-offset-2'
+							: ''}"
 					>
 						Close
 					</button>
