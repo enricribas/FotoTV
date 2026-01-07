@@ -23,6 +23,16 @@
 				-moz-user-select: none;
 				-ms-user-select: none;
 				user-select: none;
+				/* Fire TV specific touch optimizations */
+				touch-action: manipulation;
+			}
+
+			/* Body optimizations for Fire TV Echo Show */
+			body {
+				/* Prevent overscroll bounce on Fire TV */
+				overscroll-behavior: none;
+				/* Optimize for touch */
+				-webkit-overflow-scrolling: touch;
 			}
 
 			/* Allow text selection for inputs and content areas */
@@ -36,12 +46,51 @@
 				user-select: text;
 			}
 
-			/* Improve button touch targets */
+			/* Improve button touch targets and focus for Fire TV remote */
 			button,
 			.btn,
 			[role='button'] {
 				min-height: 44px;
 				min-width: 44px;
+				/* Fire TV focus improvements */
+				cursor: pointer;
+				outline: none;
+			}
+
+			/* Fire TV specific focus styles */
+			button:focus,
+			.btn:focus,
+			[role='button']:focus {
+				outline: 3px solid #3b82f6;
+				outline-offset: 2px;
+				z-index: 1000;
+			}
+
+			/* Fire TV Echo Show specific touch area improvements */
+			@media (pointer: coarse) {
+				button,
+				.btn,
+				[role='button'] {
+					min-height: 48px;
+					min-width: 48px;
+				}
+			}
+
+			/* Prevent text selection during swipe gestures */
+			.slideshow-container,
+			.slideshow-container * {
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				user-select: none;
+			}
+
+			/* Optimize for TV displays */
+			@media (display-mode: fullscreen) {
+				body {
+					margin: 0;
+					padding: 0;
+					overflow: hidden;
+				}
 			}
 		</style>
 		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />

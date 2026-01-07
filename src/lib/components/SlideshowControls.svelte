@@ -5,16 +5,29 @@
 		onPrevious: () => void;
 		onNext: () => void;
 		onDelete: () => void;
+		isEchoShowDevice: boolean;
+		onToggleTouchDebug: () => void;
+		showTouchDebug: boolean;
 	}
 
-	let { showControls, onGoBack, onPrevious, onNext, onDelete }: Props = $props();
+	let {
+		showControls,
+		onGoBack,
+		onPrevious,
+		onNext,
+		onDelete,
+		isEchoShowDevice,
+		onToggleTouchDebug,
+		showTouchDebug
+	}: Props = $props();
 </script>
 
 {#if showControls}
 	<!-- Back Button -->
 	<button
-		class="fixed top-[50px] left-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/90 text-gray-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-gray-300/90 active:scale-95"
+		class="fixed top-[50px] left-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/90 text-gray-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-gray-300/90 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95"
 		onclick={onGoBack}
+		tabindex="0"
 		aria-label="Go back to main menu"
 	>
 		<svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,8 +43,9 @@
 	<!-- Navigation Controls -->
 	<div class="fixed top-[50px] right-4 z-20 flex space-x-3">
 		<button
-			class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/90 text-gray-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-gray-300/90 active:scale-95"
+			class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/90 text-gray-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-gray-300/90 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95"
 			onclick={onPrevious}
+			tabindex="0"
 			aria-label="Previous image"
 		>
 			<svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,8 +54,9 @@
 		</button>
 
 		<button
-			class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/90 text-gray-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-gray-300/90 active:scale-95"
+			class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/90 text-gray-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-gray-300/90 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95"
 			onclick={onNext}
+			tabindex="0"
 			aria-label="Next image"
 		>
 			<svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,8 +67,9 @@
 
 	<!-- Delete Button -->
 	<button
-		class="fixed top-[50px] left-1/2 z-20 flex h-14 w-14 -translate-x-1/2 transform items-center justify-center rounded-full bg-red-200/90 text-red-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-red-300/90 active:scale-95"
+		class="fixed top-[50px] left-1/2 z-20 flex h-14 w-14 -translate-x-1/2 transform items-center justify-center rounded-full bg-red-200/90 text-red-700 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-red-300/90 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:scale-95"
 		onclick={onDelete}
+		tabindex="0"
 		aria-label="Delete current image"
 	>
 		<svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,6 +81,20 @@
 			/>
 		</svg>
 	</button>
+
+	<!-- Debug Controls (Only for Echo Show) -->
+	{#if isEchoShowDevice}
+		<div class="fixed bottom-4 left-4 z-20 flex flex-col space-y-2">
+			<button
+				class="flex h-12 w-24 items-center justify-center rounded-lg bg-blue-600/90 text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-blue-700/90 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:scale-95"
+				onclick={onToggleTouchDebug}
+				tabindex="0"
+				aria-label="Toggle touch debug"
+			>
+				<span class="text-xs font-medium">{showTouchDebug ? 'Hide' : 'Debug'}</span>
+			</button>
+		</div>
+	{/if}
 
 	<!-- Touch instruction overlay (shows briefly on first touch) -->
 	<div class="pointer-events-none fixed inset-0 z-10 flex items-center justify-center">

@@ -49,6 +49,15 @@
 	function toggleDebug() {
 		visible = !visible;
 	}
+
+	function testFireTVTouch() {
+		addEvent('Fire TV Touch Test - Manual trigger');
+		// Enable touch debugging
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem('touch_debug', 'true');
+			addEvent('Touch debug logging enabled');
+		}
+	}
 </script>
 
 {#if visible}
@@ -83,10 +92,21 @@
 					<p><strong>Screen Type:</strong> {deviceInfo?.screenType || 'Unknown'}</p>
 					<p><strong>Is TV:</strong> {deviceInfo?.isTV || false}</p>
 					<p><strong>Is Touch Device:</strong> {deviceInfo?.isTouchDevice || false}</p>
-					<p><strong>User Agent:</strong> {navigator.userAgent.slice(0, 50)}...</p>
+					<p><strong>Fire TV Check:</strong> {navigator.userAgent.includes('AFT')}</p>
+					<p><strong>WebView:</strong> {navigator.userAgent.includes('wv')}</p>
+					<p><strong>User Agent:</strong> {navigator.userAgent.slice(0, 60)}...</p>
 					<p><strong>Platform:</strong> {navigator.platform}</p>
 					<p><strong>Screen:</strong> {window.screen.width}x{window.screen.height}</p>
 					<p><strong>Viewport:</strong> {window.innerWidth}x{window.innerHeight}</p>
+					<p><strong>Touch Debug:</strong> {localStorage?.getItem('touch_debug') || 'false'}</p>
+				</div>
+				<div class="mt-2">
+					<button
+						class="rounded bg-orange-600 px-2 py-1 text-xs hover:bg-orange-700"
+						onclick={testFireTVTouch}
+					>
+						Enable Fire TV Debug
+					</button>
 				</div>
 			</div>
 
@@ -200,13 +220,17 @@
 				<p class="text-xs text-gray-300">Try swiping left/right here</p>
 			</div>
 		</div>
+
+		<!-- Fire TV Specific Instructions -->
+		<div class="mt-4 rounded border border-yellow-600 bg-yellow-900/30 p-4">
+			<h3 class="font-semibold text-yellow-400">Fire TV Echo Show Instructions</h3>
+			<div class="mt-2 space-y-1 text-xs text-gray-300">
+				<p>• <strong>Remote Navigation:</strong> Use arrow keys to navigate between buttons</p>
+				<p>• <strong>Keyboard Shortcut:</strong> Press 'D' key to toggle this debug panel</p>
+				<p>• <strong>Touch Issues:</strong> Enable Fire TV Debug above for detailed logging</p>
+				<p>• <strong>Swipe Sensitivity:</strong> Optimized for 40px minimum distance</p>
+				<p>• <strong>Tap Timeout:</strong> Extended to 400ms for Fire TV</p>
+			</div>
+		</div>
 	</div>
 {/if}
-
-<!-- Debug Toggle Button (always visible when component is mounted) -->
-<button
-	class="fixed right-4 bottom-4 z-40 rounded-full bg-orange-600 px-4 py-2 text-sm text-white shadow-lg hover:bg-orange-700"
-	onclick={toggleDebug}
->
-	{visible ? 'Hide' : 'Debug'} Touch
-</button>

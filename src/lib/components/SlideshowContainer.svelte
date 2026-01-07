@@ -259,6 +259,14 @@
 			onBack: goBack,
 			onToggleControls: toggleControls
 		});
+
+		// Additional keyboard shortcuts for debug mode
+		if (isEchoShowDevice) {
+			if (event.key === 'd' || event.key === 'D') {
+				toggleTouchDebug();
+				event.preventDefault();
+			}
+		}
 	}
 
 	function onShowDeleteDialog() {
@@ -322,7 +330,9 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div
-	class="fixed inset-0 flex flex-col {slideshowTheme === 'dark' ? 'bg-black' : 'bg-[#f0f0f0]'}"
+	class="slideshow-container fixed inset-0 flex flex-col {slideshowTheme === 'dark'
+		? 'bg-black'
+		: 'bg-[#f0f0f0]'}"
 	onclick={onScreenClick}
 	onkeydown={onScreenKeydown}
 	ontouchstart={onTouchStart}
@@ -330,7 +340,7 @@
 	ontouchend={onTouchEnd}
 	role="button"
 	tabindex="0"
-	style="touch-action: manipulation; -webkit-touch-callout: none; -webkit-user-select: none;"
+	style="touch-action: manipulation; -webkit-touch-callout: none; -webkit-user-select: none; overscroll-behavior: none;"
 >
 	{#if state.imageRefs.length > 0}
 		<SlideshowControls
@@ -339,6 +349,9 @@
 			onPrevious={previousImage}
 			onNext={nextImage}
 			onDelete={onShowDeleteDialog}
+			{isEchoShowDevice}
+			onToggleTouchDebug={toggleTouchDebug}
+			{showTouchDebug}
 		/>
 	{/if}
 
@@ -378,13 +391,5 @@
 	<!-- Touch Debug Component (only show on Echo Show) -->
 	{#if isEchoShowDevice}
 		<TouchDebug visible={showTouchDebug} />
-
-		<!-- Debug toggle button -->
-		<button
-			class="fixed bottom-4 left-4 z-40 rounded-full bg-blue-600 px-3 py-2 text-xs text-white shadow-lg hover:bg-blue-700"
-			onclick={toggleTouchDebug}
-		>
-			{showTouchDebug ? 'Hide' : 'Show'} Debug
-		</button>
 	{/if}
 </div>

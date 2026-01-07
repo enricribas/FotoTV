@@ -366,6 +366,19 @@ export function handleTouchStart(event: TouchEvent): void {
 		startTime: Date.now(),
 		moved: false
 	};
+
+	// Prevent default to avoid any browser interference on Fire TV
+	event.preventDefault();
+
+	// Debug logging for Fire TV Echo Show
+	if (typeof console !== 'undefined' && localStorage.getItem('touch_debug') === 'true') {
+		console.log('[Touch] Start:', {
+			x: touch.clientX,
+			y: touch.clientY,
+			target: (event.target as HTMLElement).tagName,
+			time: Date.now()
+		});
+	}
 }
 
 /**
@@ -378,9 +391,24 @@ export function handleTouchMove(event: TouchEvent): void {
 	const deltaX = Math.abs(touch.clientX - touchState.startX);
 	const deltaY = Math.abs(touch.clientY - touchState.startY);
 
-	// If moved more than 10px, consider it a move gesture
-	if (deltaX > 10 || deltaY > 10) {
+	// Fire TV Echo Show is more sensitive, use smaller threshold
+	const moveThreshold = 8;
+
+	// If moved more than threshold, consider it a move gesture
+	if (deltaX > moveThreshold || deltaY > moveThreshold) {
 		touchState.moved = true;
+
+		// Prevent default on move to avoid scrolling on Fire TV
+		event.preventDefault();
+
+		// Debug logging for Fire TV Echo Show
+		if (typeof console !== 'undefined' && localStorage.getItem('touch_debug') === 'true') {
+			console.log('[Touch] Move:', {
+				deltaX: touch.clientX - touchState.startX,
+				deltaY: touch.clientY - touchState.startY,
+				moved: touchState.moved
+			});
+		}
 	}
 }
 
@@ -405,25 +433,53 @@ export function handleTouchEnd(
 	const deltaTime = Date.now() - touchState.startTime;
 	const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
+	// Prevent default to ensure Fire TV doesn't interfere
+	event.preventDefault();
+
 	// Don't handle if touch target is a button
 	if ((event.target as HTMLElement).closest('button')) {
 		touchState = null;
 		return;
 	}
 
-	// Swipe detection: minimum 50px distance, maximum 500ms time, primarily horizontal
-	const isSwipe = distance > 50 && deltaTime < 500 && Math.abs(deltaX) > Math.abs(deltaY) * 2;
+	// Fire TV Echo Show optimized swipe detection
+	// Reduced minimum distance for smaller screen, extended time window for slower gestures
+	const minSwipeDistance = 40; // Reduced from 50px for Fire TV
+	const maxSwipeTime = 750; // Increased from 500ms for Fire TV
+	const horizontalRatio = 1.5; // Reduced from 2 for more forgiving horizontal detection
+
+	const isSwipe =
+		distance > minSwipeDistance &&
+		deltaTime < maxSwipeTime &&
+		Math.abs(deltaX) > Math.abs(deltaY) * horizontalRatio;
+
+	// Debug logging for Fire TV Echo Show
+	if (typeof console !== 'undefined' && localStorage.getItem('touch_debug') === 'true') {
+		console.log('[Touch] End:', {
+			deltaX,
+			deltaY,
+			deltaTime,
+			distance,
+			isSwipe,
+			moved: touchState.moved,
+			target: (event.target as HTMLElement).tagName
+		});
+	}
 
 	if (isSwipe) {
 		if (deltaX > 0 && onPrevious) {
 			// Swipe right = previous image
+			console.log('[Touch] Swipe right - previous image');
 			onPrevious();
 		} else if (deltaX < 0 && onNext) {
 			// Swipe left = next image
+			console.log('[Touch] Swipe left - next image');
 			onNext();
 		}
-	} else if (!touchState.moved && deltaTime < 300) {
+	} else if (!touchState.moved && deltaTime < 400) {
+		// Increased tap time for Fire TV
 		// Quick tap without movement = toggle controls
+		console.log('[Touch] Tap - toggle controls');
 		toggleControls(currentShowControls, actions);
 	}
 
