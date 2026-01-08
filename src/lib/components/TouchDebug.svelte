@@ -57,6 +57,56 @@
 			localStorage.setItem('touch_debug', 'true');
 			addEvent('Touch debug logging enabled');
 		}
+
+		// Test touch event registration
+		testTouchEventRegistration();
+	}
+
+	function testTouchEventRegistration() {
+		addEvent('Testing touch event registration...');
+
+		// Test if touch events are available
+		if ('ontouchstart' in window) {
+			addEvent('✓ ontouchstart available in window');
+		} else {
+			addEvent('✗ ontouchstart NOT available in window');
+		}
+
+		if ('TouchEvent' in window) {
+			addEvent('✓ TouchEvent constructor available');
+		} else {
+			addEvent('✗ TouchEvent constructor NOT available');
+		}
+
+		// Test touch points
+		addEvent(`Touch points: ${navigator.maxTouchPoints || 'unknown'}`);
+
+		// Test if we're in Fire TV WebView
+		const ua = navigator.userAgent;
+		if (ua.includes('AFT') || ua.includes('Amazon')) {
+			addEvent('✓ Fire TV detected in user agent');
+		} else {
+			addEvent('? Fire TV not clearly detected in user agent');
+		}
+	}
+
+	function forceEchoShowMode() {
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem('force_echo_show', 'true');
+			localStorage.setItem('touch_debug', 'true');
+			addEvent('Force Echo Show mode enabled - reloading...');
+			setTimeout(() => window.location.reload(), 1000);
+		}
+	}
+
+	function resetDetection() {
+		if (typeof localStorage !== 'undefined') {
+			localStorage.removeItem('force_echo_show');
+			localStorage.removeItem('touch_debug');
+			localStorage.removeItem('tv_mode');
+			addEvent('Device detection reset - reloading...');
+			setTimeout(() => window.location.reload(), 1000);
+		}
 	}
 </script>
 
@@ -101,12 +151,26 @@
 					<p><strong>Touch Debug:</strong> {localStorage?.getItem('touch_debug') || 'false'}</p>
 				</div>
 				<div class="mt-2">
-					<button
-						class="rounded bg-orange-600 px-2 py-1 text-xs hover:bg-orange-700"
-						onclick={testFireTVTouch}
-					>
-						Enable Fire TV Debug
-					</button>
+					<div class="flex flex-wrap gap-1">
+						<button
+							class="rounded bg-orange-600 px-2 py-1 text-xs hover:bg-orange-700"
+							onclick={testFireTVTouch}
+						>
+							Test Fire TV Touch
+						</button>
+						<button
+							class="rounded bg-purple-600 px-2 py-1 text-xs hover:bg-purple-700"
+							onclick={forceEchoShowMode}
+						>
+							Force Echo Show
+						</button>
+						<button
+							class="rounded bg-red-600 px-2 py-1 text-xs hover:bg-red-700"
+							onclick={resetDetection}
+						>
+							Reset Detection
+						</button>
+					</div>
 				</div>
 			</div>
 
@@ -223,13 +287,57 @@
 
 		<!-- Fire TV Specific Instructions -->
 		<div class="mt-4 rounded border border-yellow-600 bg-yellow-900/30 p-4">
-			<h3 class="font-semibold text-yellow-400">Fire TV Echo Show Instructions</h3>
+			<h3 class="font-semibold text-yellow-400">Fire TV Echo Show Troubleshooting</h3>
 			<div class="mt-2 space-y-1 text-xs text-gray-300">
-				<p>• <strong>Remote Navigation:</strong> Use arrow keys to navigate between buttons</p>
-				<p>• <strong>Keyboard Shortcut:</strong> Press 'D' key to toggle this debug panel</p>
-				<p>• <strong>Touch Issues:</strong> Enable Fire TV Debug above for detailed logging</p>
-				<p>• <strong>Swipe Sensitivity:</strong> Optimized for 40px minimum distance</p>
-				<p>• <strong>Tap Timeout:</strong> Extended to 400ms for Fire TV</p>
+				<p><strong>Common Issues:</strong></p>
+				<p>
+					• <span class="text-red-400">Virtual Remote Overlay:</span> Android manifest needs touchscreen
+					support
+				</p>
+				<p>
+					• <span class="text-red-400">Touch Events Not Firing:</span> WebView may block touch - check
+					console
+				</p>
+				<p>
+					• <span class="text-red-400">Device Not Detected:</span> Use "Force Echo Show" button above
+				</p>
+
+				<p class="mt-2"><strong>Testing Steps:</strong></p>
+				<p>1. Click "Test Fire TV Touch" to check touch event registration</p>
+				<p>2. If no touch events, try "Force Echo Show" mode</p>
+				<p>3. Check browser console for [Touch] debug messages</p>
+				<p>4. Test touch in colored areas below</p>
+
+				<p class="mt-2"><strong>Keyboard Shortcuts:</strong></p>
+				<p>• <strong>D</strong> = Toggle debug panel | <strong>E</strong> = Force Echo Show</p>
+				<p>• <strong>T</strong> = Toggle touch logging | <strong>I</strong> = Device info</p>
+				<p>• <strong>R</strong> = Reset detection</p>
+			</div>
+		</div>
+
+		<!-- Current Status -->
+		<div class="mt-4 rounded border border-blue-600 bg-blue-900/30 p-4">
+			<h3 class="font-semibold text-blue-400">Current Status</h3>
+			<div class="mt-2 space-y-1 text-xs text-gray-300">
+				<p>
+					<strong>Device Detection:</strong>
+					{isEchoShowDevice ? 'Echo Show Detected ✓' : 'Not Echo Show ✗'}
+				</p>
+				<p><strong>Touch Support:</strong> {touchSupported ? 'Available ✓' : 'Not Available ✗'}</p>
+				<p>
+					<strong>Touch Debug:</strong>
+					{localStorage?.getItem('touch_debug') === 'true' ? 'Enabled ✓' : 'Disabled ✗'}
+				</p>
+				<p>
+					<strong>Force Mode:</strong>
+					{localStorage?.getItem('force_echo_show') === 'true' ? 'Active ✓' : 'Inactive ✗'}
+				</p>
+				<p>
+					<strong>User Agent:</strong>
+					{navigator.userAgent.includes('AFT') || navigator.userAgent.includes('Amazon')
+						? 'Fire TV Detected ✓'
+						: 'Standard Browser ✗'}
+				</p>
 			</div>
 		</div>
 	</div>

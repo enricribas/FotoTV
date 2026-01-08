@@ -66,6 +66,23 @@
 				z-index: 1000;
 			}
 
+			/* Fire TV Echo Show touch debugging styles */
+			.touch-debug-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+				z-index: 9999;
+				background: rgba(255, 0, 0, 0.1);
+				display: none;
+			}
+
+			.touch-debug-overlay.active {
+				display: block;
+			}
+
 			/* Fire TV Echo Show specific touch area improvements */
 			@media (pointer: coarse) {
 				button,
@@ -98,5 +115,71 @@
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
+
+		<!-- Fire TV Echo Show Touch Debugging Script -->
+		<script>
+			// Global touch event debugging for Fire TV Echo Show
+			if (typeof window !== 'undefined') {
+				let touchDebugEnabled = false;
+
+				// Check if touch debug is enabled
+				const checkTouchDebug = () => {
+					try {
+						return localStorage.getItem('touch_debug') === 'true';
+					} catch {
+						return false;
+					}
+				};
+
+				// Log touch events globally
+				const logTouchEvent = (type, event) => {
+					if (!checkTouchDebug()) return;
+
+					const touch = type === 'touchend' ? event.changedTouches[0] : event.touches[0];
+					if (!touch) return;
+
+					console.log(`[Global Touch] ${type}:`, {
+						x: Math.round(touch.clientX),
+						y: Math.round(touch.clientY),
+						target: event.target.tagName || 'unknown',
+						timestamp: Date.now(),
+						userAgent: navigator.userAgent.includes('AFT') ? 'Fire TV' : 'Other'
+					});
+				};
+
+				// Add global touch listeners
+				document.addEventListener('touchstart', (e) => logTouchEvent('touchstart', e), {
+					passive: false
+				});
+				document.addEventListener('touchmove', (e) => logTouchEvent('touchmove', e), {
+					passive: false
+				});
+				document.addEventListener('touchend', (e) => logTouchEvent('touchend', e), {
+					passive: false
+				});
+
+				// Debug info on page load
+				if (checkTouchDebug()) {
+					console.log('[Fire TV Debug] Page loaded with touch debug enabled');
+					console.log('[Fire TV Debug] User Agent:', navigator.userAgent);
+					console.log('[Fire TV Debug] Touch support:', 'ontouchstart' in window);
+					console.log('[Fire TV Debug] Max touch points:', navigator.maxTouchPoints);
+				}
+
+				// Keyboard shortcut to toggle debug from anywhere
+				document.addEventListener('keydown', (e) => {
+					if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'D')) {
+						try {
+							const current = localStorage.getItem('touch_debug') === 'true';
+							localStorage.setItem('touch_debug', current ? 'false' : 'true');
+							console.log(`[Fire TV Debug] Touch debugging ${current ? 'disabled' : 'enabled'}`);
+						} catch (err) {
+							console.warn('[Fire TV Debug] Cannot access localStorage:', err);
+						}
+						e.preventDefault();
+					}
+				});
+			}
+		</script>
 	</body>
 </html>

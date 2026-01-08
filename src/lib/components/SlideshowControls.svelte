@@ -82,9 +82,10 @@
 		</svg>
 	</button>
 
-	<!-- Debug Controls (Only for Echo Show) -->
-	{#if isEchoShowDevice}
-		<div class="fixed bottom-4 left-4 z-20 flex flex-col space-y-2">
+	<!-- Debug Controls (Always available - fallback when device detection fails) -->
+	<div class="fixed bottom-4 left-4 z-20 flex flex-col space-y-2">
+		<!-- Primary debug button (always visible if Echo Show detected) -->
+		{#if isEchoShowDevice}
 			<button
 				class="flex h-12 w-24 items-center justify-center rounded-lg bg-blue-600/90 text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:bg-blue-700/90 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:scale-95"
 				onclick={onToggleTouchDebug}
@@ -93,8 +94,36 @@
 			>
 				<span class="text-xs font-medium">{showTouchDebug ? 'Hide' : 'Debug'}</span>
 			</button>
-		</div>
-	{/if}
+		{/if}
+
+		<!-- Fallback debug button (smaller, always present) -->
+		<button
+			class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500/80 text-xs text-white shadow-md backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-orange-600/90 focus:ring-2 focus:ring-orange-400 active:scale-95"
+			onclick={onToggleTouchDebug}
+			tabindex="0"
+			aria-label="Force debug mode (fallback)"
+			title="Force Debug Mode (Press D key or click)"
+		>
+			D
+		</button>
+
+		<!-- Emergency Echo Show mode toggle -->
+		<button
+			class="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500/80 text-xs text-white shadow-md backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-purple-600/90 focus:ring-2 focus:ring-purple-400 active:scale-95"
+			onclick={() => {
+				if (typeof localStorage !== 'undefined') {
+					localStorage.setItem('force_echo_show', 'true');
+					localStorage.setItem('touch_debug', 'true');
+					window.location.reload();
+				}
+			}}
+			tabindex="0"
+			aria-label="Force Echo Show mode"
+			title="Force Echo Show Mode + Debug"
+		>
+			E
+		</button>
+	</div>
 
 	<!-- Touch instruction overlay (shows briefly on first touch) -->
 	<div class="pointer-events-none fixed inset-0 z-10 flex items-center justify-center">
@@ -105,4 +134,18 @@
 			<p class="text-center text-sm">Tap to show/hide controls • Swipe left/right to navigate</p>
 		</div>
 	</div>
+
+	<!-- Debug keyboard shortcuts help (only visible when debug enabled) -->
+	{#if showTouchDebug || (typeof localStorage !== 'undefined' && localStorage.getItem('touch_debug') === 'true')}
+		<div
+			class="pointer-events-none fixed top-4 right-4 z-30 rounded-lg bg-black/70 p-2 text-xs text-white backdrop-blur-sm"
+		>
+			<div class="space-y-1">
+				<p><strong>Debug Keys:</strong></p>
+				<p>D = Toggle Debug</p>
+				<p>E = Force Echo Show</p>
+				<p>R = Reset Detection</p>
+			</div>
+		</div>
+	{/if}
 {/if}

@@ -260,12 +260,69 @@
 			onToggleControls: toggleControls
 		});
 
-		// Additional keyboard shortcuts for debug mode
-		if (isEchoShowDevice) {
-			if (event.key === 'd' || event.key === 'D') {
-				toggleTouchDebug();
-				event.preventDefault();
+		// Enhanced keyboard shortcuts for Fire TV Echo Show debugging
+		// Always available, not just when Echo Show detected
+		if (event.key === 'd' || event.key === 'D') {
+			toggleTouchDebug();
+			event.preventDefault();
+		}
+
+		// Force Echo Show mode for testing
+		if (event.key === 'e' || event.key === 'E') {
+			if (typeof localStorage !== 'undefined') {
+				localStorage.setItem('force_echo_show', 'true');
+				localStorage.setItem('touch_debug', 'true');
+				console.log('[Debug] Forced Echo Show mode enabled');
+				window.location.reload();
 			}
+			event.preventDefault();
+		}
+
+		// Reset device detection
+		if (event.key === 'r' || event.key === 'R') {
+			if (typeof localStorage !== 'undefined') {
+				localStorage.removeItem('force_echo_show');
+				localStorage.removeItem('touch_debug');
+				localStorage.removeItem('tv_mode');
+				localStorage.removeItem('tv_mode_disabled');
+				console.log('[Debug] Device detection reset');
+				window.location.reload();
+			}
+			event.preventDefault();
+		}
+
+		// Force touch debug logging without Echo Show mode
+		if (event.key === 't' || event.key === 'T') {
+			if (typeof localStorage !== 'undefined') {
+				const currentDebug = localStorage.getItem('touch_debug');
+				if (currentDebug === 'true') {
+					localStorage.removeItem('touch_debug');
+					console.log('[Debug] Touch debug logging disabled');
+				} else {
+					localStorage.setItem('touch_debug', 'true');
+					console.log('[Debug] Touch debug logging enabled');
+				}
+			}
+			event.preventDefault();
+		}
+
+		// Show device info in console
+		if (event.key === 'i' || event.key === 'I') {
+			console.log('[Debug] Device Information:', {
+				userAgent: navigator.userAgent,
+				platform: navigator.platform,
+				screen: `${window.screen.width}x${window.screen.height}`,
+				viewport: `${window.innerWidth}x${window.innerHeight}`,
+				touchSupported: 'ontouchstart' in window,
+				maxTouchPoints: navigator.maxTouchPoints,
+				isEchoShow: isEchoShowDevice,
+				localStorage: {
+					force_echo_show: localStorage?.getItem('force_echo_show'),
+					touch_debug: localStorage?.getItem('touch_debug'),
+					tv_mode: localStorage?.getItem('tv_mode')
+				}
+			});
+			event.preventDefault();
 		}
 	}
 
@@ -324,6 +381,12 @@
 
 	function toggleTouchDebug() {
 		showTouchDebug = !showTouchDebug;
+
+		// Also enable touch debug logging when debug panel is shown
+		if (typeof localStorage !== 'undefined' && showTouchDebug) {
+			localStorage.setItem('touch_debug', 'true');
+			console.log('[Debug] Touch debug panel and logging enabled');
+		}
 	}
 </script>
 
@@ -388,8 +451,29 @@
 		</div>
 	{/if}
 
-	<!-- Touch Debug Component (only show on Echo Show) -->
-	{#if isEchoShowDevice}
+	<!-- Touch Debug Component (show when debug enabled or Echo Show detected) -->
+	{#if isEchoShowDevice || showTouchDebug || (typeof localStorage !== 'undefined' && localStorage.getItem('touch_debug') === 'true')}
 		<TouchDebug visible={showTouchDebug} />
+	{/if}
+
+	<!-- Debug keyboard shortcuts help overlay -->
+	{#if showTouchDebug || (typeof localStorage !== 'undefined' && localStorage.getItem('touch_debug') === 'true')}
+		<div
+			class="pointer-events-none fixed right-4 bottom-4 z-40 rounded-lg bg-black/80 p-3 text-xs text-white backdrop-blur-sm"
+		>
+			<div class="space-y-1">
+				<p class="font-semibold text-yellow-400">Fire TV Debug Keys:</p>
+				<p><span class="text-cyan-300">D</span> = Toggle Debug Panel</p>
+				<p><span class="text-cyan-300">E</span> = Force Echo Show Mode</p>
+				<p><span class="text-cyan-300">R</span> = Reset Detection</p>
+				<p><span class="text-cyan-300">T</span> = Toggle Touch Logging</p>
+				<p><span class="text-cyan-300">I</span> = Show Device Info</p>
+				<p class="mt-2 text-gray-400">Echo Show: {isEchoShowDevice}</p>
+				<p class="text-gray-400">
+					Touch Debug: {typeof localStorage !== 'undefined' &&
+						localStorage.getItem('touch_debug') === 'true'}
+				</p>
+			</div>
+		</div>
 	{/if}
 </div>

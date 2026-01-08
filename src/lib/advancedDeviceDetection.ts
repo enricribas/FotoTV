@@ -104,11 +104,35 @@ export class AdvancedDeviceDetector {
 
 		const userAgent = navigator.userAgent.toLowerCase();
 
-		// Check for Echo Show specific identifiers
+		// Enhanced Fire TV Echo Show detection
 		if (
 			userAgent.includes('echo show') ||
+			userAgent.includes('echo-show') ||
 			(userAgent.includes('amazon') && userAgent.includes('webview')) ||
-			(userAgent.includes('silk') && userAgent.includes('tv'))
+			(userAgent.includes('silk') && userAgent.includes('tv')) ||
+			(userAgent.includes('aft') && userAgent.includes('wv')) || // Fire TV WebView
+			userAgent.includes('afts') || // Fire TV Stick
+			userAgent.includes('aftm') || // Fire TV
+			userAgent.includes('aftb') || // Fire TV
+			userAgent.includes('aftt') || // Fire TV
+			userAgent.includes('aftn') || // Fire TV Nebula
+			(userAgent.includes('linux') && userAgent.includes('android') && userAgent.includes('tv'))
+		) {
+			return true;
+		}
+
+		// Check for Fire TV specific screen dimensions (common Echo Show sizes)
+		const screenWidth = window.screen.width;
+		const screenHeight = window.screen.height;
+		const maxDim = Math.max(screenWidth, screenHeight);
+		const minDim = Math.min(screenWidth, screenHeight);
+
+		// Echo Show 15: 1980x1080, Echo Show 10: 1280x800
+		if (
+			(maxDim === 1980 && minDim === 1080) ||
+			(maxDim === 1920 && minDim === 1080) ||
+			(maxDim === 1280 && minDim === 800) ||
+			(userAgent.includes('android') && userAgent.includes('tv') && 'ontouchstart' in window)
 		) {
 			return true;
 		}
@@ -118,7 +142,14 @@ export class AdvancedDeviceDetector {
 			const model = this.deviceInfo.model?.toLowerCase() || '';
 			const manufacturer = this.deviceInfo.manufacturer?.toLowerCase() || '';
 
-			if (manufacturer.includes('amazon') || model.includes('echo')) {
+			if (manufacturer.includes('amazon') || model.includes('echo') || model.includes('fire')) {
+				return true;
+			}
+		}
+
+		// Check for forced Echo Show mode for debugging
+		if (typeof localStorage !== 'undefined') {
+			if (localStorage.getItem('force_echo_show') === 'true') {
 				return true;
 			}
 		}
@@ -174,6 +205,11 @@ export class AdvancedDeviceDetector {
 			// TV devices might have bluetooth keyboards
 			if (await this.isAndroidTV()) {
 				return await this.detectTVKeyboard();
+			}
+
+			// Echo Show devices might have virtual keyboards
+			if (await this.isEchoShow()) {
+				return false; // Echo Show uses virtual keyboard
 			}
 
 			// Mobile devices typically don't have physical keyboards
@@ -305,6 +341,12 @@ export class AdvancedDeviceDetector {
 
 		// Echo Show devices should be treated as TV regardless of size
 		if (await this.isEchoShow()) {
+			return 'tv';
+		}
+
+		// Check for Fire TV indicators in user agent
+		const userAgent = navigator.userAgent.toLowerCase();
+		if (userAgent.includes('aft') || userAgent.includes('fire tv')) {
 			return 'tv';
 		}
 
@@ -440,6 +482,25 @@ export const disableTVMode = () => {
 		const url = new URL(window.location.href);
 		url.searchParams.delete('tv');
 		window.history.replaceState({}, '', url.toString());
+	}
+};
+
+// Echo Show debugging helpers
+export const forceEchoShowMode = () => {
+	if (typeof window !== 'undefined') {
+		localStorage.setItem('force_echo_show', 'true');
+		localStorage.setItem('tv_mode', 'true');
+		localStorage.removeItem('tv_mode_disabled');
+		window.location.reload();
+	}
+};
+
+export const disableEchoShowMode = () => {
+	if (typeof window !== 'undefined') {
+		localStorage.removeItem('force_echo_show');
+		localStorage.removeItem('tv_mode');
+		localStorage.setItem('tv_mode_disabled', 'true');
+		window.location.reload();
 	}
 };
 
