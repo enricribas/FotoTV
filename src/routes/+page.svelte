@@ -46,8 +46,97 @@
 		</div>
 	</header>
 
+	<!-- Two-Step Setup Process -->
+	<div class="px-6 pt-24 pb-2">
+		<div class="mx-auto max-w-5xl">
+			<div class="flex flex-col gap-8 lg:flex-row lg:gap-12">
+				<!-- Step 1: TV -->
+				<div class="flex-1">
+					<h3 class="mb-4 pl-16 text-left text-lg font-semibold text-gray-800">
+						Step 1: Get FotoTV for your TV
+					</h3>
+					<div class="flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
+						<a
+							href="https://play.google.com/store/apps/details?id=com.phototv.app&hl=en"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="flex items-center gap-2 rounded-lg bg-blue-800 px-6 py-3 text-white transition-colors hover:bg-blue-900"
+						>
+							<svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+								<path
+									d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"
+								/>
+							</svg>
+							<div class="text-left">
+								<div class="text-xs">AVAILABLE ON</div>
+								<div class="text-sm font-semibold">Google Play</div>
+							</div>
+						</a>
+						<a
+							href="https://www.amazon.com/Knomni-FotoTV/dp/B0FP33YB92"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="flex items-center gap-2 rounded-lg bg-blue-800 px-6 py-3 text-white transition-colors hover:bg-blue-900"
+						>
+							<svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+								<path
+									d="M.045 18.02c.072-.116.187-.124.348-.022 3.636 2.11 8.206 3.166 13.58 3.166 2.844 0 5.454-.404 7.77-1.207 2.314-.803 4.065-1.689 5.253-2.654.115-.094.23-.094.345 0 .116.095.088.203-.086.318-1.253 1.181-3.14 2.155-5.66 2.925-2.52.769-5.339 1.154-8.459 1.154-2.573 0-4.96-.404-7.162-1.207-2.2-.804-3.897-1.712-5.089-2.725-.13-.116-.144-.224-.043-.318l.203-.23z"
+								/>
+							</svg>
+							<div class="text-left">
+								<div class="text-xs">AVAILABLE ON</div>
+								<div class="text-sm font-semibold">Fire TV</div>
+							</div>
+						</a>
+					</div>
+				</div>
+
+				<!-- Step 2: Phone -->
+				<div class="flex-1">
+					<h3 class="mb-4 pl-16 text-left text-lg font-semibold text-gray-800">
+						Step 2: Upload photos from your phone
+					</h3>
+					<div class="flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
+						<a
+							href="https://play.google.com/store/apps/details?id=com.phototv.app&hl=en"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="flex items-center gap-2 rounded-lg bg-blue-800 px-6 py-3 text-white transition-colors hover:bg-blue-900"
+						>
+							<svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+								<path
+									d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"
+								/>
+							</svg>
+							<div class="text-left">
+								<div class="text-xs">ANDROID</div>
+								<div class="text-sm font-semibold">Google Play</div>
+							</div>
+						</a>
+						<a
+							href="https://fototv.ca"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="flex items-center gap-2 rounded-lg bg-blue-800 px-6 py-3 text-white transition-colors hover:bg-blue-900"
+						>
+							<svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+								<path
+									d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+								/>
+							</svg>
+							<div class="text-left">
+								<div class="text-xs">IPHONE / ANDROID</div>
+								<div class="text-sm font-semibold">Web Version</div>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- Hero Section -->
-	<section class="flex min-h-screen items-center justify-center px-6 pt-20">
+	<section class="flex min-h-screen items-center justify-center px-6 pt-0">
 		<div class="mx-auto max-w-4xl">
 			<h1 class="mb-6 text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl">
 				Turn Your TV Into a <span class="text-orange-600">Personal Photo Gallery</span>
@@ -83,16 +172,18 @@
 					></div>
 				</div>
 			</div>
-			<div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-				<a
-					href="/app"
-					class="rounded-lg bg-orange-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-colors hover:bg-orange-700"
-					>Get Started Free</a
-				>
-				<button
-					class="rounded-lg border-2 border-orange-600 px-8 py-4 text-lg font-semibold text-orange-600 transition-colors hover:bg-orange-50"
-					>Learn More</button
-				>
+			<div class="flex flex-col items-center justify-center gap-6">
+				<div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+					<a
+						href="/app"
+						class="rounded-lg bg-orange-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-colors hover:bg-orange-700"
+						>Get Started Free</a
+					>
+					<button
+						class="rounded-lg border-2 border-orange-600 px-8 py-4 text-lg font-semibold text-orange-600 transition-colors hover:bg-orange-50"
+						>Learn More</button
+					>
+				</div>
 			</div>
 		</div>
 	</section>
