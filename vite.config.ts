@@ -13,7 +13,8 @@ export default defineConfig({
 		__APP_VERSION__: JSON.stringify(appVersion)
 	},
 	server: {
-		host: true
+		host: true,
+		allowedHosts: true
 	},
 	test: {
 		projects: [
