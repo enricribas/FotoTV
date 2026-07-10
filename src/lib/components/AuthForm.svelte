@@ -150,7 +150,7 @@
 					type="email"
 					placeholder="Enter your email"
 					bind:value={$email}
-					class="input input-bordered w-full"
+					class="input input-bordered w-full text-base"
 					disabled={$isLoading}
 					on:input={clearMessage}
 					required
@@ -163,7 +163,7 @@
 					type="password"
 					placeholder="Enter your password"
 					bind:value={$password}
-					class="input input-bordered w-full"
+					class="input input-bordered w-full text-base"
 					disabled={$isLoading}
 					on:input={clearMessage}
 					required
@@ -173,18 +173,18 @@
 
 		{#if $stage === 2}
 			<div class="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
-				No account with that email and password. Fill in these fields to create an account.
+				<strong>New account:</strong> No account found with that email. Fill in your name and confirm your password to create one.
 			</div>
 			<div>
-				<label for="display-name" class="mb-1 block text-sm font-medium text-gray-700">
-					Display Name
+				<label for="display-name" class="mb-2 block text-sm font-medium text-gray-700">
+					Your Name
 				</label>
 				<input
 					id="display-name"
 					type="text"
-					placeholder="Name to display"
+					placeholder="e.g. Grandma Sue"
 					bind:value={$displayName}
-					class="input input-bordered w-full"
+					class="input input-bordered w-full text-base"
 					disabled={$isLoading}
 					on:input={clearMessage}
 					required
@@ -192,7 +192,7 @@
 			</div>
 
 			<div>
-				<label for="confirm-password" class="mb-1 block text-sm font-medium text-gray-700">
+				<label for="confirm-password" class="mb-2 block text-sm font-medium text-gray-700">
 					Confirm Password
 				</label>
 				<input
@@ -200,56 +200,28 @@
 					type="password"
 					placeholder="Confirm your password"
 					bind:value={$confirmPassword}
-					class="input input-bordered w-full"
+					class="input input-bordered w-full text-base"
 					disabled={$isLoading}
 					on:input={clearMessage}
 					required
 				/>
-				<p class="mt-1 text-xs text-gray-500">Password must be at least 6 characters long</p>
+				<p class="mt-2 text-xs text-gray-600">At least 6 characters</p>
 			</div>
 		{/if}
 
-		{#if $stage === 1}
-			<div class="flex gap-2">
-				<button
-					type="submit"
-					class="btn flex-1 border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
-					disabled={$isLoading}
-				>
-					{#if $isLoading}
-						<span class="loading loading-spinner loading-sm mr-2"></span>
-						Creating...
-					{:else}
-						Create Account
-					{/if}
-				</button>
-				<button
-					type="submit"
-					class="btn flex-1 border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
-					disabled={$isLoading}
-				>
-					{#if $isLoading}
-						<span class="loading loading-spinner loading-sm mr-2"></span>
-						Signing in...
-					{:else}
-						Sign In
-					{/if}
-				</button>
-			</div>
-		{:else}
-			<button
-				type="submit"
-				class="btn w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
-				disabled={$isLoading}
-			>
-				{#if $isLoading}
-					<span class="loading loading-spinner loading-sm mr-2"></span>
-					Creating Account...
-				{:else}
-					Create Account
-				{/if}
-			</button>
-		{/if}
+		<!-- Single, clear action button -->
+		<button
+			type="submit"
+			class="btn w-full border-0 bg-gradient-to-r from-orange-500 to-red-500 text-base font-semibold text-white hover:from-orange-600 hover:to-red-600"
+			disabled={$isLoading}
+		>
+			{#if $isLoading}
+				<span class="loading loading-spinner loading-sm mr-2"></span>
+				{$stage === 1 ? 'Signing in...' : 'Creating Account...'}
+			{:else}
+				{$stage === 1 ? 'Continue' : 'Create Account'}
+			{/if}
+		</button>
 	</form>
 
 	<!-- Stage 2 back button -->
@@ -260,7 +232,7 @@
 				on:click={goBackToStage1}
 				disabled={$isLoading}
 			>
-				← Back to sign in
+				← Back
 			</button>
 		</div>
 	{/if}
