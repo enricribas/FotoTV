@@ -160,7 +160,7 @@
 {#if isOpen && collection}
 	<!-- Backdrop -->
 	<div
-		class="fixed inset-0 z-50 bg-black/50"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
 		transition:fade={{ duration: 200 }}
 		on:click={handleBackdropClick}
 		on:keydown={handleKeydown}
@@ -172,7 +172,7 @@
 		<!-- Modal -->
 		<div
 			bind:this={modalElement}
-			class="fixed top-1/2 left-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-xl"
+			class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
 			transition:scale={{ duration: 200, start: 0.95 }}
 			on:click|stopPropagation
 			on:keydown|stopPropagation
