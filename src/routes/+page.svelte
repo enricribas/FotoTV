@@ -59,7 +59,7 @@
 	<section class="flex min-h-screen items-center justify-center px-6 pt-20">
 		<div class="mx-auto max-w-4xl text-center">
 			<h1 class="mb-6 text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-				Show Your Family Photos<br />
+				Show Your Family Photos and Artwork<br />
 				<span class="text-orange-600">on Your TV</span>
 			</h1>
 			<p class="mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-gray-600">
